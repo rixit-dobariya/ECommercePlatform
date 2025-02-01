@@ -1,0 +1,19 @@
+﻿Done: 
+	Cart
+	User
+	Category
+	Cart
+	Product
+	ProductAttributes
+	Wishlist
+	Address
+	OrderHeader
+	OrderDetail
+	Offer
+
+
+Extra:
+	Banner
+	PagesContent
+	Response
+	Review

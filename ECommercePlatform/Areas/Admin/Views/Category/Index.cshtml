@@ -1,0 +1,45 @@
+﻿
+@{
+	ViewData["Title"] = "Category Management";
+}
+<div class="page-header">
+	<h3 class="fw-bold mb-3">Category Management</h3>
+	<ul class="breadcrumbs mb-3">
+		<li class="nav-home">
+			<a href="#">
+				<i class="icon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="icon-arrow-right"></i>
+		</li>
+		<li class="nav-item">
+			<a href="Admin/Category/">Categories</a>
+		</li>
+		<li class="separator">
+			<i class="icon-arrow-right"></i>
+		</li>
+		<li class="nav-item">
+			<a href="Admin/Category/Index">Home</a>
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Categories</h4>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table id="categoryTbl" >
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script src="~/js/datatables/category.js"></script>
+}
