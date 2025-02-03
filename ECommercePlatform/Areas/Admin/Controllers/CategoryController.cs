@@ -22,13 +22,13 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             ViewData["ActiveMenu"] = "Category";
             return View();
         }
+        int getChildCount(int? id)
+        {
+            return _unitOfWork.Categories.GetAll().Count(c => c.ParentCategoryId == id);
+        }
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            int getChildCount(int? id)
-            {
-                return _unitOfWork.Categories.GetAll().Count(c => c.ParentCategoryId == id); ;
-            }
             IEnumerable<SelectListItem> categoriesList = _unitOfWork.Categories
                 .GetAll("ParentCategory")
                 .Where(c=>c.CategoryId!=id && c.ParentCategoryId==null)
@@ -103,13 +103,19 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
         #region API ENDPOINTS
         [HttpGet]
-        public IActionResult GetAll(int draw, int start, int length, string search)
+        public IActionResult GetAll()
         {
             // Query with filtering
-            List<Category> categoriesList = _unitOfWork.Categories
+            var categoriesList = _unitOfWork.Categories
                 .GetAll(includeProperties: "ParentCategory")
-                .ToList();
-
+                .ToList().Select(c => new
+                {
+                    c.CategoryId,
+                    c.Name,
+                    c.ParentCategory,
+                    childCount=getChildCount(c.CategoryId)
+                });
+            
             return Json(new
             {
                 data = categoriesList

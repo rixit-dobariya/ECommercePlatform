@@ -15,16 +15,26 @@ function loadCategoryData() {
             { data: 'name', title: 'Category Name', width: "15%" },
             { data: 'parentCategory.name', title: 'Parent Category', defaultContent: '-', width: "15%" },
             {
-                data: 'categoryId',
+                data: null,
                 render: function (data) {
-                    return `
-                            <a href="Category/Edit/${data}" class="btn btn-link btn-primary btn-lg">
+                    var htmlContent =`
+                            <a href="Category/Edit/${data.categoryId}" class="btn btn-link btn-primary btn-lg">
                                 <i class="fa fa-edit"></i>
                             </a>
-                            <button onClick="deleteItem('category/delete/${data}', 'categoryTbl')" class="btn btn-link btn-danger">
-                                <i class="fa fa-times"></i>
-                            </button>
                         `;
+                    if (data.childCount == 0) {
+                        htmlContent += `
+                        <button onClick="deleteItem('category/delete/${data.categoryId}', 'categoryTbl')" class="btn btn-link btn-danger">
+                                <i class="fa fa-times"></i>
+                            </button>`;
+                    }
+                    else {
+                        htmlContent += `
+                        <button onClick="displayMessage()" class="btn btn-link btn-danger">
+                                <i class="fa fa-times"></i>
+                            </button>`;
+                    }
+                    return htmlContent;
                 },
                 title: 'Action',
                 width: "10%"
@@ -33,6 +43,12 @@ function loadCategoryData() {
     });
 }
 
+function displayMessage() {
+    Swal.fire({
+        text: "Parent category with child categories cannot be deleted!",
+        icon: "error"
+    });
+}
 function deleteItem(url, tableId) {
     Swal.fire({
         title: "Are you sure?",
