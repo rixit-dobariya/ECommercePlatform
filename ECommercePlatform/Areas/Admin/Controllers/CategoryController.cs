@@ -1,8 +1,10 @@
 ﻿using ECommercePlatform.Constants;
 using ECommercePlatform.Models;
+using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
 
 namespace ECommercePlatform.Areas.Admin.Controllers
@@ -20,20 +22,82 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             ViewData["ActiveMenu"] = "Category";
             return View();
         }
-        public IActionResult Upsert(int? id)
+        [HttpGet]
+        public IActionResult Edit(int? id)
         {
-            if(id==null || id == 0)
+            int getChildCount(int? id)
             {
-                return NotFound();
+                return _unitOfWork.Categories.GetAll().Count(c => c.ParentCategoryId == id); ;
             }
+            IEnumerable<SelectListItem> categoriesList = _unitOfWork.Categories
+                .GetAll("ParentCategory")
+                .Where(c=>c.CategoryId!=id && c.ParentCategoryId==null)
+                .Select(c =>   new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.CategoryId.ToString()
+                });
+            //find the childcategory count for condition
+            int childCategoriesCount= getChildCount(id);
+
             Category category = _unitOfWork.Categories.Get(c => c.CategoryId == id);
-            if (category == null) //Insert page
+            CategoryVM categoryVM = new CategoryVM
             {
-                return View();
+                Category = category,
+                CategoriesList = categoriesList
+            };
+            if (childCategoriesCount>=1)
+            {
+                categoryVM.CategoriesList = null; 
             }
-            else //Update Page
+            return View(categoryVM);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(CategoryVM categoryVM)
+        {
+            if (ModelState.IsValid) { 
+                _unitOfWork.Categories.Update(categoryVM.Category);
+                _unitOfWork.Save();
+                return RedirectToAction("Index");
+            }
+            else
             {
-                return View(category);
+                return View(categoryVM);
+            }
+        }
+        [HttpGet]
+        public IActionResult Create()
+        {
+            IEnumerable<SelectListItem> categoriesList = _unitOfWork.Categories
+                .GetAll("ParentCategory")
+                .Where(c=>c.ParentCategoryId==null)
+                .Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.CategoryId.ToString()
+                });
+            //Fetch parent categories for dropdown
+
+            CategoryVM categoryVM = new CategoryVM
+            {
+                CategoriesList = categoriesList
+            };
+            return View(categoryVM);
+        }
+
+        [HttpPost]
+        public IActionResult Create(CategoryVM categoryVM)
+        {
+            if (ModelState.IsValid)
+            {
+                _unitOfWork.Categories.Add(categoryVM.Category);
+                _unitOfWork.Save();
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(categoryVM);
             }
         }
 
@@ -41,18 +105,17 @@ namespace ECommercePlatform.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll(int draw, int start, int length, string search)
         {
-            var categoriesList = _unitOfWork.Categories.GetAll(includeProperties: "ParentCategory").Select(c => new
+            // Query with filtering
+            List<Category> categoriesList = _unitOfWork.Categories
+                .GetAll(includeProperties: "ParentCategory")
+                .ToList();
+
+            return Json(new
             {
-                c.CategoryId,
-                c.Name,
-                ParentCategory = c.ParentCategory != null ? new { c.ParentCategory.Name } : null
+                data = categoriesList
             });
-            return Json(new {
-                draw = draw,
-                recordsTotal = categoriesList.Count(),
-                recordsFiltered = categoriesList.Count(),
-                data = categoriesList });
         }
+
 
         [HttpDelete]
         public IActionResult Delete(int? id) 

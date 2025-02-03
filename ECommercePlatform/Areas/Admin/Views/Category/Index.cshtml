@@ -2,28 +2,38 @@
 @{
 	ViewData["Title"] = "Category Management";
 }
-<div class="page-header">
-	<h3 class="fw-bold mb-3">Category Management</h3>
-	<ul class="breadcrumbs mb-3">
-		<li class="nav-home">
-			<a href="#">
-				<i class="icon-home"></i>
+@* <div class="page-header"> *@
+	<div class="row">
+		<div class="col-md-9 page-header">
+			<h3 class="fw-bold mb-3">Category Management</h3>
+			<ul class="breadcrumbs mb-3 d-flex align-items-center">
+				<li class="nav-home">
+					<a asp-controller="Home" asp-action="Index">
+						<i class="icon-home"></i>
+					</a>
+				</li>
+				<li class="separator">
+					<i class="icon-arrow-right"></i>
+				</li>
+				<li class="nav-item">
+					<a asp-controller="Category" asp-action="Index">Categories</a>
+				</li>
+				<li class="separator">
+					<i class="icon-arrow-right"></i>
+				</li>
+				<li class="nav-item">
+					<a asp-controller="Category" asp-action="Index">Home</a>
+				</li>
+			</ul>
+		</div>
+		<div class="col-md-3 d-flex justify-content-end align-items-start">
+			<a asp-controller="Category" asp-action="Create" class="btn btn-primary">
+				Add Category
 			</a>
-		</li>
-		<li class="separator">
-			<i class="icon-arrow-right"></i>
-		</li>
-		<li class="nav-item">
-			<a href="Admin/Category/">Categories</a>
-		</li>
-		<li class="separator">
-			<i class="icon-arrow-right"></i>
-		</li>
-		<li class="nav-item">
-			<a href="Admin/Category/Index">Home</a>
-		</li>
-	</ul>
-</div>
+		</div>
+	</div>
+	
+@* </div> *@
 <div class="row">
 	<div class="col-md-12">
 		<div class="card">

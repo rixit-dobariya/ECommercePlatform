@@ -1,6 +1,9 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 
 namespace ECommercePlatform.Models
 {
@@ -18,7 +21,8 @@ namespace ECommercePlatform.Models
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
-        Category Category { get; set; }
+        [ValidateNever]
+        public Category Category { get; set; }
 
         [Required]
         public int Stock { get; set; }
@@ -32,9 +36,9 @@ namespace ECommercePlatform.Models
         public decimal Discount { get; set; }
 
         [Required]
-        public int ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
 
-        public int IsActive { get; set; } = 1;
+        public int IsActive {  get; set; } = 1;
 
     }
 }

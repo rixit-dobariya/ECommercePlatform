@@ -3,14 +3,35 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ECommercePlatform.Migrations
 {
     /// <inheritdoc />
-    public partial class AddMoreTables : Migration
+    public partial class AddTablesAndSeedTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ParentCategoryId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
+                    table.ForeignKey(
+                        name: "FK_Categories_Categories_ParentCategoryId",
+                        column: x => x.ParentCategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId");
+                });
+
             migrationBuilder.CreateTable(
                 name: "Offers",
                 columns: table => new
@@ -27,6 +48,27 @@ namespace ECommercePlatform.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Offers", x => x.OfferId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Stock = table.Column<int>(type: "int", nullable: false),
+                    SellPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CostPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.ProductId);
                 });
 
             migrationBuilder.CreateTable(
@@ -47,6 +89,27 @@ namespace ECommercePlatform.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductAttributes",
+                columns: table => new
+                {
+                    AttributeID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductID = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductAttributes", x => x.AttributeID);
+                    table.ForeignKey(
+                        name: "FK_ProductAttributes_Products_ProductID",
+                        column: x => x.ProductID,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -179,6 +242,57 @@ namespace ECommercePlatform.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryId", "Name", "ParentCategoryId" },
+                values: new object[,]
+                {
+                    { 1, "Electronics", null },
+                    { 4, "Fashion", null },
+                    { 7, "Home Appliances", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Products",
+                columns: new[] { "ProductId", "CategoryId", "CostPrice", "Description", "Discount", "ImageUrl", "IsActive", "Name", "SellPrice", "Stock" },
+                values: new object[,]
+                {
+                    { 1, 2, 1200.00m, "High-end gaming laptop", 10.0m, "th\\Images\\profile.jpg", 1, "Laptop", 1500.00m, 10 },
+                    { 2, 3, 600.00m, "Latest Android smartphone", 5.0m, "th\\Images\\profile.jpg", 1, "Smartphone", 800.00m, 20 },
+                    { 3, 5, 12.00m, "Comfortable cotton t-shirt", 0.0m, "th\\Images\\profile.jpg", 1, "Men's T-shirt", 20.00m, 50 },
+                    { 4, 6, 25.00m, "Elegant summer dress", 10.0m, "th\\Images\\profile.jpg", 1, "Women's Dress", 35.00m, 30 },
+                    { 5, 8, 950.00m, "Energy-efficient refrigerator", 15.0m, "th\\Images\\profile.jpg", 1, "Refrigerator", 1200.00m, 15 },
+                    { 6, 9, 400.00m, "Front-load washing machine", 5.0m, "th\\Images\\profile.jpg", 1, "Washing Machine", 500.00m, 25 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryId", "Name", "ParentCategoryId" },
+                values: new object[,]
+                {
+                    { 2, "Laptops", 1 },
+                    { 3, "Smartphones", 1 },
+                    { 5, "Men's Clothing", 4 },
+                    { 6, "Women's Clothing", 4 },
+                    { 8, "Refrigerators", 7 },
+                    { 9, "Washing Machines", 7 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ProductAttributes",
+                columns: new[] { "AttributeID", "Name", "ProductID", "Value" },
+                values: new object[,]
+                {
+                    { 1, "Brand", 1, "BrandX" },
+                    { 2, "Warranty", 1, "2 years" },
+                    { 3, "Brand", 2, "BrandY" },
+                    { 4, "Battery Life", 2, "12 hours" },
+                    { 5, "Material", 3, "Cotton" },
+                    { 6, "Material", 4, "Polyester" },
+                    { 7, "Energy Rating", 5, "A+" },
+                    { 8, "Load Capacity", 6, "8 kg" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_UserId",
                 table: "Addresses",
@@ -188,6 +302,11 @@ namespace ECommercePlatform.Migrations
                 name: "IX_CartItems_ProductId",
                 table: "CartItems",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_ParentCategoryId",
+                table: "Categories",
+                column: "ParentCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_orderHeaders_BillingAddressId",
@@ -205,6 +324,11 @@ namespace ECommercePlatform.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_ProductID",
+                table: "ProductAttributes",
+                column: "ProductID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WishlistItems_ProductId",
                 table: "WishlistItems",
                 column: "ProductId");
@@ -217,16 +341,25 @@ namespace ECommercePlatform.Migrations
                 name: "CartItems");
 
             migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
                 name: "Offers");
 
             migrationBuilder.DropTable(
                 name: "OrderDetails");
 
             migrationBuilder.DropTable(
+                name: "ProductAttributes");
+
+            migrationBuilder.DropTable(
                 name: "WishlistItems");
 
             migrationBuilder.DropTable(
                 name: "orderHeaders");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Addresses");

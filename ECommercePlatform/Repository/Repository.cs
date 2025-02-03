@@ -7,7 +7,7 @@ namespace ECommercePlatform.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private ApplicationDbContext _db;
+        protected ApplicationDbContext _db;
         internal DbSet<T> dbSet;
         public Repository(ApplicationDbContext db)
         {

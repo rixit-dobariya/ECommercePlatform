@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommercePlatform.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250131164624_SeedCategoryTable")]
-    partial class SeedCategoryTable
+    [Migration("20250201175030_UpdateAttribute1")]
+    partial class UpdateAttribute1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -278,8 +278,9 @@ namespace ECommercePlatform.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ImageUrl")
-                        .HasColumnType("int");
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IsActive")
                         .HasColumnType("int");
@@ -297,6 +298,86 @@ namespace ECommercePlatform.Migrations
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            ProductId = 1,
+                            CategoryId = 2,
+                            CostPrice = 1200.00m,
+                            Description = "High-end gaming laptop",
+                            Discount = 10.0m,
+                            ImageUrl = "th\\Images\\profile.jpg",
+                            IsActive = 1,
+                            Name = "Laptop",
+                            SellPrice = 1500.00m,
+                            Stock = 10
+                        },
+                        new
+                        {
+                            ProductId = 2,
+                            CategoryId = 3,
+                            CostPrice = 600.00m,
+                            Description = "Latest Android smartphone",
+                            Discount = 5.0m,
+                            ImageUrl = "th\\Images\\profile.jpg",
+                            IsActive = 1,
+                            Name = "Smartphone",
+                            SellPrice = 800.00m,
+                            Stock = 20
+                        },
+                        new
+                        {
+                            ProductId = 3,
+                            CategoryId = 5,
+                            CostPrice = 12.00m,
+                            Description = "Comfortable cotton t-shirt",
+                            Discount = 0.0m,
+                            ImageUrl = "th\\Images\\profile.jpg",
+                            IsActive = 1,
+                            Name = "Men's T-shirt",
+                            SellPrice = 20.00m,
+                            Stock = 50
+                        },
+                        new
+                        {
+                            ProductId = 4,
+                            CategoryId = 6,
+                            CostPrice = 25.00m,
+                            Description = "Elegant summer dress",
+                            Discount = 10.0m,
+                            ImageUrl = "th\\Images\\profile.jpg",
+                            IsActive = 1,
+                            Name = "Women's Dress",
+                            SellPrice = 35.00m,
+                            Stock = 30
+                        },
+                        new
+                        {
+                            ProductId = 5,
+                            CategoryId = 8,
+                            CostPrice = 950.00m,
+                            Description = "Energy-efficient refrigerator",
+                            Discount = 15.0m,
+                            ImageUrl = "th\\Images\\profile.jpg",
+                            IsActive = 1,
+                            Name = "Refrigerator",
+                            SellPrice = 1200.00m,
+                            Stock = 15
+                        },
+                        new
+                        {
+                            ProductId = 6,
+                            CategoryId = 9,
+                            CostPrice = 400.00m,
+                            Description = "Front-load washing machine",
+                            Discount = 5.0m,
+                            ImageUrl = "th\\Images\\profile.jpg",
+                            IsActive = 1,
+                            Name = "Washing Machine",
+                            SellPrice = 500.00m,
+                            Stock = 25
+                        });
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.ProductAttribute", b =>
@@ -323,6 +404,64 @@ namespace ECommercePlatform.Migrations
                     b.HasIndex("ProductID");
 
                     b.ToTable("ProductAttributes");
+
+                    b.HasData(
+                        new
+                        {
+                            AttributeID = 1,
+                            Name = "Brand",
+                            ProductID = 1,
+                            Value = "BrandX"
+                        },
+                        new
+                        {
+                            AttributeID = 2,
+                            Name = "Warranty",
+                            ProductID = 1,
+                            Value = "2 years"
+                        },
+                        new
+                        {
+                            AttributeID = 3,
+                            Name = "Brand",
+                            ProductID = 2,
+                            Value = "BrandY"
+                        },
+                        new
+                        {
+                            AttributeID = 4,
+                            Name = "Battery Life",
+                            ProductID = 2,
+                            Value = "12 hours"
+                        },
+                        new
+                        {
+                            AttributeID = 5,
+                            Name = "Material",
+                            ProductID = 3,
+                            Value = "Cotton"
+                        },
+                        new
+                        {
+                            AttributeID = 6,
+                            Name = "Material",
+                            ProductID = 4,
+                            Value = "Polyester"
+                        },
+                        new
+                        {
+                            AttributeID = 7,
+                            Name = "Energy Rating",
+                            ProductID = 5,
+                            Value = "A+"
+                        },
+                        new
+                        {
+                            AttributeID = 8,
+                            Name = "Load Capacity",
+                            ProductID = 6,
+                            Value = "8 kg"
+                        });
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.User", b =>
