@@ -23,36 +23,63 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             ViewData["ActiveMenu"] = "Product";
             return View();
         }
-        public IActionResult Upsert(int? id = 0)
+        public IActionResult Create()
         {
-            ProductVM productVM = new ProductVM
+            ProductVM productVM = new()
             {
-                CategoriesList = _unitOfWork.Categories.GetAll()
-                .Where(c => c.ParentCategoryId != null)
-                .Select(c => new SelectListItem
-                {
-                    Text = c.Name,
-                    Value = c.CategoryId.ToString()
-                })
+                CategoriesList = GetSelectListItems()
             };
-            if (id == null || id == 0)//Insert
+            return View(productVM);
+        }
+        [HttpPost]
+        public IActionResult Create(ProductVM productVM)
+        {
+            if (ModelState.IsValid)
             {
-                return View(productVM);
+                if (productVM.productImage != null)
+                {
+                    if (productVM.productImage.ContentType.StartsWith("image/"))
+                    {
+                        string wwwRootPath = _env.WebRootPath;
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(productVM.productImage.FileName);
+                        string productPath = Path.Combine(_env.WebRootPath, @"Images\products");
+
+                        using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                        {
+                            productVM.productImage.CopyTo(fileStream);
+                        }
+                        productVM.Product.ImageUrl = @"\Images\products\" + fileName;
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Product.ImageUrl", "Product Image is not in the correct format. Please choose image.");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("Product.ImageUrl", "Product Image must not be empty.");
+                    productVM.CategoriesList = GetSelectListItems();
+                    return View(productVM);
+                }
+                _unitOfWork.Products.Add(productVM.Product);
+                _unitOfWork.Save();
+                TempData["sucess"] = "Product added successfully!";
+                return RedirectToAction("Index");
             }
-            else//Update
+            else
             {
-                productVM.Product = _unitOfWork.Products.Get(p => p.ProductId == id);
+                productVM.CategoriesList = GetSelectListItems();
                 return View(productVM);
             }
         }
         [HttpPost]
-        public IActionResult Upsert(ProductVM productVM, IFormFile? productImage)
+        public IActionResult Edit(ProductVM productVM)
         {
-            if (ModelState.IsValid || productVM.Product?.ProductId==null)
+            if (ModelState.IsValid)
             {
-                if (productImage != null)
+                if (productVM.productImage != null)
                 {
-                    if (productImage.ContentType.StartsWith("image/"))
+                    if (productVM.productImage.ContentType.StartsWith("image/"))
                     {
                         string wwwRootPath = _env.WebRootPath;
                         if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
@@ -63,12 +90,12 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                                 System.IO.File.Delete(oldImagePath);
                             }
                         }
-                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(productImage.FileName);
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(productVM.productImage.FileName);
                         string productPath = Path.Combine(_env.WebRootPath, @"Images\products");
 
                         using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                         {
-                            productImage.CopyTo(fileStream);
+                            productVM.productImage.CopyTo(fileStream);
                         }
                         productVM.Product.ImageUrl = @"\Images\products\" + fileName;
                     }
@@ -77,29 +104,58 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                         ModelState.AddModelError("Product.ImageUrl", "Product Image is not in the correct format. Please choose image.");
                     }
                 }
-                if (productVM.Product.ProductId == 0)
-                {
-                    _unitOfWork.Products.Add(productVM.Product);
-                }
-                else
-                {
-                    _unitOfWork.Products.Update(productVM.Product);
-                }
+                
+                _unitOfWork.Products.Update(productVM.Product);
                 _unitOfWork.Save();
+                TempData["sucess"] = "Product updated successfully!";
                 return RedirectToAction("Index");
             }
             else
             {
-                productVM.CategoriesList = _unitOfWork.Categories.GetAll()
-                        .Where(c => c.ParentCategoryId != null)
-                        .Select(c => new SelectListItem
-                        {
-                            Text = c.Name,
-                            Value = c.CategoryId.ToString()
-                        });
+                productVM.CategoriesList = GetSelectListItems();
                 return View(productVM);
             }
         }
+        public IActionResult Edit(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                ProductVM productVM = new ProductVM
+                {
+                    Product = _unitOfWork.Products.Get(p => p.ProductId == id),
+                    CategoriesList = GetSelectListItems()
+                };
+                return View(productVM);
+            }
+        }
+        #region METHODS
+        IEnumerable<SelectListItem> GetSelectListItems()
+        {
+            var categories = _unitOfWork.Categories
+                .GetAll("ParentCategory")
+                .Where(c => c.ParentCategoryId != null && c.ParentCategory != null)
+                .ToList();
+
+            var groupDictionary = new Dictionary<string, SelectListGroup>();
+
+            IEnumerable<SelectListItem> categoriesList = categories
+                    .GroupBy(c => c.ParentCategory!.Name)
+                    .SelectMany(group => group.Select(c => new SelectListItem
+                    {
+                        Text = c.Name,
+                        Value = c.CategoryId.ToString(),
+                        Group = groupDictionary.TryGetValue(group.Key, out var groupObj)
+                            ? groupObj
+                            : (groupDictionary[group.Key] = new SelectListGroup { Name = group.Key }) // Create if not exists
+                    }))
+                    .ToList();
+            return categoriesList;
+        }
+        #endregion
         #region API ENDPOINTS
         [HttpGet]
         public IActionResult GetAll()
@@ -121,8 +177,8 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     message = "No record found!",
                 });
             }
-            Category category = _unitOfWork.Categories.Get(c => c.CategoryId == id);
-            _unitOfWork.Categories.Remove(category);
+            Product product = _unitOfWork.Products.Get(p => p.ProductId == id);
+            _unitOfWork.Products.Remove(product);
             _unitOfWork.Save();
             return Json(new
             {

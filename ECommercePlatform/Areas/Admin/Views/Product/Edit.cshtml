@@ -1,0 +1,112 @@
+﻿@model ProductVM
+
+@{
+	ViewData["Title"] = "Edit Product";
+}
+<div class="page-header">
+	<h3 class="fw-bold mb-3">Products</h3>
+	<ul class="breadcrumbs mb-3">
+		<li class="nav-home">
+			<a asp-controller="Home">
+				<i class="icon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="icon-arrow-right"></i>
+		</li>
+		<li class="nav-item">
+			<a asp-controller="Product">Products</a>
+		</li>
+		<li class="separator">
+			<i class="icon-arrow-right"></i>
+		</li>
+		<li class="nav-item">
+			<a asp-controller="Product" asp-action="Edit" asp-route-id="@Model.Product?.ProductId">
+				Edit Product
+			</a>
+		</li>
+	</ul>
+</div>
+<form method="post" enctype="multipart/form-data">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-title">Edit Product</div>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<input asp-for="Product.ProductId" hidden />
+						<input asp-for="Product.ImageUrl" hidden />
+						<div class="form-group col-md-6">
+							<label asp-for="Product.Name"></label>
+							<input class="form-control" asp-for="Product.Name" placeholder="Enter Product Name" />
+							<span asp-validation-for="Product.Name" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="Product.CategoryId"></label>
+							<select class="form-select form-select" asp-for="Product.CategoryId" asp-items="@Model.CategoriesList">
+								<option disabled selected>-Select Category-</option>
+							</select>
+							<span asp-validation-for="Product.CategoryId" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="Product.Stock"></label>
+							<input class="form-control" asp-for="Product.Stock" placeholder="Enter Product Stock" />
+							<span asp-validation-for="Product.Stock" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="Product.Discount"></label>
+							<input class="form-control" asp-for="Product.Discount" placeholder="Enter Discount" />
+							<span asp-validation-for="Product.Discount" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="Product.CostPrice"></label>
+							<input class="form-control" asp-for="Product.CostPrice" placeholder="Enter Cost Price" />
+							<span asp-validation-for="Product.CostPrice" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="Product.SellPrice"></label>
+							<input class="form-control" asp-for="Product.SellPrice" placeholder="Enter Sell Price" />
+							<span asp-validation-for="Product.SellPrice" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group">
+							<label asp-for="Product.ImageUrl"></label>
+							<input type="file" name="productImage" class="form-control" placeholder="Enter Product Image" accept="image/*" />
+							<div class="col-md-3">
+								<img src="@Model.Product?.ImageUrl" class="img-fluid" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label asp-for="Product.Description"></label>
+							<textarea id="description" class="form-control" asp-for="Product.Description" placeholder="Enter Product Description" ></textarea>
+							<span asp-validation-for="Product.Description" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-primary">Update Product</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+@section Scripts{
+	<partial name="_ValidationScriptsPartial" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			$('#description').summernote({
+				placeholder: 'Enter description...',
+				tabsize: 2,
+				height: 200,
+				toolbar: [
+					['style', ['bold', 'italic', 'underline', 'clear']],
+					['para', ['ul', 'ol', 'paragraph']],
+					['insert', ['link', 'picture']],
+					['view', ['fullscreen', 'codeview']]
+				]
+			});
+		});
+	</script>
+}

@@ -66,6 +66,7 @@ function deleteItem(url, tableId) {
                 success: function (data) {
                     categoryDataTable.ajax.reload();
                     toastr.success(data.message);
+
                 }
             });
         }

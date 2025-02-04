@@ -11,32 +11,31 @@ namespace ECommercePlatform.Models
     {
         [Key]
         public int ProductId { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Product name must not be empty!")]
         public string Name { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Product description must not be empty!")]
         public string Description { get; set; }
 
         [DisplayName("Category Name")]
-        [Required]
+        [Required(ErrorMessage ="Category must not be empty!")]
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
         [ValidateNever]
         public Category Category { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Product stock must not be empty!")]
         public int Stock { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Sell Price must not be empty!")]
         public decimal SellPrice { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Cost Price must not be empty!")]
         public decimal CostPrice { get; set; }
 
         public decimal Discount { get; set; }
 
-        [Required]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         public int IsActive {  get; set; } = 1;
 

@@ -32,6 +32,7 @@ namespace ECommercePlatform.Data
             modelBuilder.Entity<OrderDetail>()
                 .HasKey(od => new { od.OrderId, od.ProductId });
 
+            
             modelBuilder.Entity<OrderHeader>()
                 .HasOne(o => o.ShippingAddress)
                 .WithMany()

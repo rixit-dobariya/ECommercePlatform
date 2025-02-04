@@ -32,7 +32,7 @@ function loadProductData() {
                 data: 'productId',
                 render: function (data) {
                     return `
-                            <a href="Product/Upsert/${data}" class="btn btn-link btn-primary btn-lg">
+                            <a href="Product/Edit/${data}" class="btn btn-link btn-primary btn-lg">
                                 <i class="fa fa-edit"></i>
                             </a>
                             <button onClick="deleteItem('product/delete/${data}', 'productTbl')" class="btn btn-link btn-danger">

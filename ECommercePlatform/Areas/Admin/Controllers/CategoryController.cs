@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
@@ -24,31 +25,29 @@ namespace ECommercePlatform.Areas.Admin.Controllers
         }
         int getChildCount(int? id)
         {
-            return _unitOfWork.Categories.GetAll().Count(c => c.ParentCategoryId == id);
+            return _unitOfWork.Categories
+                    .GetAll()
+                    .Count(c => c.ParentCategoryId == id);
         }
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            IEnumerable<SelectListItem> categoriesList = _unitOfWork.Categories
-                .GetAll("ParentCategory")
-                .Where(c=>c.CategoryId!=id && c.ParentCategoryId==null)
-                .Select(c =>   new SelectListItem
-                {
-                    Text = c.Name,
-                    Value = c.CategoryId.ToString()
-                });
-            //find the childcategory count for condition
-            int childCategoriesCount= getChildCount(id);
-
-            Category category = _unitOfWork.Categories.Get(c => c.CategoryId == id);
             CategoryVM categoryVM = new CategoryVM
             {
-                Category = category,
-                CategoriesList = categoriesList
+                Category = _unitOfWork.Categories.Get(c => c.CategoryId == id),
             };
-            if (childCategoriesCount>=1)
+
+            //If a category has no child only, then it can have a parent category
+            if (getChildCount(id) == 0)
             {
-                categoryVM.CategoriesList = null; 
+                categoryVM.CategoriesList = _unitOfWork.Categories
+                                                .GetAll("ParentCategory")
+                                                .Where(c => c.CategoryId != id && c.ParentCategoryId == null)
+                                                .Select(c => new SelectListItem
+                                                {
+                                                    Text = c.Name,
+                                                    Value = c.CategoryId.ToString()
+                                                });
             }
             return View(categoryVM);
         }
@@ -59,6 +58,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             if (ModelState.IsValid) { 
                 _unitOfWork.Categories.Update(categoryVM.Category);
                 _unitOfWork.Save();
+                TempData["sucess"] = "Category updated successfully!";
                 return RedirectToAction("Index");
             }
             else
@@ -69,19 +69,17 @@ namespace ECommercePlatform.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            IEnumerable<SelectListItem> categoriesList = _unitOfWork.Categories
+            CategoryVM categoryVM = new CategoryVM
+            {
+                //parent categories
+                CategoriesList = _unitOfWork.Categories
                 .GetAll("ParentCategory")
-                .Where(c=>c.ParentCategoryId==null)
+                .Where(c => c.ParentCategoryId == null)
                 .Select(c => new SelectListItem
                 {
                     Text = c.Name,
                     Value = c.CategoryId.ToString()
-                });
-            //Fetch parent categories for dropdown
-
-            CategoryVM categoryVM = new CategoryVM
-            {
-                CategoriesList = categoriesList
+                })
             };
             return View(categoryVM);
         }
@@ -93,6 +91,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             {
                 _unitOfWork.Categories.Add(categoryVM.Category);
                 _unitOfWork.Save();
+                TempData["sucess"] = "Category created successfully!";
                 return RedirectToAction("Index");
             }
             else
@@ -105,17 +104,15 @@ namespace ECommercePlatform.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            // Query with filtering
             var categoriesList = _unitOfWork.Categories
-                .GetAll(includeProperties: "ParentCategory")
-                .ToList().Select(c => new
-                {
-                    c.CategoryId,
-                    c.Name,
-                    c.ParentCategory,
-                    childCount=getChildCount(c.CategoryId)
-                });
-            
+                                    .GetAll(includeProperties: "ParentCategory")
+                                    .ToList().Select(c => new
+                                    {
+                                        c.CategoryId,
+                                        c.Name,
+                                        c.ParentCategory,
+                                        childCount=getChildCount(c.CategoryId)
+                                    });
             return Json(new
             {
                 data = categoriesList
@@ -134,8 +131,10 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 });
             }
             Category category = _unitOfWork.Categories.Get(c=>c.CategoryId==id);
+
             _unitOfWork.Categories.Remove(category);
             _unitOfWork.Save();
+
             return Json(new { 
                 success = true,
                 message = "Delete Successful!", 

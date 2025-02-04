@@ -1,8 +1,7 @@
 ﻿@model ProductVM
 
 @{
-	string actionType = Model.Product?.ProductId==null ? "Add" : "Edit";
-	ViewData["Title"] = actionType+ " Product";
+	ViewData["Title"] = "Add Product";
 }
 <div class="page-header">
 	<h3 class="fw-bold mb-3">Products</h3>
@@ -22,8 +21,8 @@
 			<i class="icon-arrow-right"></i>
 		</li>
 		<li class="nav-item">
-			<a asp-controller="Product" asp-action="Upsert" asp-route-id="@Model.Product?.ProductId">
-				@actionType Product
+			<a asp-controller="Product" asp-action="Create">
+				Add Product
 			</a>
 		</li>
 	</ul>
@@ -33,12 +32,10 @@
 		<div class="col-md-12">
 			<div class="card">
 				<div class="card-header">
-					<div class="card-title">@actionType Product</div>
+					<div class="card-title">Add Product</div>
 				</div>
 				<div class="card-body">
 					<div class="row">
-						<input asp-for="Product.ProductId" hidden />
-						<input asp-for="Product.ImageUrl" hidden />
 						<div class="form-group col-md-6">
 							<label asp-for="Product.Name"></label>
 							<input class="form-control" asp-for="Product.Name" placeholder="Enter Product Name" />
@@ -73,16 +70,8 @@
 						</div>
 						<div class="form-group">
 							<label asp-for="Product.ImageUrl"></label>
-							@if (Model.Product?.ProductId != null){
-								<input type="file" id="productImage" name="productImage" class="form-control" placeholder="Enter Product Image" accept="image/*" />
-								<div class="col-md-3">
-									<img src="@Model.Product?.ImageUrl" class="img-fluid" />
-								</div>
-							}
-							else{
-								<input type="file" asp-for="Product.ImageUrl" name="productImage" class="form-control" placeholder="Enter Product Image" accept="image/*" />
-							}
-							<span asp-validation-for="Product.ImageUrl" id="imageError" class="form-text text-danger"></span>
+							<input type="file" asp-for="Product.ImageUrl" name="productImage" class="form-control" placeholder="Enter Product Image" accept="image/*" />
+							<span asp-validation-for="Product.ImageUrl" class="form-text text-danger"></span>
 						</div>
 						<div class="form-group">
 							<label asp-for="Product.Description"></label>
@@ -90,13 +79,7 @@
 							<span asp-validation-for="Product.Description" class="form-text text-danger"></span>
 						</div>
 						<div class="form-group">
-							@if (Model.Product?.ProductId == null)
-							{
-								<button type="submit" class="btn btn-success">Add Product</button>
-							}
-							else{
-								<button type="submit" class="btn btn-primary">Update Product</button>
-							}
+							<button type="submit" class="btn btn-success">Add Product</button>
 						</div>
 					</div>
 				</div>
@@ -105,8 +88,8 @@
 	</div>
 </form>
 @section Scripts{
-	<partial name="_ValidationScriptsPartial" />
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.js"></script>
+
 	<script>
 		$(document).ready(function () {
 			$('#description').summernote({
@@ -122,4 +105,5 @@
 			});
 		});
 	</script>
+	<partial name="_ValidationScriptsPartial" />
 }

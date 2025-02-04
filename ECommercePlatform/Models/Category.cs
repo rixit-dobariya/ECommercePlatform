@@ -20,5 +20,7 @@ namespace ECommercePlatform.Models
         [ValidateNever]
         [ForeignKey("ParentCategoryId")]
         public Category ParentCategory { get; set; }
+
+
     }
 }

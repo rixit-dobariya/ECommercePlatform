@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ECommercePlatform</title>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.css" rel="stylesheet">
 
     @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
@@ -16,7 +16,8 @@
 	
 	
 	<!-- Fonts and icons -->
-    <script src="~/js/plugin/webfont/webfont.min.js"></script>
+	<script src="~/js/plugin/webfont/webfont.min.js"></script>
+
     <script>
         WebFont.load({
             google: { families: ["Public Sans:300,400,500,600,700"] },
@@ -39,6 +40,9 @@
 	<link rel="stylesheet" href="~/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/plugins.min.css" />
 	<link rel="stylesheet" href="~/css/kaiadmin.min.css" />
+
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
 
  @*    <!-- CSS Just for demo purpose, don't include it in your project --> *@
 	 @* <link rel="stylesheet" href="~/css/demo.css" />  *@
@@ -541,8 +545,6 @@
 			</div>
 		</footer>
 	</div>
-			
-    
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -586,6 +588,11 @@
 	<!-- Kaiadmin DEMO methods, don't include it in your project! -->
 	@* <script src="~/js/setting-demo.js"></script> *@
 	@* <script src="~/js/demo.js"></script> *@
+
+
+	<!-- Toastr JS-->
+	<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 	<script>
 		$("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
 			type: "line",
@@ -615,5 +622,6 @@
 		});
 	</script>
     @await RenderSectionAsync("Scripts", required: false)
+	<partial name="_ToastPartial" />
 </body>
 </html>
