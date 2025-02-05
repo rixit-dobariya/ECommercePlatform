@@ -6,17 +6,25 @@ namespace ECommercePlatform.Models
     {
         [Key]
         public int OfferId { get; set; }
+
         [Required]
-        public string OfferCode { get; set; }
+        public string OfferCode { get; set; }  // Nullable removed since it's required
+
         [Required]
-        public string OfferDescription { get; set; }
+        public string OfferDescription { get; set; }  // Nullable removed since it's required
+
         [Required]
-        public decimal MinimumAmount {  get; set; }
+        [Range(0.01, double.MaxValue, ErrorMessage = "Minimum Amount must be greater than zero.")]
+        public decimal MinimumAmount { get; set; }
+
         [Required]
-        public decimal Discount {  get; set; }
+        [Range(0.01, 100, ErrorMessage = "Discount must be greater than zero and less than or equal to 100.")]
+        public decimal Discount { get; set; }
+
         [Required]
-        public DateTime StartDate { get; set; }
+        public DateOnly StartDate { get; set; }
+
         [Required]
-        public DateTime EndDate { get; set; }
+        public DateOnly EndDate { get; set; }
     }
 }

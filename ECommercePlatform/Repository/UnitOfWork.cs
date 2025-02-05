@@ -10,6 +10,7 @@ namespace ECommercePlatform.Repository
         public IProductRepository Products { get; private set; }
         public IRepository<ProductAttribute> ProductAttributes { get; private set; }
         public IUserRepository Users { get; private set; }
+        public IRepository<Offer> Offers { get; private set; }
 
         private ApplicationDbContext _db;
 
@@ -20,6 +21,7 @@ namespace ECommercePlatform.Repository
             Products = new ProductRepository(db);
             ProductAttributes = new Repository<ProductAttribute>(db);
             Users = new UserRepository(db);
+            Offers = new Repository<Offer>(db);
         }
 
         public void Save()

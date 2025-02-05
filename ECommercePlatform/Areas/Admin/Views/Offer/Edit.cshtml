@@ -1,0 +1,81 @@
+﻿@model Offer
+
+@{
+	ViewData["Title"] = "Edit Offer";
+}
+<div class="page-header">
+	<h3 class="fw-bold mb-3">Offers</h3>
+	<ul class="breadcrumbs mb-3">
+		<li class="nav-home">
+			<a asp-controller="Home">
+				<i class="icon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="icon-arrow-right"></i>
+		</li>
+		<li class="nav-item">
+			<a asp-controller="Offer">Offers</a>
+		</li>
+		<li class="separator">
+			<i class="icon-arrow-right"></i>
+		</li>
+		<li class="nav-item">
+			<a asp-controller="Offer" asp-action="Edit" asp-route-id="@Model?.OfferId">
+				Edit Offer
+			</a>
+		</li>
+	</ul>
+</div>
+<form method="post">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-title">Add Offer</div>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<input asp-for="OfferId" hidden />
+						<div class="form-group col-md-6">
+							<label asp-for="OfferCode"></label>
+							<input class="form-control" asp-for="OfferCode" placeholder="Enter Offer Code" />
+							<span asp-validation-for="OfferCode" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="OfferDescription"></label>
+							<input class="form-control" asp-for="OfferDescription" placeholder="Enter Offer Description" />
+							<span asp-validation-for="OfferDescription" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="MinimumAmount"></label>
+							<input class="form-control" asp-for="MinimumAmount" placeholder="Enter Minimum amount for Offer" />
+							<span asp-validation-for="MinimumAmount" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="Discount"></label>
+							<input class="form-control" asp-for="Discount" placeholder="Enter Discount" />
+							<span asp-validation-for="Discount" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="StartDate"></label>
+							<input class="form-control" asp-for="StartDate" placeholder="Enter Offer Start date" />
+							<span asp-validation-for="StartDate" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group col-md-6">
+							<label asp-for="EndDate"></label>
+							<input class="form-control" asp-for="EndDate" placeholder="Enter Offer End date" />
+							<span asp-validation-for="EndDate" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-primary">Update Offer</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

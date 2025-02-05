@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommercePlatform.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250205040504_CreateTablesAndSeedTables")]
-    partial class CreateTablesAndSeedTables
+    [Migration("20250205170629_addTablesAndSeedTables")]
+    partial class addTablesAndSeedTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -168,8 +168,8 @@ namespace ECommercePlatform.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
 
                     b.Property<decimal>("MinimumAmount")
                         .HasColumnType("decimal(18,2)");
@@ -182,8 +182,8 @@ namespace ECommercePlatform.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
 
                     b.HasKey("OfferId");
 

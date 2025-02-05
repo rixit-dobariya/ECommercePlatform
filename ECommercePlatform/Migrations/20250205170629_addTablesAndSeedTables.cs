@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ECommercePlatform.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTablesAndSeedTables : Migration
+    public partial class addTablesAndSeedTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,8 +42,8 @@ namespace ECommercePlatform.Migrations
                     OfferDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MinimumAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
