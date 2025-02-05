@@ -30,20 +30,20 @@ namespace ECommercePlatform.Data
             modelBuilder.Entity<CartItem>()
                 .HasKey(ci => new { ci.UserId, ci.ProductId });
             modelBuilder.Entity<OrderDetail>()
-                .HasKey(od => new { od.OrderId, od.ProductId });
+                .HasKey(od => new { od.OrderHeaderId, od.ProductId });
 
             
             modelBuilder.Entity<OrderHeader>()
                 .HasOne(o => o.ShippingAddress)
                 .WithMany()
                 .HasForeignKey(o => o.ShippingAddressId)
-                .OnDelete(DeleteBehavior.NoAction);  // 👈 Prevents cascade delete
+                .OnDelete(DeleteBehavior.NoAction);  // Prevents cascade delete
 
             modelBuilder.Entity<OrderHeader>()
                 .HasOne(o => o.BillingAddress)
                 .WithMany()
                 .HasForeignKey(o => o.BillingAddressId)
-                .OnDelete(DeleteBehavior.NoAction);  // 👈 Prevents cascade delete
+                .OnDelete(DeleteBehavior.NoAction);  // Prevents cascade delete
 
             //seed tables
 
@@ -156,6 +156,7 @@ namespace ECommercePlatform.Data
                 new ProductAttribute { AttributeID = 7, ProductID = 5, Name = "Energy Rating", Value = "A+" },
                 new ProductAttribute { AttributeID = 8, ProductID = 6, Name = "Load Capacity", Value = "8 kg" }
             );
+            
         }
 
     }

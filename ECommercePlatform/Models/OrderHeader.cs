@@ -4,6 +4,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ECommercePlatform.Models
 {
+
+    public enum OrderStatus
+    {
+        Pending,
+        Shipped,
+        Delivered,
+        Canceled
+    }
+
+    public enum PaymentMode
+    {
+        UPI,
+        COD
+    }
+
     public class OrderHeader
     {
         [Key]
@@ -15,25 +30,29 @@ namespace ECommercePlatform.Models
         public User User { get; set; }
 
         [Required]
-        public string OrderStatus { get; set; }
+        public OrderStatus OrderStatus { get; set; } // Enum type
 
         [Required]
-        public DateTime OrderDate { get; set; } = DateTime.Now;
+        public DateTime OrderDate { get; set; } = DateTime.UtcNow;  // UTC time by default
 
         [Required]
         public int ShippingAddressId { get; set; }
         [ForeignKey("ShippingAddressId")]
         public Address ShippingAddress { get; set; }
 
-        public int BillingAddressId { get; set; }
+        public int? BillingAddressId { get; set; }  // Nullable for optional billing address
         [ForeignKey("BillingAddressId")]
         public Address BillingAddress { get; set; }
 
         [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Shipping Charge must be greater than zero.")]
         public decimal ShippingCharge { get; set; }
+
         [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Subtotal must be greater than zero.")]
         public decimal Subtotal { get; set; }
+
         [Required]
-        public string PaymentMode { get; set; }
+        public PaymentMode PaymentMode { get; set; } // Enum type
     }
 }

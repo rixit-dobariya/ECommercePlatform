@@ -3,8 +3,13 @@
     public static class UserRole
     {
         public const string Admin = "Admin";
-        public const string User = "User";
+        public const string Customer = "Customer";
         public const string Manager = "Manager";
+    }
+    public enum RoleType
+    {
+        Admin,
+        User
     }
 
 }

@@ -8,7 +8,7 @@ namespace ECommercePlatform.Models
         [Key]
         public int UserId { get; set; }
         [Required]
-        public string Role { get;set; } = UserRole.User;
+        public RoleType Role { get;set; } = RoleType.User;
         [Required]
         public string FullName { get; set; }
         [Required]

@@ -189,13 +189,13 @@ namespace ECommercePlatform.Migrations
 
             modelBuilder.Entity("ECommercePlatform.Models.OrderDetail", b =>
                 {
-                    b.Property<int>("OrderId")
+                    b.Property<int>("OrderHeaderId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("CalculatedDiscount")
+                    b.Property<decimal>("DiscountAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Price")
@@ -204,7 +204,9 @@ namespace ECommercePlatform.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("OrderId", "ProductId");
+                    b.HasKey("OrderHeaderId", "ProductId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("OrderDetails");
                 });
@@ -217,19 +219,17 @@ namespace ECommercePlatform.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-                    b.Property<int>("BillingAddressId")
+                    b.Property<int?>("BillingAddressId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("OrderStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
 
-                    b.Property<string>("PaymentMode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PaymentMode")
+                        .HasColumnType("int");
 
                     b.Property<int>("ShippingAddressId")
                         .HasColumnType("int");
@@ -498,9 +498,8 @@ namespace ECommercePlatform.Migrations
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.HasKey("UserId");
 
@@ -565,11 +564,19 @@ namespace ECommercePlatform.Migrations
                 {
                     b.HasOne("ECommercePlatform.Models.OrderHeader", "OrderHeader")
                         .WithMany()
-                        .HasForeignKey("OrderId")
+                        .HasForeignKey("OrderHeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ECommercePlatform.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("OrderHeader");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.OrderHeader", b =>
@@ -577,8 +584,7 @@ namespace ECommercePlatform.Migrations
                     b.HasOne("ECommercePlatform.Models.Address", "BillingAddress")
                         .WithMany()
                         .HasForeignKey("BillingAddressId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("ECommercePlatform.Models.Address", "ShippingAddress")
                         .WithMany()
