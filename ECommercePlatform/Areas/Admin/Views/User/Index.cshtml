@@ -1,5 +1,52 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿
 @{
+	ViewData["Title"] = "User Management";
+}
+<div class="row">
+	<div class="col-md-9 page-header">
+	<h3 class="fw-bold mb-3">User Management</h3>
+		<ul class="breadcrumbs mb-3 d-flex align-items-center">
+			<li class="nav-home">
+				<a asp-controller="Home" asp-action="Index">
+					<i class="icon-home"></i>
+				</a>
+			</li>
+			<li class="separator">
+				<i class="icon-arrow-right"></i>
+			</li>
+			<li class="nav-item">
+				<a asp-controller="User" asp-action="Index">Users</a>
+			</li>
+			<li class="separator">
+				<i class="icon-arrow-right"></i>
+			</li>
+			<li class="nav-item">
+				<a asp-controller="User" asp-action="Index">Home</a>
+			</li>
+		</ul>
+	</div>
+	<div class="col-md-3 d-flex justify-content-end align-items-start">
+		<a asp-controller="User" asp-action="Create" class="btn btn-primary">
+			Add User
+		</a>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Users</h4>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table id="userTbl" >
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script src="~/js/datatables/user.js"></script>
 }

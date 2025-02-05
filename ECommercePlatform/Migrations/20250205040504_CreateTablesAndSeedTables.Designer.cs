@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommercePlatform.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250201175030_UpdateAttribute1")]
-    partial class UpdateAttribute1
+    [Migration("20250205040504_CreateTablesAndSeedTables")]
+    partial class CreateTablesAndSeedTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -279,7 +279,6 @@ namespace ECommercePlatform.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IsActive")
@@ -296,6 +295,8 @@ namespace ECommercePlatform.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ProductId");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
 
@@ -480,6 +481,12 @@ namespace ECommercePlatform.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("bit");
 
@@ -492,15 +499,11 @@ namespace ECommercePlatform.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfilePicture")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.HasKey("UserId");
 
@@ -597,6 +600,17 @@ namespace ECommercePlatform.Migrations
                     b.Navigation("ShippingAddress");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ECommercePlatform.Models.Product", b =>
+                {
+                    b.HasOne("ECommercePlatform.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.ProductAttribute", b =>

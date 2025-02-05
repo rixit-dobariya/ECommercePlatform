@@ -178,7 +178,8 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 });
             }
             Product product = _unitOfWork.Products.Get(p => p.ProductId == id);
-            _unitOfWork.Products.Remove(product);
+            product.IsActive = 0;
+            _unitOfWork.Products.Update(product);
             _unitOfWork.Save();
             return Json(new
             {

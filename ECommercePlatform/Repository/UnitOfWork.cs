@@ -7,8 +7,9 @@ namespace ECommercePlatform.Repository
     public class UnitOfWork : IUnitOfWork
     {
         public IRepository<Category> Categories { get; private set; }
-        public IRepository<Product> Products { get; private set; }
+        public IProductRepository Products { get; private set; }
         public IRepository<ProductAttribute> ProductAttributes { get; private set; }
+        public IUserRepository Users { get; private set; }
 
         private ApplicationDbContext _db;
 
@@ -16,8 +17,9 @@ namespace ECommercePlatform.Repository
         {
             _db = db;
             Categories = new Repository<Category>(db);
-            Products = new Repository<Product>(db);
+            Products = new ProductRepository(db);
             ProductAttributes = new Repository<ProductAttribute>(db);
+            Users = new UserRepository(db);
         }
 
         public void Save()
