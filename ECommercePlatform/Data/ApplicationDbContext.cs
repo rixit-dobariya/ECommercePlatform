@@ -20,6 +20,7 @@ namespace ECommercePlatform.Data
         DbSet<OrderHeader> orderHeaders { get; set; }
         DbSet<User> Users { get; set; }
         DbSet<WishlistItem> WishlistItems { get; set; }
+        DbSet<UserOTP> UserOTPs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

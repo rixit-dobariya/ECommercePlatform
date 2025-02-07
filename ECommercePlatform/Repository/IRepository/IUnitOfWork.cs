@@ -9,6 +9,7 @@ namespace ECommercePlatform.Repository.IRepository
         IRepository<ProductAttribute> ProductAttributes { get; }
         IUserRepository Users { get; }
         IRepository<Offer> Offers { get; }
+        IRepository<UserOTP> UserOTPs { get; }
 
         void Save();
     }

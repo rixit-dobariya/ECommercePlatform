@@ -48,16 +48,6 @@ function loadUserData() {
                                 <i class="fa fa-times"></i>
                             </button>`;
                     }
-                    if (data.isActive) {
-                        htmlContent += `<button onClick="deactivateUser('user/deactivate/${data.userId}', 'userTbl')" class="btn btn-link btn-dark">
-                                <i class="fa fa-toggle-off"></i>
-                            </button>`;
-                    }
-                    else {
-                        htmlContent += `<button onClick="activateUser('user/activate/${data.userId}', 'userTbl')" class="btn btn-link">
-                                <i class="fa fa-toggle-on"></i>
-                            </button>`;
-                    }
                     return htmlContent;
                 },
                 title: 'Action',
@@ -89,56 +79,3 @@ function deleteItem(url, tableId) {
         }
     });
 }
-
-function deactivateUser(url, tableId) {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "This user will be deactivated!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, deactivate it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                type: "POST", // Use POST instead of DELETE if deactivating
-                success: function (data) {
-                    $("#" + tableId).DataTable().ajax.reload();
-                    toastr.success(data.message);
-                },
-                error: function (xhr) {
-                    toastr.error("Failed to deactivate user.");
-                }
-            });
-        }
-    });
-}
-
-function activateUser(url, tableId) {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "This user will be activated!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, activate it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                type: "POST", // Use POST instead of DELETE if activating
-                success: function (data) {
-                    $("#" + tableId).DataTable().ajax.reload();
-                    toastr.success(data.message);
-                },
-                error: function (xhr) {
-                    toastr.error("Failed to activate user.");
-                }
-            });
-        }
-    });
-}
-

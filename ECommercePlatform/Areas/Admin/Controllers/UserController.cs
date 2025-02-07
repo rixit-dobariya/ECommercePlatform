@@ -1,4 +1,5 @@
 ﻿using ECommercePlatform.Constants;
+using ECommercePlatform.Helpers;
 using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
@@ -58,6 +59,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     ModelState.AddModelError("User.ProfilePicture", "User profile picture must not be empty.");
                     return View(userVM);
                 }
+                userVM.User.Password = PasswordHelper.HashPassword(userVM.User.Password); 
                 _unitOfWork.Users.Add(userVM.User);
                 _unitOfWork.Save();
                 TempData["sucess"] = "User added successfully!";
@@ -114,7 +116,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                         ModelState.AddModelError("User.ProfilePicture", "Profile Picture is not in the correct format. Please choose image.");
                     }
                 }
-
+                userVM.User.Password = PasswordHelper.HashPassword(userVM.User.Password);
                 _unitOfWork.Users.Update(userVM.User);
                 _unitOfWork.Save();
                 TempData["sucess"] = "User updated successfully!";
@@ -151,49 +153,6 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             {
                 success = true,
                 message = "User Deleted successfully!",
-            });
-        }
-        [HttpPost]
-        public IActionResult Activate(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "No record found!",
-                });
-            }
-            User user = _unitOfWork.Users.Get(u => u.UserId == id);
-            user.IsActive = true;
-            _unitOfWork.Users.Update(user);
-            _unitOfWork.Save();
-            return Json(new
-            {
-                success = true,
-                message = "User Activated successfully!",
-            });
-        }
-        [HttpPost]
-        [HttpDelete]
-        public IActionResult Deactivate(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "No record found!",
-                });
-            }
-            User user = _unitOfWork.Users.Get(u => u.UserId == id);
-            user.IsActive = false;
-            _unitOfWork.Users.Update(user);
-            _unitOfWork.Save();
-            return Json(new
-            {
-                success = true,
-                message = "User Deactivted successfully!",
             });
         }
         #endregion

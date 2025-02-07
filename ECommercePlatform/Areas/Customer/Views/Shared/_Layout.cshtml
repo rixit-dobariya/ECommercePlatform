@@ -4,7 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ECommercePlatform</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
     <!-- Icon Font CSS -->
     <link rel="stylesheet" href="~/assets/css/icons.min.css">
     <!-- Plugins CSS -->
@@ -12,8 +14,8 @@
     <!-- Main Style CSS -->
     <link rel="stylesheet" href="~/assets/css/style.css">
     <!-- Modernizer JS -->
-    <script src="assets/js/vendor/modernizr-2.8.3.min.js"></script>
-    @* <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
+    <script src="~/assets/js/vendor/modernizr-2.8.3.min.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> 
     @* <link rel="stylesheet" href="~/ECommercePlatform.styles.css" asp-append-version="true" /> *@
 </head>
 <body>
@@ -163,17 +165,7 @@
                                 </form>
                             </div>
                         </div>
-                        <div class="same-style account-satting">
-                            <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i></a>
-                            <div class="account-dropdown">
-                                <ul>
-                                    <li><a href="login-register.html">Login</a></li>
-                                    <li><a href="login-register.html">Register</a></li>
-                                    <li><a href="wishlist.html">Wishlist  </a></li>
-                                    <li><a href="my-account.html">my account</a></li>
-                                </ul>
-                            </div>
-                        </div>
+                        <partial name="_UserProfile" />
                         <div class="same-style header-wishlist">
                             <a href="wishlist.html"><i class="pe-7s-like"></i></a>
                         </div>
@@ -447,7 +439,10 @@
     <script src="~/assets/js/ajax-mail.js"></script>
     <!-- Main JS -->
     <script src="~/assets/js/main.js"></script>
+    <!-- Toastr JS-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+    <partial name="_ToastPartial" />
 </body>
 </html>

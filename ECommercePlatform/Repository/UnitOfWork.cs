@@ -11,7 +11,7 @@ namespace ECommercePlatform.Repository
         public IRepository<ProductAttribute> ProductAttributes { get; private set; }
         public IUserRepository Users { get; private set; }
         public IRepository<Offer> Offers { get; private set; }
-
+        public IRepository<UserOTP> UserOTPs { get; private set; }
         private ApplicationDbContext _db;
 
         public UnitOfWork(ApplicationDbContext db)
@@ -22,6 +22,7 @@ namespace ECommercePlatform.Repository
             ProductAttributes = new Repository<ProductAttribute>(db);
             Users = new UserRepository(db);
             Offers = new Repository<Offer>(db);
+            UserOTPs = new Repository<UserOTP>(db);
         }
 
         public void Save()

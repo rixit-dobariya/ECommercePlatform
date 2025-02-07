@@ -1,4 +1,5 @@
 using ECommercePlatform.Data;
+using ECommercePlatform.Helpers.EmailHelper;
 using ECommercePlatform.Repository;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         )
     );
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+
+// Add session services
+builder.Services.AddDistributedMemoryCache(); // Store session in memory (server side)
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20); // the session expires after 20 minutes of inactivity.
+    options.Cookie.HttpOnly = true; // Prevents client-side scripts from accessing the session cookie
+    options.Cookie.IsEssential = true; // Ensures the session cookie is stored even if the user rejects non-essential cookies.
+});
 
 var app = builder.Build();
 
@@ -26,12 +41,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "areas",

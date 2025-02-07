@@ -10,7 +10,7 @@ namespace ECommercePlatform.Repository
         {
         }
 
-        public IEnumerable<Product> GetAll(string? includeProperties = null)
+        public override IEnumerable<Product> GetAll(string? includeProperties = null)
         {
             return base.GetAll(includeProperties).Where(p => p.IsActive == 1);
         }

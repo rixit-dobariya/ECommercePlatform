@@ -1,4 +1,4 @@
-html {
+/*html {
   font-size: 14px;
 }
 
@@ -19,4 +19,16 @@ html {
 
 body {
   margin-bottom: 60px;
+}*/
+
+/*Customer side css*/
+.login-register-wrapper .login-form-container .login-register-form form input{
+    margin-bottom:5px;
 }
+.login-register-wrapper .login-form-container .login-register-form form>div>span {
+    color:red;
+}
+.login-register-wrapper .login-form-container .login-register-form form > div {
+    margin-bottom: 20px;
+}
+.error{color:red;}

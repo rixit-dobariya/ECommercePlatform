@@ -124,7 +124,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             }
             else
             {
-                ProductVM productVM = new ProductVM
+                ProductVM productVM = new()
                 {
                     Product = _unitOfWork.Products.Get(p => p.ProductId == id),
                     CategoriesList = GetSelectListItems()

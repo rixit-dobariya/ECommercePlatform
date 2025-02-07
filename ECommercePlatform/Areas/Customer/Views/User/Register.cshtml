@@ -1,0 +1,80 @@
+﻿@model User
+
+@{
+    ViewData["Title"] = "Register";
+}
+<div class="breadcrumb-area pt-35 pb-35 bg-gray-3">
+    <div class="container">
+        <div class="breadcrumb-content text-center">
+            <ul>
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
+                <li class="active">Register </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="login-register-area pt-100 pb-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7 col-md-12 ml-auto mr-auto">
+                <div class="login-register-wrapper">
+                    <div class="login-register-tab-list nav">
+                        <a class="active" data-toggle="tab">
+                            <h4> register </h4>
+                        </a>
+                    </div>
+                    <div class="tab-content">
+                        <div id="lg2" class="tab-pane active">
+                            <div class="login-form-container">
+                                <div class="login-register-form">
+                                    <form method="post" enctype="multipart/form-data">
+                                        <div>
+                                            <label asp-for="FullName"></label>
+                                            <input asp-for="FullName" placeholder="Full name">
+                                            <span asp-validation-for="FullName"></span>
+                                        </div>
+                                        <div>
+                                            <label asp-for="Password"></label>
+                                            <input asp-for="Password" placeholder="Password">
+                                            <span asp-validation-for="Password"></span>
+                                        </div>
+                                        <div>
+                                            <label asp-for="ConfirmPassword"></label>
+                                            <input asp-for="ConfirmPassword" placeholder="Confirm Password">
+                                            <span asp-validation-for="ConfirmPassword"></span>
+                                        </div>
+                                        <div>
+                                            <label asp-for="Email"></label>
+                                            <input asp-for="Email" placeholder="Email" >
+                                            <span asp-validation-for="Email"></span>
+                                        </div>
+                                        <div>
+                                            <label asp-for="Phone"></label>
+                                            <input asp-for="Phone" placeholder="Phone">
+                                            <span asp-validation-for="Phone"></span>
+                                        </div>
+                                        <div>
+                                            <label asp-for="ProfilePicture"></label>
+                                            <input type="file" name="profilePicture" />
+                                            <span asp-validation-for="ProfilePicture"></span>
+                                        </div>
+
+                                        <div class="button-box">
+                                            <button type="submit"><span>Register</span></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{<partial name="_ValidationScriptsPartial" />}
+}
