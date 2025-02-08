@@ -2,6 +2,7 @@
 using ECommercePlatform.Helpers;
 using ECommercePlatform.Helpers.EmailHelper;
 using ECommercePlatform.Models;
+using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -74,62 +75,12 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return View(user);
         }
 
-        private IActionResult SendVerificationEmail(User user)
-        {
-
-            User newUser = _unitOfWork.Users.Get(u => u.Email == user.Email);
-            int userId = newUser.UserId;
-
-            UserOTP userOTP = _unitOfWork.UserOTPs.Get(uo=>uo.UserId==userId);
-            //either user has expired otp or user do not have otp
-            if (userOTP == null || userOTP.ExpirationTime < DateTime.UtcNow)
-            {
-                if (userOTP!=null && userOTP.ExpirationTime < DateTime.UtcNow)
-                {
-                    _unitOfWork.UserOTPs.Remove(userOTP);
-                    //remove old otp
-                }
-                Random random = new Random();
-                string otp = random.Next((int)Math.Pow(10, 5), (int)Math.Pow(10, 6)).ToString();
-
-                userOTP = new()
-                {
-                    UserId = userId,
-                    OTP = otp,
-                    ExpirationTime = DateTime.UtcNow.AddMinutes(5)
-                };
-                // Send email synchronously
-                string subject = "OTP For email verification!";
-                string body = $"<h1>Hi {user.FullName},</h1><p>Your OTP is {userOTP.OTP}!</p>";
-
-                _emailService.SendEmail(user.Email, subject, body);
-
-                // Set session
-                HttpContext.Session.SetString("TempUserId", userId.ToString());
-
-                _unitOfWork.UserOTPs.Add(userOTP);
-                _unitOfWork.Save();
-                TempData["sucess"] = "Mail sent successfully!";
-            }
-            else
-            {
-                // Set session
-                HttpContext.Session.SetString("TempUserId", userId.ToString());
-
-                TempData["sucess"] = "Your old OTP is still valid!";
-            }
-
-
-            
-            return RedirectToAction("OtpVerification");
-        }
-
+        
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
-        [HttpPost]
         [HttpPost]
         public IActionResult Login(LoginVM loginVM)
         {
@@ -164,8 +115,16 @@ namespace ECommercePlatform.Areas.Customer.Controllers
 
         public IActionResult OtpVerification()
         {
-            return View();
+            string tempUserId = HttpContext.Session.GetString("TempUserId")??"0";
+            if (tempUserId.Equals("0"))
+            {
+                TempData["error"] = "You have not requested OTP yet.";
+                return RedirectToAction("Index","User");
+            }
+            UserOTP userOTP = _unitOfWork.UserOTPs.Get(uo => uo.UserId == Convert.ToInt32(tempUserId));
+            return View(new UserOTP { ExpirationTime=userOTP.ExpirationTime});
         }
+
         [HttpPost]
         public IActionResult OTPVerification(UserOTP userOTP)
         {
@@ -191,7 +150,13 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 ModelState.AddModelError("OTP", "This OTP has expired.");
                 return View(userOTP);
             }
-
+            string whereToRedirect = HttpContext.Session.GetString("Page");
+            if (whereToRedirect != null)
+            {
+                //go to reset password page
+                HttpContext.Session.SetInt32("VerifiedOTP", 1);
+                return RedirectToAction(whereToRedirect);
+            }
             // Verify Email
             User user = _unitOfWork.Users.Get(u => u.UserId == userOTPFetched.UserId);
             user.IsEmailVerified = true;
@@ -207,30 +172,103 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public IActionResult ResendOTP()
+        {
+            return SendVerificationEmail(
+                new User{ Email = HttpContext.Session.GetString("TempEmail") }
+                );
+        }
         public IActionResult ForgotPassword()
         {
             return View();
         }
-        #region METHODS
-        public bool ValidateOtp(string enteredOtp)
+        [HttpPost]
+        public IActionResult ForgotPassword(ForgotPasswordVM forgotPasswordVM)
         {
-            string storedOtp = HttpContext.Session.GetString("Otp");
-            string storedTimestamp = HttpContext.Session.GetString("OtpTimestamp");
-
-            if (string.IsNullOrEmpty(storedOtp) || string.IsNullOrEmpty(storedTimestamp))
+            if (ModelState.IsValid)
             {
-                return false;  // No OTP stored in session
+                HttpContext.Session.SetString("Page", "ResetPassword");
+                return SendVerificationEmail(new User{Email=forgotPasswordVM.Email});
             }
-
-            // Check if OTP has expired (e.g., expired after 5 minutes)
-            DateTime otpTimestamp = DateTime.Parse(storedTimestamp);
-            if (DateTime.UtcNow - otpTimestamp > TimeSpan.FromMinutes(5))
-            {
-                return false;  // OTP expired
-            }
-
-            return storedOtp == enteredOtp;  // Compare entered OTP with stored OTP
+            return View();
         }
+        public IActionResult ResetPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult ResetPassword(ResetPasswordVM resetPasswordVM)
+        {
+            if (!ModelState.IsValid)
+            { 
+                return View(resetPasswordVM);
+            }
+            if (HttpContext.Session.GetInt32("VerifiedOTP") == null) 
+            { 
+                TempData["error"] = "You cannot access this page without verifing your credentials!";
+                return RedirectToAction("Index", "Home");
+            }
+            string userId = HttpContext.Session.GetString("TempUserId") ?? "";
+            if (userId.Equals(""))
+            {
+                TempData["error"] = "You cannot access this page without verifing your credentials!";
+                return RedirectToAction("Index", "Home");
+            }
+            User user = _unitOfWork.Users.Get(u => u.UserId == Convert.ToInt32(userId));
+            user.Password = PasswordHelper.HashPassword(resetPasswordVM.Password);
+            _unitOfWork.Users.Update(user);
+            _unitOfWork.Save();
+            TempData["success"] = "Your password has been updated successfully!";
+            return RedirectToAction("Index","Home");
+        }
+        #region METHODS
+        private IActionResult SendVerificationEmail(User user)
+        {
+
+            User newUser = _unitOfWork.Users.Get(u => u.Email == user.Email);
+            int userId = newUser.UserId;
+
+            UserOTP userOTP = _unitOfWork.UserOTPs.Get(uo => uo.UserId == userId);
+            //either user has expired otp or user do not have otp
+            if (userOTP == null || userOTP.ExpirationTime < DateTime.UtcNow)
+            {
+                if (userOTP != null && userOTP.ExpirationTime < DateTime.UtcNow)
+                {
+                    _unitOfWork.UserOTPs.Remove(userOTP);
+                    //remove old otp
+                }
+                Random random = new Random();
+                string otp = random.Next((int)Math.Pow(10, 5), (int)Math.Pow(10, 6)).ToString();
+
+                userOTP = new()
+                {
+                    UserId = userId,
+                    OTP = otp,
+                    ExpirationTime = DateTime.UtcNow.AddMinutes(5)
+                };
+                // Send email synchronously
+                string subject = "OTP For email verification!";
+                string body = $"<h1>Hi {user.FullName},</h1><p>Your OTP is {userOTP.OTP}!</p>";
+
+                _emailService.SendEmail(user.Email, subject, body);
+
+                // Set session
+                HttpContext.Session.SetString("TempUserId", userId.ToString());
+                HttpContext.Session.SetString("TempEmail", user.Email);
+
+                _unitOfWork.UserOTPs.Add(userOTP);
+                _unitOfWork.Save();
+                TempData["sucess"] = "Mail sent successfully!";
+            }
+            else
+            {
+                // Set session
+                HttpContext.Session.SetString("TempUserId", userId.ToString());
+                TempData["sucess"] = "Your old OTP is still valid!";
+            }
+            return RedirectToAction("OTPVerification");
+        }
+
         #endregion 
     }
 }

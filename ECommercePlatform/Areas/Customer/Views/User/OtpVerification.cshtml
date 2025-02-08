@@ -37,7 +37,11 @@
                                         <div class="button-box">
                                             <button type="submit"><span>Verify</span></button>
                                         </div>
-                                        <a asp-action="ResendOTP" id="resendOTPLink">Resend OTP</a>
+                                        <div class="d-flex justify-content-center">
+                                            <span id="resendOtpText" class="text-danger">Resend OTP in <span id="countdown"></span> seconds</span>
+                                            <a asp-action="ResendOTP" id="resendOTPLink" >Resend OTP</a>
+                                        </div>
+                                        
                                     </form>
                                 </div>
                             </div>
@@ -54,6 +58,34 @@
         <partial name="_ValidationScriptsPartial" />
     }
     <script>
-       //write code to disable resend otp link, till otp is valid
+        var expirationTime = new Date('@Model.ExpirationTime.ToString("yyyy-MM-ddTHH:mm:ssZ")');
+        var currentTime = new Date('@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")');
+
+        var remainingTime = Math.floor((expirationTime - currentTime) / 1000);
+        var countdownElement = document.getElementById("countdown");
+        var resendOtpBtn = document.getElementById("resendOTPLink");
+        var resendOtpText = document.getElementById("resendOtpText");
+
+        function updateCountdown() {
+            if (remainingTime > 0) {
+                countdownElement.textContent = remainingTime;
+                resendOtpBtn.style.display = "none"; // Keep Resend OTP hidden
+                remainingTime--;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                resendOtpText.style.display = "none"; // Hide countdown text
+                resendOtpBtn.style.display = "inline"; // Show Resend OTP button
+            }
+        }
+
+        // Hide "Resend OTP" initially if countdown is active
+        if (remainingTime > 0) {
+            resendOtpBtn.style.display = "none";
+            updateCountdown();
+        } else {
+            resendOtpText.style.display = "none";
+            resendOtpBtn.style.display = "inline";
+        }
+
     </script>
 }
