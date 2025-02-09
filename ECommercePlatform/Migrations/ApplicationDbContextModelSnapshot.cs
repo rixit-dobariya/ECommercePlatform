@@ -58,7 +58,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.CartItem", b =>
@@ -76,7 +76,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.Category", b =>
@@ -98,7 +98,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -184,7 +184,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasKey("OfferId");
 
-                    b.ToTable("Offers");
+                    b.ToTable("Offers", (string)null);
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.OrderDetail", b =>
@@ -208,7 +208,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.OrderHeader", b =>
@@ -251,7 +251,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("orderHeaders");
+                    b.ToTable("orderHeaders", (string)null);
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.Product", b =>
@@ -295,7 +295,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
 
                     b.HasData(
                         new
@@ -401,7 +401,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasIndex("ProductID");
 
-                    b.ToTable("ProductAttributes");
+                    b.ToTable("ProductAttributes", (string)null);
 
                     b.HasData(
                         new
@@ -501,7 +501,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.UserOTP", b =>
@@ -524,7 +524,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserOTPs");
+                    b.ToTable("UserOTPs", (string)null);
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.WishlistItem", b =>
@@ -539,7 +539,7 @@ namespace ECommercePlatform.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("WishlistItems");
+                    b.ToTable("WishlistItems", (string)null);
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.Address", b =>

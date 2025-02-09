@@ -12,6 +12,8 @@ namespace ECommercePlatform.Repository
         public IUserRepository Users { get; private set; }
         public IRepository<Offer> Offers { get; private set; }
         public IRepository<UserOTP> UserOTPs { get; private set; }
+        public IRepository<CartItem> CartItems { get; private set; }
+        public IRepository<WishlistItem> WishlistItems { get; private set; }
         private ApplicationDbContext _db;
 
         public UnitOfWork(ApplicationDbContext db)
@@ -23,6 +25,8 @@ namespace ECommercePlatform.Repository
             Users = new UserRepository(db);
             Offers = new Repository<Offer>(db);
             UserOTPs = new Repository<UserOTP>(db);
+            CartItems = new Repository<CartItem>(db);
+            WishlistItems = new Repository<WishlistItem>(db);
         }
 
         public void Save()

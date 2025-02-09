@@ -272,13 +272,3 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         #endregion 
     }
 }
-
-
-
-/*
- * 1. User tries to register 
- * 2. User gets OTP in inbox
- * 3. User might try to resend OTP
- * 4. User's registeration is sucessful
- * 5. User forgot his password -> send reset password link
- */
