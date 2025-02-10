@@ -1,0 +1,81 @@
+﻿@model UserInfoVM
+<div class="same-style account-satting">
+    <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i></a>
+    <div class="account-dropdown">
+        @if (string.IsNullOrEmpty(Model.ProfilePictureUrl)) 
+        {
+            <ul>
+                <li><a asp-controller="User" asp-action="Login">Login</a></li>
+                <li><a asp-controller="User" asp-action="Register">Register</a></li>
+            </ul>
+        }
+        else
+        {
+            <ul>
+                <li><a href="my-account.html">my account</a></li>
+                <li><a href="wishlist.html">Wishlist  </a></li>
+            </ul>
+        }
+    </div>
+</div>
+<div class="same-style header-wishlist">
+    <a asp-controller="Wishlist" asp-action="Index">
+        <i class="pe-7s-like"></i>
+    </a>
+</div>
+<div class="same-style cart-wrap">
+    <button class="icon-cart">
+        <i class="pe-7s-shopbag"></i>
+        <span class="count-style">@(Model.CartItems?.Count()??0)</span>
+    </button>
+    <div class="shopping-cart-content">
+        @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+        {
+            <ul>
+                @foreach (var cartItem in Model.CartItems ?? new List<CartItem>())
+                {
+                    decimal price = (cartItem.Product.SellPrice - (cartItem.Product.SellPrice * cartItem.Product.Discount / 100)) * cartItem.Quantity;
+                    <li class="single-shopping-cart">
+                        <div class="shopping-cart-img">
+                            <a asp-controller="Shop" asp-action="ProductDetails" asp-route-productId="@cartItem.ProductId">
+                                <img alt="@cartItem.Product.Name" src="@cartItem.Product.ImageUrl">
+                            </a>
+                        </div>
+                        <div class="shopping-cart-title">
+                            <h4>
+                                <a asp-controller="Shop" asp-action="ProductDetails" asp-route-productId="@cartItem.ProductId">
+                                    @cartItem.Product.Name
+                                </a>
+                            </h4>
+                            <h6>Qty: @cartItem.Quantity</h6>
+                            <span>₹ @Math.Round(price, 2)</span>
+                        </div>
+                        @* <div class="shopping-cart-delete"> *@
+                        @*     <a href="#"><i class="fa fa-times-circle"></i></a> *@
+                        @* </div> *@
+                    </li>
+                }
+
+            </ul>
+            <div class="shopping-cart-total">
+                <h4>Shipping : ₹ @Math.Round(Model.ShippingCharge, 2)<span></span></h4>
+                <h4>Total : <span class="shop-total">₹ @Math.Round(Model.Total, 2)</span></h4>
+            </div>
+        }
+        else
+        {
+            <div class="empty-cart text-center pb-10">
+                <h3>Your cart is empty!</h3>
+                <p>It looks like you haven't added any items to your cart yet.</p>
+                <img class="img-fluid w-25" src="~/Images/Empty Cart.jpg" /><br />
+                <div class="cart-shiping-update">
+                </div>
+            </div>
+        }
+        
+        <div class="shopping-cart-btn btn-hover text-center">
+            <a class="default-btn" asp-controller="Cart" asp-action="Index">view cart</a>
+            <a class="default-btn" href="checkout.html">checkout</a>
+        </div>
+    </div>
+</div>
