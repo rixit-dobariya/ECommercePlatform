@@ -1,5 +1,6 @@
 ﻿using ECommercePlatform.Constants;
 using ECommercePlatform.Models;
+using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -14,17 +15,23 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        public IActionResult Index(IEnumerable<CartItem> cartItems)
+        public IActionResult Index()
         {
+            CartVM cartVM  = new();
             string? userId = HttpContext.Session.GetString("UserId");
             if (userId == null)
             {
                 TempData["error"] = "You must be logged in to access this page";
                 return RedirectToAction("Login", "User");
             }
-            cartItems = _unitOfWork.CartItems.GetAll("Product")
+            cartVM.CartItems = _unitOfWork.CartItems.GetAll("Product")
                 .Where(ci => ci.UserId == Convert.ToInt32(userId));
-            return View(cartItems);
+            cartVM.Total = cartVM.CartItems
+                    .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
+                    .DefaultIfEmpty(0)
+                    .Sum();
+            cartVM.ShippingCharge = cartVM.Total >= 500 ? 0 : 50;
+            return View(cartVM);
         }
         public IActionResult Add(int productId, int quantity=1)
         {

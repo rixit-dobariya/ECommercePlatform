@@ -20,6 +20,37 @@
     <script src="~/assets/js/vendor/modernizr-2.8.3.min.js"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> 
     @* <link rel="stylesheet" href="~/ECommercePlatform.styles.css" asp-append-version="true" /> *@
+    <style>
+        /* Hide radio buttons */
+        .saved-addresses .form-check-input {
+            display: none;
+        }
+
+        /* Default address styling */
+        .address-item {
+            cursor: pointer;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: 0.3s;
+            background-color: white;
+        }
+            .address-item:hover {
+                border-color: #A749FF;
+            }
+
+            /* Highlight selected address */
+            .address-item.selected {
+                border-color: #A749FF;
+                background-color: #A749FFAA;
+                color: white;
+            }
+
+        .checkout-account {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <header class="header-area header-padding-1 sticky-bar header-res-padding clearfix">

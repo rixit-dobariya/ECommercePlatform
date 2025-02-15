@@ -14,6 +14,10 @@ namespace ECommercePlatform.Repository
         public IRepository<UserOTP> UserOTPs { get; private set; }
         public IRepository<CartItem> CartItems { get; private set; }
         public IRepository<WishlistItem> WishlistItems { get; private set; }
+        public IRepository<Address> Addresses { get; private set; }
+        public IRepository<OrderHeader> OrderHeaders { get; private set; }
+        public IRepository<OrderDetail> OrderDetails { get; private set; }
+
         private ApplicationDbContext _db;
 
         public UnitOfWork(ApplicationDbContext db)
@@ -27,6 +31,9 @@ namespace ECommercePlatform.Repository
             UserOTPs = new Repository<UserOTP>(db);
             CartItems = new Repository<CartItem>(db);
             WishlistItems = new Repository<WishlistItem>(db);
+            Addresses = new Repository<Address>(db);
+            OrderHeaders = new Repository<OrderHeader>(db);
+            OrderDetails = new Repository<OrderDetail>(db);
         }
 
         public void Save()

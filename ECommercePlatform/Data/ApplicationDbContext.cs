@@ -17,7 +17,7 @@ namespace ECommercePlatform.Data
         DbSet<CartItem> CartItems { get; set; }
         DbSet<Offer> Offers { get; set; }
         DbSet<OrderDetail> OrderDetails { get; set; }
-        DbSet<OrderHeader> orderHeaders { get; set; }
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
         DbSet<User> Users { get; set; }
         DbSet<WishlistItem> WishlistItems { get; set; }
         DbSet<UserOTP> UserOTPs { get; set; }
@@ -45,6 +45,13 @@ namespace ECommercePlatform.Data
                 .WithMany()
                 .HasForeignKey(o => o.BillingAddressId)
                 .OnDelete(DeleteBehavior.NoAction);  // Prevents cascade delete
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(od => od.OrderHeader)
+                .WithMany(oh => oh.OrderDetails)
+                .HasForeignKey(od => od.OrderHeaderId)
+                .OnDelete(DeleteBehavior.Cascade); // If OrderHeader is deleted, OrderDetails should also be deleted.
+
 
             //seed tables
 

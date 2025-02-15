@@ -1,0 +1,179 @@
+﻿@model CheckoutVM
+<div class="breadcrumb-area pt-35 pb-35 bg-gray-3">*
+    <div class="container">
+        <div class="breadcrumb-content text-center">
+            <ul>
+                <li>
+                    <a asp-controller="Home" asp-action="Index"> Home</a>
+                </li>
+                <li class="active">Checkout </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<form method="post">
+<div class="checkout-area pt-95 pb-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="billing-info-wrap">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3>Shipping Details</h3>
+                            <button  id="toggle-address-form">+ Add New Address</button>
+                    </div>
+                    <form method="post" asp-action="AddAddress">
+                    <!-- Address Form (Initially Hidden) -->
+                    <div id="address-form" class="checkout-account-toggle open-toggle2 mb-30" style="display: none;">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.FirstName"></label>
+                                    <input asp-for="Address.FirstName">
+                                    <span asp-validation-for="Address.FirstName"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.LastName"></label>
+                                    <input asp-for="Address.LastName">
+                                    <span asp-validation-for="Address.LastName"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.Region"></label>
+                                    <textarea asp-for="Address.Region"></textarea>
+                                    <span asp-validation-for="Address.Region"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.City"></label>
+                                    <input asp-for="Address.City">
+                                    <span asp-validation-for="Address.City"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.State"></label>
+                                    <input asp-for="Address.State">
+                                    <span asp-validation-for="Address.State"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.PinCode"></label>
+                                    <input asp-for="Address.PinCode">
+                                    <span asp-validation-for="Address.PinCode"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.Phone"></label>
+                                    <input asp-for="Address.Phone">
+                                    <span asp-validation-for="Address.Phone"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="billing-info mb-20">
+                                    <button type="submit" class="btn-hover p-2 border-none">Save address</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                    
+                    <h5>Select a Saved Address</h5>
+                    <div class="row saved-addresses">
+                        @if(Model.Addresses.Any())
+                        {
+                            @foreach (var address in Model.Addresses)
+                            {
+                                <div class="col-md-6">
+                                    <div class="form-check address-item" data-value="1">
+                                        <input class="form-check-input" type="radio" asp-for="ShippingAddressId" value="@address.AddressId">
+                                        <label class="form-check-label w-100 p-2" for="address1">
+                                            <strong>@address.FirstName @address.LastName</strong><br>
+                                            @address.Region, @address.City, @address.State, <br />
+                                            Pin Code: @address.PinCode<br>
+                                            Phone: @address.Phone
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                            <span asp-validation-for="ShippingAddressId"></span>
+                        }
+                        else
+                        {
+                            <p>No addresses available.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="your-order-area">
+                    <h3>Your order</h3>
+                    <div class="your-order-wrap gray-bg-4 pb-3">
+                        <div class="your-order-product-info">
+                            <div class="your-order-top">
+                                <ul>
+                                    <li>Product</li>
+                                    <li>Total</li>
+                                </ul>
+                            </div>
+                            <div class="your-order-middle">
+                                <ul>
+                                    @foreach(var cartItem in Model.CartItems)
+                                    {
+                                        <li>
+                                            <span class="order-middle-left">@cartItem.Product.Name X @cartItem.Quantity</span>
+                                            <span class="order-price">₹ @(Math.Round(cartItem.Product.SellPrice - cartItem.Product.Discount * cartItem.Product.SellPrice / 100,2))</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            <div class="your-order-bottom">
+                                <ul>
+                                    <li class="your-order-shipping">Shipping</li>
+                                    <li>@(Model.ShippingCharge > 0 ? Model.ShippingCharge : "Free shipping")</li>
+                                </ul>
+                            </div>
+                            <div class="your-order-total mb-1">
+                                <ul>
+                                    <li class="order-total">Total</li>
+                                    <li>₹ @(Math.Round(Model.Total,2))</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="Place-order mt-25">
+                        <button class="btn-hover" type="submit">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Toggle Address Form
+            $("#toggle-address-form").click(function () {
+                $("#address-form").slideToggle();
+            });
+
+            // Address Selection
+            $(".address-item").click(function () {
+                $(".address-item").removeClass("selected");
+                $(this).addClass("selected");
+                $(this).find(".form-check-input").prop("checked", true);
+            });
+        });
+    </script>
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

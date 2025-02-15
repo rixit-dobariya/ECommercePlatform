@@ -4,7 +4,7 @@ using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ECommercePlatform.Components
+namespace ECommercePlatform.Areas.Customer.Components
 {
     [Area(UserRole.Customer)]
     public class UserInfoViewComponent : ViewComponent
@@ -20,7 +20,6 @@ namespace ECommercePlatform.Components
         {
             string? userId = HttpContext.Session.GetString("UserId");
             UserInfoVM userInfoVM = new();
-            int shippingCharge = 50;
 
             if (!string.IsNullOrEmpty(userId))
             {
@@ -32,16 +31,16 @@ namespace ECommercePlatform.Components
                 userInfoVM.WishlistCount = _unitOfWork.WishlistItems.GetAll()
                     ?.Count(wi => wi.UserId == userIdInt) ?? 0;
 
-                userInfoVM.ShippingCharge = shippingCharge;
-
                 userInfoVM.Total = userInfoVM.CartItems
-                    .Select(ci => (ci.Product.SellPrice - (ci.Product.SellPrice * ci.Product.Discount / 100)) * ci.Quantity)
+                    .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
                     .DefaultIfEmpty(0)
-                    .Sum() + shippingCharge;
+                    .Sum();
 
                 userInfoVM.ProfilePictureUrl = _unitOfWork.Users.Get(u => u.UserId == userIdInt)?.ProfilePicture
-                    ??"";
+                    ?? "";
             }
+            userInfoVM.ShippingCharge = userInfoVM.Total >= 500 ? 0 : 50;
+            userInfoVM.Total += userInfoVM.ShippingCharge;
 
             return View(userInfoVM);
         }

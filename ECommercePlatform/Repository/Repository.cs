@@ -51,7 +51,6 @@ namespace ECommercePlatform.Repository
             }
             return query.ToList();
         }
-
         public void Remove(T entity)
         {
             dbSet.Remove(entity);

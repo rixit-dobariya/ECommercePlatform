@@ -10,7 +10,7 @@ namespace ECommercePlatform.Models
         Pending,
         Shipped,
         Delivered,
-        Canceled
+        Cancelled
     }
 
     public enum PaymentMode
@@ -54,5 +54,8 @@ namespace ECommercePlatform.Models
 
         [Required]
         public PaymentMode PaymentMode { get; set; } // Enum type
+
+        //Navigation property
+        public IEnumerable<OrderDetail> OrderDetails { get; set; }
     }
 }

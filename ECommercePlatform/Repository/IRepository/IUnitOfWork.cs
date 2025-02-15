@@ -12,6 +12,9 @@ namespace ECommercePlatform.Repository.IRepository
         IRepository<UserOTP> UserOTPs { get; }
         IRepository<CartItem> CartItems { get;}
         IRepository<WishlistItem> WishlistItems { get;}
+        IRepository<Address> Addresses { get;}
+        IRepository<OrderHeader> OrderHeaders { get; }
+        IRepository<OrderDetail> OrderDetails { get; }
 
         void Save();
     }
