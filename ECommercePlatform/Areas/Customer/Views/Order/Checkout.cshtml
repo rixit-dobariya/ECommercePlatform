@@ -101,7 +101,6 @@
                                     </div>
                                 </div>
                             }
-                            <span asp-validation-for="ShippingAddressId"></span>
                         }
                         else
                         {
@@ -147,6 +146,7 @@
                             </div>
                         </div>
                     </div>
+                    <span asp-validation-for="ShippingAddressId" class="text-danger mt-2"></span>
                     <div class="Place-order mt-25">
                         <button class="btn-hover" type="submit">Place Order</button>
                     </div>

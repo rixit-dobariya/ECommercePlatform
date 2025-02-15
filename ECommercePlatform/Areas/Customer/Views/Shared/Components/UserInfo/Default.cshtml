@@ -30,7 +30,7 @@
         <span class="count-style">@(Model.CartItems?.Count()??0)</span>
     </button>
     <div class="shopping-cart-content">
-        @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+        @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl) && Model.CartItems.Any())
         {
             <ul>
                 @foreach (var cartItem in Model.CartItems ?? new List<CartItem>())
@@ -76,7 +76,7 @@
         
         <div class="shopping-cart-btn btn-hover text-center">
             <a class="default-btn" asp-controller="Cart" asp-action="Index">view cart</a>
-            <a class="default-btn" href="checkout.html">checkout</a>
+            <a class="default-btn" asp-controller="Order" asp-action="Checkout">checkout</a>
         </div>
     </div>
 </div>

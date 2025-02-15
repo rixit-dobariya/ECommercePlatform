@@ -63,6 +63,16 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             {
                 return NotFound();
             }
+            CheckoutVM checkoutVM = GetCheckoutVM(userId);
+            if (checkoutVM.CartItems.Count() == 0)
+            {
+                TempData["error"] = "Your cart is empty, so add products to order them";
+                return RedirectToAction("Index", "Shop");
+            }
+            return View(checkoutVM);
+        }
+        CheckoutVM GetCheckoutVM(int userId)
+        {
             CheckoutVM checkoutVM = new()
             {
                 CartItems = _unitOfWork.CartItems.GetAll("Product").Where(ci => ci.UserId == userId),
@@ -74,7 +84,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                     .Sum();
             checkoutVM.ShippingCharge = checkoutVM.Total >= 500 ? 0 : 50;
             checkoutVM.Total += checkoutVM.ShippingCharge;
-            return View(checkoutVM);
+            return checkoutVM;
         }
         [HttpPost]
         public IActionResult AddAddress(Address address)
@@ -102,23 +112,24 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         public IActionResult Checkout(CheckoutVM checkoutVM)
         {
             int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-            if(userId<=0)
+
+            if (userId<=0)
             {
                 TempData["error"] = "You must be logged in to place order.";
                 return RedirectToAction("Login","User");
             }
+
+            CheckoutVM fetchedCheckoutVM = GetCheckoutVM(userId);
+
             if (checkoutVM.ShippingAddressId <= 0)
             {
-                ModelState.AddModelError("ShippingAddressId","You must select order to place order.");
-                return View(checkoutVM);
+                ModelState.AddModelError("ShippingAddressId","You must select address to place order.");
+                return View(fetchedCheckoutVM);
             }
-            checkoutVM.CartItems = _unitOfWork.CartItems.GetAll("Product")
-                .Where(ci => ci.UserId == Convert.ToInt32(userId));
-            checkoutVM.Total = checkoutVM.CartItems
-                    .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
-                    .DefaultIfEmpty(0)
-                    .Sum();
-            checkoutVM.ShippingCharge = checkoutVM.Total >= 500 ? 0 : 50;
+
+            fetchedCheckoutVM.ShippingAddressId = checkoutVM.ShippingAddressId;
+            checkoutVM = fetchedCheckoutVM;
+
             OrderHeader orderHeader = new()
             {
                 UserId = userId,
