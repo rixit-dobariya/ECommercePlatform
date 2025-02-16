@@ -19,70 +19,9 @@
                 <div class="billing-info-wrap">
                     <div class="d-flex justify-content-between align-items-center">
                         <h3>Shipping Details</h3>
-                            <button  id="toggle-address-form">+ Add New Address</button>
+                        <button href="#" data-toggle="modal" data-target="#addAddressModal">+ Add New Address</button>
+                            @* <button  id="toggle-address-form">+ Add New Address</button> *@
                     </div>
-                    <form method="post" asp-action="AddAddress">
-                    <!-- Address Form (Initially Hidden) -->
-                    <div id="address-form" class="checkout-account-toggle open-toggle2 mb-30" style="display: none;">
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6">
-                                <div class="billing-info mb-20">
-                                    <label asp-for="Address.FirstName"></label>
-                                    <input asp-for="Address.FirstName">
-                                    <span asp-validation-for="Address.FirstName"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6">
-                                <div class="billing-info mb-20">
-                                    <label asp-for="Address.LastName"></label>
-                                    <input asp-for="Address.LastName">
-                                    <span asp-validation-for="Address.LastName"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="billing-info mb-20">
-                                    <label asp-for="Address.Region"></label>
-                                    <textarea asp-for="Address.Region"></textarea>
-                                    <span asp-validation-for="Address.Region"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6">
-                                <div class="billing-info mb-20">
-                                    <label asp-for="Address.City"></label>
-                                    <input asp-for="Address.City">
-                                    <span asp-validation-for="Address.City"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6">
-                                <div class="billing-info mb-20">
-                                    <label asp-for="Address.State"></label>
-                                    <input asp-for="Address.State">
-                                    <span asp-validation-for="Address.State"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6">
-                                <div class="billing-info mb-20">
-                                    <label asp-for="Address.PinCode"></label>
-                                    <input asp-for="Address.PinCode">
-                                    <span asp-validation-for="Address.PinCode"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6">
-                                <div class="billing-info mb-20">
-                                    <label asp-for="Address.Phone"></label>
-                                    <input asp-for="Address.Phone">
-                                    <span asp-validation-for="Address.Phone"></span>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="billing-info mb-20">
-                                    <button type="submit" class="btn-hover p-2 border-none">Save address</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    </form>
-                    
                     <h5>Select a Saved Address</h5>
                     <div class="row saved-addresses">
                         @if(Model.Addresses.Any())
@@ -156,20 +95,102 @@
     </div>
 </div>
 </form>
+<!-- Add New Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-action="AddAddress">
+                    <!-- Address Form (Initially Hidden) -->
+                    <div id="address-form" class="checkout-account-toggle open-toggle2 mb-30">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.FirstName"></label>
+                                    <input asp-for="Address.FirstName">
+                                    <span asp-validation-for="Address.FirstName"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.LastName"></label>
+                                    <input asp-for="Address.LastName">
+                                    <span asp-validation-for="Address.LastName"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.Region"></label>
+                                    <textarea asp-for="Address.Region"></textarea>
+                                    <span asp-validation-for="Address.Region"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.City"></label>
+                                    <input asp-for="Address.City">
+                                    <span asp-validation-for="Address.City"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.State"></label>
+                                    <input asp-for="Address.State">
+                                    <span asp-validation-for="Address.State"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.PinCode"></label>
+                                    <input asp-for="Address.PinCode">
+                                    <span asp-validation-for="Address.PinCode"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="billing-info mb-20">
+                                    <label asp-for="Address.Phone"></label>
+                                    <input asp-for="Address.Phone">
+                                    <span asp-validation-for="Address.Phone"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="billing-info mb-20">
+                                    <button type="submit" class="btn-hover p-2 border-none">Save address</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
 
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal end -->
 @section Scripts {
     <script>
         $(document).ready(function () {
             // Toggle Address Form
-            $("#toggle-address-form").click(function () {
-                $("#address-form").slideToggle();
-            });
+            // $("#toggle-address-form").click(function () {
+            //     $("#address-form").slideToggle();
+            // });
 
             // Address Selection
             $(".address-item").click(function () {
-                $(".address-item").removeClass("selected");
-                $(this).addClass("selected");
-                $(this).find(".form-check-input").prop("checked", true);
+                let checkbox = $(this).find(".form-check-input");
+                let isChecked = checkbox.prop("checked");
+
+                $(".address-item").removeClass("selected").find(".form-check-input").prop("checked", false);
+
+                if (!isChecked) $(this).addClass("selected").find(".form-check-input").prop("checked", true);
             });
         });
     </script>

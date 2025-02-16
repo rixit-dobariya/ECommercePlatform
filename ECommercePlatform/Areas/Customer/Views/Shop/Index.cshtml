@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Product>
+﻿@model List<ProductDisplay>
 
 <div class="breadcrumb-area pt-35 pb-35 bg-gray-3">
     <div class="container">
@@ -105,13 +105,29 @@
                                             <img class="default-img" src="@product.ImageUrl" alt="">
                                             @* <img class="hover-img" src="@product.ImageUrl" alt=""> *@
                                         </a>
-                                        <span class="pink">-@discount%</span>
+                                        @if(discount>0 || discount!=null){
+                                            <span class="pink">-@discount%</span>
+                                        }
                                         <div class="product-action">
                                             <div class="pro-same-action pro-wishlist">
-                                                <a title="Wishlist" asp-controller="Wishlist" asp-action="Add" asp-route-productId="@product.ProductId"><i class="pe-7s-like"></i></a>
+                                                @if (product.IsInWishlist)
+                                                {
+                                                    <a title="Remove from wishlist" asp-controller="Wishlist" asp-action="Remove" asp-route-productId="@product.ProductId"><i class="fa-solid fa-heart"></i></a>
+                                                }
+                                                else
+                                                {
+                                                    <a title="Add to Wishlist" asp-controller="Wishlist" asp-action="Add" asp-route-productId="@product.ProductId"><i class="fa-regular fa-heart"></i></a>
+                                                }
                                             </div>
                                             <div class="pro-same-action pro-cart">
-                                                <a title="Add To Cart" asp-controller="Cart" asp-action="Add" asp-route-productId="@product.ProductId"><i class="pe-7s-cart"></i> Add to cart</a>
+                                                @if (product.IsInCart)
+                                                {
+                                                    <a title="Remove from Cart" asp-controller="Cart" asp-action="Remove" asp-route-productId="@product.ProductId"><i class="pe-7s-cart"></i> Remove from cart</a>
+                                                }
+                                                else
+                                                {
+                                                    <a title="Add To Cart" asp-controller="Cart" asp-action="Add" asp-route-productId="@product.ProductId"><i class="pe-7s-cart"></i> Add to cart</a>
+                                                }
                                             </div>
                                             <div class="pro-same-action pro-quickview">
                                                 <a title="Quick View" data-toggle="modal" data-target="#modal@product.ProductId"><i class="pe-7s-look"></i></a>

@@ -61,7 +61,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             if (userId <= 0)
             {
-                return NotFound();
+                TempData["error"] = "You must be logged in to access this page";
+                return RedirectToAction("Login", "User");
             }
             CheckoutVM checkoutVM = GetCheckoutVM(userId);
             if (checkoutVM.CartItems.Count() == 0)
@@ -70,21 +71,6 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 return RedirectToAction("Index", "Shop");
             }
             return View(checkoutVM);
-        }
-        CheckoutVM GetCheckoutVM(int userId)
-        {
-            CheckoutVM checkoutVM = new()
-            {
-                CartItems = _unitOfWork.CartItems.GetAll("Product").Where(ci => ci.UserId == userId),
-                Addresses = _unitOfWork.Addresses.GetAll().Where(a => a.UserId == userId),
-            };
-            checkoutVM.Total = checkoutVM.CartItems
-                    .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
-                    .DefaultIfEmpty(0)
-                    .Sum();
-            checkoutVM.ShippingCharge = checkoutVM.Total >= 500 ? 0 : 50;
-            checkoutVM.Total += checkoutVM.ShippingCharge;
-            return checkoutVM;
         }
         [HttpPost]
         public IActionResult AddAddress(Address address)
@@ -158,5 +144,22 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             TempData["success"] = "Order placed successfully.";
             return RedirectToActionPermanent("History");
         }
+        #region METHODS
+        CheckoutVM GetCheckoutVM(int userId)
+        {
+            CheckoutVM checkoutVM = new()
+            {
+                CartItems = _unitOfWork.CartItems.GetAll("Product").Where(ci => ci.UserId == userId),
+                Addresses = _unitOfWork.Addresses.GetAll().Where(a => a.UserId == userId),
+            };
+            checkoutVM.Total = checkoutVM.CartItems
+                    .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
+                    .DefaultIfEmpty(0)
+                    .Sum();
+            checkoutVM.ShippingCharge = checkoutVM.Total >= 500 ? 0 : 50;
+            checkoutVM.Total += checkoutVM.ShippingCharge;
+            return checkoutVM;
+        }
+        #endregion
     }
 }
