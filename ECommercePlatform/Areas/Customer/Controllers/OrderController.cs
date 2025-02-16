@@ -21,8 +21,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         }
         public IActionResult Display(int orderId)
         {
-            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-            if (userId <= 0)
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
             {
                 TempData["error"] = "You must be logged in to access this page";
                 return RedirectToAction("Login","User");
@@ -47,8 +47,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
 
         public IActionResult History()
         {
-            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-            if (userId <= 0)
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
             {
                 TempData["error"] = "You must be logged in to view orders";
                 return RedirectToAction("Login", "User");
@@ -58,8 +58,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         }
         public IActionResult Checkout()
         {
-            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-            if (userId <= 0)
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
             {
                 TempData["error"] = "You must be logged in to access this page";
                 return RedirectToAction("Login", "User");
@@ -77,7 +77,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             if (ModelState.IsValid)
             {
-                address.UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                address.UserId = Convert.ToInt32(HttpContext.Session.GetInt32("UserId"));
                 if (address.UserId > 0)
                 {
                     _unitOfWork.Addresses.Add(address);
@@ -97,9 +97,9 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         [HttpPost]
         public IActionResult Checkout(CheckoutVM checkoutVM)
         {
-            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            int? userId = HttpContext.Session.GetInt32("UserId");
 
-            if (userId<=0)
+            if (userId == null)
             {
                 TempData["error"] = "You must be logged in to place order.";
                 return RedirectToAction("Login","User");
@@ -118,7 +118,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
 
             OrderHeader orderHeader = new()
             {
-                UserId = userId,
+                UserId = (int)userId,
                 OrderStatus= OrderStatus.Pending,
                 ShippingAddressId = checkoutVM.ShippingAddressId,
                 ShippingCharge = checkoutVM.ShippingCharge,
@@ -145,7 +145,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return RedirectToActionPermanent("History");
         }
         #region METHODS
-        CheckoutVM GetCheckoutVM(int userId)
+        CheckoutVM GetCheckoutVM(int? userId)
         {
             CheckoutVM checkoutVM = new()
             {

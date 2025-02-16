@@ -20,8 +20,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             List<Product> products = _unitOfWork.Products.GetAll("Category").ToList();
             List<ProductDisplay> productDisplays;
 
-            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-            if (userId <= 0)
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
             {
                 productDisplays = products.Select(p => new ProductDisplay{
                     SellPrice=p.SellPrice,

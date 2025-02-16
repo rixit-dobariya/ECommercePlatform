@@ -1,4 +1,5 @@
 ﻿using ECommercePlatform.Constants;
+using ECommercePlatform.Filters;
 using ECommercePlatform.Helpers;
 using ECommercePlatform.Helpers.EmailHelper;
 using ECommercePlatform.Models;
@@ -104,7 +105,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }
 
             // Set session
-            HttpContext.Session.SetString("UserId", user.UserId.ToString());
+            HttpContext.Session.SetInt32("UserId", user.UserId);
             TempData["success"] = "Login successful!";
 
             // Redirect based on role
@@ -115,8 +116,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
 
         public IActionResult OtpVerification()
         {
-            string tempUserId = HttpContext.Session.GetString("TempUserId")??"0";
-            if (tempUserId.Equals("0"))
+            int tempUserId = HttpContext.Session.GetInt32("TempUserId")??0;
+            if (tempUserId == 0)
             {
                 TempData["error"] = "You have not requested OTP yet.";
                 return RedirectToAction("Index","User");
@@ -130,7 +131,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             if (!ModelState.IsValid)
                 return View(userOTP);
-            string userId = HttpContext.Session.GetString("TempUserId");
+            int? userId = HttpContext.Session.GetInt32("TempUserId");
             UserOTP userOTPFetched = _unitOfWork.UserOTPs.Get(uo => uo.UserId==Convert.ToInt32(userId));
 
             if (userOTPFetched == null)
@@ -167,7 +168,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             _unitOfWork.UserOTPs.Remove(userOTPFetched);
             _unitOfWork.Save();
 
-            HttpContext.Session.SetString("UserId", user.UserId.ToString());
+            HttpContext.Session.SetInt32("UserId", user.UserId);
             TempData["success"] = "Your email is verified successfully!";
             return RedirectToAction("Index", "Home");
         }
@@ -208,8 +209,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 TempData["error"] = "You cannot access this page without verifing your credentials!";
                 return RedirectToAction("Index", "Home");
             }
-            string userId = HttpContext.Session.GetString("TempUserId") ?? "";
-            if (userId.Equals(""))
+            int? userId = HttpContext.Session.GetInt32("TempUserId");
+            if (userId==null)
             {
                 TempData["error"] = "You cannot access this page without verifing your credentials!";
                 return RedirectToAction("Index", "Home");
@@ -221,7 +222,57 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             TempData["success"] = "Your password has been updated successfully!";
             return RedirectToAction("Index","Home");
         }
+
+        [AuthCheck]
+        public IActionResult MyAccount()
+        {
+            MyAccountVM myAccountVM = GetMyAccountVM();
+            return View(myAccountVM);
+        }
+        [HttpPost]
+        public IActionResult ChangePassword(ChangePassword changePassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("MyAccount", new MyAccountVM { ChangePassword = changePassword });
+            }
+            MyAccountVM myAccountVM = GetMyAccountVM();
+            return View("MyAccount", myAccountVM);
+        }
+        [HttpPost]
+        public IActionResult UpdateProfile(UpdateProfile UpdateProfile)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("MyAccount", new MyAccountVM { UpdateProfile = UpdateProfile });
+            }
+            MyAccountVM myAccountVM = GetMyAccountVM();
+            return View("MyAccount", myAccountVM);
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserId");
+            TempData["success"] = "You have logged out successfully!";
+            return RedirectToActionPermanent("Index","Home");
+        }
         #region METHODS
+        private MyAccountVM GetMyAccountVM()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            User user = _unitOfWork.Users.Get(u => u.UserId == userId);
+            MyAccountVM myAccountVM = new MyAccountVM
+            {
+                UpdateProfile = new UpdateProfile
+                {
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    Phone = user.Phone,
+                    ProfilePicture = user.ProfilePicture
+                },
+            };
+            return myAccountVM;
+        }
         private IActionResult SendVerificationEmail(User user)
         {
 
@@ -253,7 +304,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 _emailService.SendEmail(user.Email, subject, body);
 
                 // Set session
-                HttpContext.Session.SetString("TempUserId", userId.ToString());
+                HttpContext.Session.SetInt32("TempUserId", userId);
                 HttpContext.Session.SetString("TempEmail", user.Email);
 
                 _unitOfWork.UserOTPs.Add(userOTP);
@@ -263,7 +314,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             else
             {
                 // Set session
-                HttpContext.Session.SetString("TempUserId", userId.ToString());
+                HttpContext.Session.SetInt32("TempUserId", userId);
                 TempData["sucess"] = "Your old OTP is still valid!";
             }
             return RedirectToAction("OTPVerification");

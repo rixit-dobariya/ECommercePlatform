@@ -15,7 +15,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         }
         public IActionResult Index(IEnumerable<WishlistItem> wishlistItems)
         {
-            string? userId = HttpContext.Session.GetString("UserId");
+            int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
                 TempData["error"] = "You must be logged in to access this page";
@@ -31,7 +31,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             {
                 return RedirectToActionPermanent("Index");
             }
-            string? userId = HttpContext.Session.GetString("UserId");
+            int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
                 TempData["error"] = "You must be logged in to access this page";
@@ -56,7 +56,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         }
         public IActionResult Remove(int productId)
         {
-            string? userId = HttpContext.Session.GetString("UserId");
+            int? userId = HttpContext.Session.GetInt32("UserId");
             if (productId == 0)
             {
                 TempData["error"] = "Deletion failed";

@@ -59,7 +59,8 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     ModelState.AddModelError("User.ProfilePicture", "User profile picture must not be empty.");
                     return View(userVM);
                 }
-                userVM.User.Password = PasswordHelper.HashPassword(userVM.User.Password); 
+                userVM.User.Password = PasswordHelper.HashPassword(userVM.User.Password);
+                userVM.User.IsEmailVerified = true;
                 _unitOfWork.Users.Add(userVM.User);
                 _unitOfWork.Save();
                 TempData["sucess"] = "User added successfully!";
