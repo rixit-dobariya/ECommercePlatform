@@ -49,5 +49,9 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }).ToList();
             return View(productDisplays);
         }
+        public IActionResult ProductDetail(int productId)
+        {
+            return View();
+        }
     }
 }

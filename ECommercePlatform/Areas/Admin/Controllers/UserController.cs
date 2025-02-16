@@ -84,7 +84,6 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             return View(userVM);
         }
         [HttpPost]
-        [HttpPost]
         public IActionResult Edit(UserVM userVM)
         {
             if (ModelState.IsValid)
@@ -129,7 +128,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<User> usersList = _unitOfWork.Users.GetAll().ToList();
+            List<User> usersList = _unitOfWork.Users.GetAll().Where(u => u.Role==RoleType.User).ToList();
             return Json(new { data = usersList });
         }
 

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ECommercePlatform.Migrations
 {
     /// <inheritdoc />
-    public partial class NewDB : Migration
+    public partial class AddTablesAndSeedTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -92,7 +92,8 @@ namespace ECommercePlatform.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LongDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
                     SellPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -119,11 +120,14 @@ namespace ECommercePlatform.Migrations
                     AddressId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Region = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PinCode = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -207,7 +211,7 @@ namespace ECommercePlatform.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "orderHeaders",
+                name: "OrderHeaders",
                 columns: table => new
                 {
                     OrderId = table.Column<int>(type: "int", nullable: false)
@@ -223,19 +227,19 @@ namespace ECommercePlatform.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_orderHeaders", x => x.OrderId);
+                    table.PrimaryKey("PK_OrderHeaders", x => x.OrderId);
                     table.ForeignKey(
-                        name: "FK_orderHeaders_Addresses_BillingAddressId",
+                        name: "FK_OrderHeaders_Addresses_BillingAddressId",
                         column: x => x.BillingAddressId,
                         principalTable: "Addresses",
                         principalColumn: "AddressId");
                     table.ForeignKey(
-                        name: "FK_orderHeaders_Addresses_ShippingAddressId",
+                        name: "FK_OrderHeaders_Addresses_ShippingAddressId",
                         column: x => x.ShippingAddressId,
                         principalTable: "Addresses",
                         principalColumn: "AddressId");
                     table.ForeignKey(
-                        name: "FK_orderHeaders_Users_UserId",
+                        name: "FK_OrderHeaders_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -256,16 +260,16 @@ namespace ECommercePlatform.Migrations
                 {
                     table.PrimaryKey("PK_OrderDetails", x => new { x.OrderHeaderId, x.ProductId });
                     table.ForeignKey(
+                        name: "FK_OrderDetails_OrderHeaders_OrderHeaderId",
+                        column: x => x.OrderHeaderId,
+                        principalTable: "OrderHeaders",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_OrderDetails_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "ProductId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderDetails_orderHeaders_OrderHeaderId",
-                        column: x => x.OrderHeaderId,
-                        principalTable: "orderHeaders",
-                        principalColumn: "OrderId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -276,7 +280,37 @@ namespace ECommercePlatform.Migrations
                 {
                     { 1, "Electronics", null },
                     { 4, "Fashion", null },
-                    { 7, "Home Appliances", null },
+                    { 7, "Home Appliances", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Offers",
+                columns: new[] { "OfferId", "Discount", "EndDate", "MinimumAmount", "OfferCode", "OfferDescription", "StartDate" },
+                values: new object[] { 1, 10.00m, new DateOnly(2025, 2, 28), 50.00m, "DISCOUNT10", "Get 10% off on all orders above $50", new DateOnly(2025, 2, 1) });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "Email", "FullName", "IsDeleted", "IsEmailVerified", "Password", "Phone", "ProfilePicture", "Role" },
+                values: new object[,]
+                {
+                    { 1, "Admin@admin.com", "Admin", false, true, "$2a$11$aZsiddJKDzxfpg2rdgqLZOWyxRoVrZUNsJnYFd3EORCmnpoAPKwlm", "8732965892", "/Images/users/d8dadcfc-e8b8-480a-94b7-ca496880db91.png", 0 },
+                    { 2, "rixitdobariya05@gmail.com", "Rixit Dobariya", false, true, "$2a$11$aZsiddJKDzxfpg2rdgqLZOWyxRoVrZUNsJnYFd3EORCmnpoAPKwlm", "8732965892", "/Images/users/d8dadcfc-e8b8-480a-94b7-ca496880db91.png", 1 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Addresses",
+                columns: new[] { "AddressId", "City", "FirstName", "IsDeleted", "LastName", "Phone", "PinCode", "Region", "State", "UserId" },
+                values: new object[,]
+                {
+                    { 1, "New York", "Rixit", 0, "Dobariya", "1234567890", "10001", "Manhattan", "NY", 2 },
+                    { 2, "Los Angeles", "Rixit", 0, "Dobariya", "9876543210", "90001", "Downtown", "CA", 2 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryId", "Name", "ParentCategoryId" },
+                values: new object[,]
+                {
                     { 2, "Laptops", 1 },
                     { 3, "Smartphones", 1 },
                     { 5, "Men's Clothing", 4 },
@@ -286,16 +320,34 @@ namespace ECommercePlatform.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Products",
-                columns: new[] { "ProductId", "CategoryId", "CostPrice", "Description", "Discount", "ImageUrl", "IsActive", "Name", "SellPrice", "Stock" },
+                table: "OrderHeaders",
+                columns: new[] { "OrderId", "BillingAddressId", "OrderDate", "OrderStatus", "PaymentMode", "ShippingAddressId", "ShippingCharge", "Subtotal", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 2, 1200.00m, "High-end gaming laptop", 10.0m, "th\\Images\\profile.jpg", 1, "Laptop", 1500.00m, 10 },
-                    { 2, 3, 600.00m, "Latest Android smartphone", 5.0m, "th\\Images\\profile.jpg", 1, "Smartphone", 800.00m, 20 },
-                    { 3, 5, 12.00m, "Comfortable cotton t-shirt", 0.0m, "th\\Images\\profile.jpg", 1, "Men's T-shirt", 20.00m, 50 },
-                    { 4, 6, 25.00m, "Elegant summer dress", 10.0m, "th\\Images\\profile.jpg", 1, "Women's Dress", 35.00m, 30 },
-                    { 5, 8, 950.00m, "Energy-efficient refrigerator", 15.0m, "th\\Images\\profile.jpg", 1, "Refrigerator", 1200.00m, 15 },
-                    { 6, 9, 400.00m, "Front-load washing machine", 5.0m, "th\\Images\\profile.jpg", 1, "Washing Machine", 500.00m, 25 }
+                    { 1, 2, new DateTime(2025, 2, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, 0, 1, 5.00m, 100.00m, 2 },
+                    { 2, 2, new DateTime(2025, 2, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, 0, 2, 0.00m, 50.00m, 2 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Products",
+                columns: new[] { "ProductId", "CategoryId", "CostPrice", "Discount", "ImageUrl", "IsActive", "LongDescription", "Name", "SellPrice", "ShortDescription", "Stock" },
+                values: new object[,]
+                {
+                    { 1, 2, 1200.00m, 10.0m, "\\Images\\profile.jpg", 1, "High-end gaming laptop", "Laptop", 1500.00m, "High-end gaming laptop", 10 },
+                    { 2, 3, 600.00m, 5.0m, "\\Images\\profile.jpg", 1, "Latest Android smartphone", "Smartphone", 800.00m, "Latest Android smartphone", 20 },
+                    { 3, 5, 12.00m, 0.0m, "\\Images\\profile.jpg", 1, "Comfortable cotton t-shirt", "Men's T-shirt", 20.00m, "Comfortable cotton t-shirt", 50 },
+                    { 4, 6, 25.00m, 10.0m, "\\Images\\profile.jpg", 1, "Elegant summer dress", "Women's Dress", 35.00m, "Elegant summer dress", 30 },
+                    { 5, 8, 950.00m, 15.0m, "\\Images\\profile.jpg", 1, "Energy-efficient refrigerator", "Refrigerator", 1200.00m, "Energy-efficient refrigerator", 15 },
+                    { 6, 9, 400.00m, 5.0m, "\\Images\\profile.jpg", 1, "Front-load washing machine", "Washing Machine", 500.00m, "Front-load washing machine", 25 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "OrderDetails",
+                columns: new[] { "OrderHeaderId", "ProductId", "DiscountAmount", "Price", "Quantity" },
+                values: new object[,]
+                {
+                    { 1, 1, 5.00m, 50.00m, 2 },
+                    { 2, 2, 0.00m, 50.00m, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -334,18 +386,18 @@ namespace ECommercePlatform.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orderHeaders_BillingAddressId",
-                table: "orderHeaders",
+                name: "IX_OrderHeaders_BillingAddressId",
+                table: "OrderHeaders",
                 column: "BillingAddressId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orderHeaders_ShippingAddressId",
-                table: "orderHeaders",
+                name: "IX_OrderHeaders_ShippingAddressId",
+                table: "OrderHeaders",
                 column: "ShippingAddressId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orderHeaders_UserId",
-                table: "orderHeaders",
+                name: "IX_OrderHeaders_UserId",
+                table: "OrderHeaders",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -386,7 +438,7 @@ namespace ECommercePlatform.Migrations
                 name: "WishlistItems");
 
             migrationBuilder.DropTable(
-                name: "orderHeaders");
+                name: "OrderHeaders");
 
             migrationBuilder.DropTable(
                 name: "Products");

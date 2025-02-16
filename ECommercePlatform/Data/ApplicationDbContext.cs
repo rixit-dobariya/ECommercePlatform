@@ -1,4 +1,5 @@
-﻿using ECommercePlatform.Models;
+﻿using ECommercePlatform.Constants;
+using ECommercePlatform.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -74,26 +75,28 @@ namespace ECommercePlatform.Data
                 {
                     ProductId=1,
                     Name = "Laptop",
-                    Description = "High-end gaming laptop",
+                    LongDescription = "High-end gaming laptop",
+                    ShortDescription = "High-end gaming laptop",
                     CategoryId = 2,
                     Stock = 10,
                     SellPrice = 1500.00m,
                     CostPrice = 1200.00m,
                     Discount = 10.0m,
-                    ImageUrl = "th\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\profile.jpg",
                     IsActive = 1
                 },
                 new Product
                 {
                     ProductId = 2,
                     Name = "Smartphone",
-                    Description = "Latest Android smartphone",
+                    LongDescription = "Latest Android smartphone",
+                    ShortDescription = "Latest Android smartphone",
                     CategoryId = 3,
                     Stock = 20,
                     SellPrice = 800.00m,
                     CostPrice = 600.00m,
                     Discount = 5.0m,
-                    ImageUrl = "th\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\profile.jpg",
                     IsActive = 1
                 },
 
@@ -102,26 +105,28 @@ namespace ECommercePlatform.Data
                 {
                     ProductId = 3,
                     Name = "Men's T-shirt",
-                    Description = "Comfortable cotton t-shirt",
+                    ShortDescription = "Comfortable cotton t-shirt",
+                    LongDescription = "Comfortable cotton t-shirt",
                     CategoryId = 5,
                     Stock = 50,
                     SellPrice = 20.00m,
                     CostPrice = 12.00m,
                     Discount = 0.0m,
-                    ImageUrl = "th\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\profile.jpg",
                     IsActive = 1
                 },
                 new Product
                 {
                     ProductId = 4,
                     Name = "Women's Dress",
-                    Description = "Elegant summer dress",
+                    ShortDescription = "Elegant summer dress",
+                    LongDescription = "Elegant summer dress",
                     CategoryId = 6,
                     Stock = 30,
                     SellPrice = 35.00m,
                     CostPrice = 25.00m,
                     Discount = 10.0m,
-                    ImageUrl = "th\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\profile.jpg",
                     IsActive = 1
                 },
 
@@ -130,26 +135,28 @@ namespace ECommercePlatform.Data
                 {
                     ProductId = 5,
                     Name = "Refrigerator",
-                    Description = "Energy-efficient refrigerator",
+                    ShortDescription = "Energy-efficient refrigerator",
+                    LongDescription = "Energy-efficient refrigerator",
                     CategoryId = 8,
                     Stock = 15,
                     SellPrice = 1200.00m,
                     CostPrice = 950.00m,
                     Discount = 15.0m,
-                    ImageUrl = "th\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\profile.jpg",
                     IsActive = 1
                 },
                 new Product
                 {
                     ProductId = 6,
                     Name = "Washing Machine",
-                    Description = "Front-load washing machine",
+                    ShortDescription = "Front-load washing machine",
+                    LongDescription = "Front-load washing machine",
                     CategoryId = 9,
                     Stock = 25,
                     SellPrice = 500.00m,
                     CostPrice = 400.00m,
                     Discount = 5.0m,
-                    ImageUrl = "th\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\profile.jpg",
                     IsActive = 1
                 }
             );
@@ -164,7 +171,119 @@ namespace ECommercePlatform.Data
                 new ProductAttribute { AttributeID = 7, ProductID = 5, Name = "Energy Rating", Value = "A+" },
                 new ProductAttribute { AttributeID = 8, ProductID = 6, Name = "Load Capacity", Value = "8 kg" }
             );
-            
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    UserId=1,
+                    Email = "Admin@admin.com",
+                    FullName = "Admin",
+                    IsDeleted = false,
+                    IsEmailVerified = true,
+                    Password = "$2a$11$aZsiddJKDzxfpg2rdgqLZOWyxRoVrZUNsJnYFd3EORCmnpoAPKwlm",
+                    Phone = "8732965892",
+                    ProfilePicture = "/Images/users/d8dadcfc-e8b8-480a-94b7-ca496880db91.png",
+                    Role = RoleType.Admin
+                },
+                new User
+                {
+                    UserId = 2,
+                    Email = "rixitdobariya05@gmail.com",
+                    FullName = "Rixit Dobariya",
+                    IsDeleted = false,
+                    IsEmailVerified = true,
+                    Password = "$2a$11$aZsiddJKDzxfpg2rdgqLZOWyxRoVrZUNsJnYFd3EORCmnpoAPKwlm",
+                    Phone = "8732965892",
+                    ProfilePicture = "/Images/users/d8dadcfc-e8b8-480a-94b7-ca496880db91.png",
+                    Role = RoleType.User
+                }
+            );
+            modelBuilder.Entity<Offer>().HasData(
+                new Offer
+                {
+                    OfferId = 1,
+                    OfferCode = "DISCOUNT10",
+                    OfferDescription = "Get 10% off on all orders above $50",
+                    MinimumAmount = 50.00m,
+                    Discount = 10.00m,
+                    StartDate = new DateOnly(2025, 2, 1),
+                    EndDate = new DateOnly(2025, 2, 28)
+                }
+            ); 
+            modelBuilder.Entity<Address>().HasData(
+                new Address
+                {
+                    AddressId = 1,
+                    UserId = 2, // Assuming this user exists in the Users table
+                    City = "New York",
+                    Region = "Manhattan",
+                    State = "NY",
+                    PinCode = "10001",
+                    Phone = "1234567890",
+                    IsDeleted = 0,
+                    FirstName = "Rixit",
+                    LastName = "Dobariya"
+                },
+                new Address
+                {
+                    AddressId = 2,
+                    UserId = 2, // Assuming this user exists in the Users table
+                    City = "Los Angeles",
+                    Region = "Downtown",
+                    State = "CA",
+                    PinCode = "90001",
+                    Phone = "9876543210",
+                    IsDeleted = 0,
+                    FirstName = "Rixit",
+                    LastName = "Dobariya"
+                }
+            );
+            // Seeding OrderHeaders
+            modelBuilder.Entity<OrderHeader>().HasData(
+                new OrderHeader
+                {
+                    OrderId = 1,
+                    UserId = 2, // Assuming this user exists in Users table
+                    OrderStatus = OrderStatus.Pending, // Example status (e.g., Pending)
+                    OrderDate = new DateTime(2025, 2, 16),
+                    ShippingAddressId = 1, // Assuming this address exists
+                    BillingAddressId = 2, // Assuming this address exists
+                    ShippingCharge = 5.00m,
+                    Subtotal = 100.00m,
+                    PaymentMode = PaymentMode.UPI // Example payment mode (e.g., Credit Card)
+                },
+                new OrderHeader
+                {
+                    OrderId = 2,
+                    UserId = 2, // Another user
+                    OrderStatus = OrderStatus.Pending, // Example status (e.g., Shipped)
+                    OrderDate = new DateTime(2025, 2, 17),
+                    ShippingAddressId = 2, // Assuming this address exists
+                    BillingAddressId = 2, // Same address for billing
+                    ShippingCharge = 0.00m, // Free shipping
+                    Subtotal = 50.00m,
+                    PaymentMode = PaymentMode.UPI // Example payment mode (e.g., PayPal)
+                }
+            );
+
+            // Seeding OrderDetails
+            modelBuilder.Entity<OrderDetail>().HasData(
+                new OrderDetail
+                {
+                    OrderHeaderId = 1,
+                    ProductId = 1, // Assuming this product exists
+                    Quantity = 2,
+                    Price = 50.00m,
+                    DiscountAmount = 5.00m
+                },
+                new OrderDetail
+                {
+                    OrderHeaderId = 2,
+                    ProductId = 2, // Another product
+                    Quantity = 1,
+                    Price = 50.00m,
+                    DiscountAmount = 0.00m
+                }
+            );
         }
 
     }

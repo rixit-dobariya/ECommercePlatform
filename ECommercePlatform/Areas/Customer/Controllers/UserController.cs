@@ -108,7 +108,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             TempData["success"] = "Login successful!";
 
             // Redirect based on role
-            return user.Role.Equals(UserRole.Admin)
+            return (user.Role==RoleType.Admin)
                 ? RedirectToAction("Index", "Home", new { area = UserRole.Admin })
                 : RedirectToAction("Index", "Home");
         }

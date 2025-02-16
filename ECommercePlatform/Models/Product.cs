@@ -12,9 +12,11 @@ namespace ECommercePlatform.Models
         [Key]
         public int ProductId { get; set; }
         [Required(ErrorMessage ="Product name must not be empty!")]
-        public string Name { get; set; }
-        [Required(ErrorMessage ="Product description must not be empty!")]
-        public string Description { get; set; }
+        public string? Name { get; set; }
+        [Required(ErrorMessage ="Product short description must not be empty!")]
+        public string? ShortDescription { get; set; }
+        [Required(ErrorMessage = "Product long description must not be empty!")]
+        public string? LongDescription { get; set; }
 
         [DisplayName("Category Name")]
         [Required(ErrorMessage ="Category must not be empty!")]
@@ -22,7 +24,7 @@ namespace ECommercePlatform.Models
 
         [ForeignKey("CategoryId")]
         [ValidateNever]
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
         [Required(ErrorMessage ="Product stock must not be empty!")]
         public int Stock { get; set; }

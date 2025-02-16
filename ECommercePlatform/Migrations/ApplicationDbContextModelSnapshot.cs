@@ -70,6 +70,34 @@ namespace ECommercePlatform.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Addresses");
+
+                    b.HasData(
+                        new
+                        {
+                            AddressId = 1,
+                            City = "New York",
+                            FirstName = "Rixit",
+                            IsDeleted = 0,
+                            LastName = "Dobariya",
+                            Phone = "1234567890",
+                            PinCode = "10001",
+                            Region = "Manhattan",
+                            State = "NY",
+                            UserId = 2
+                        },
+                        new
+                        {
+                            AddressId = 2,
+                            City = "Los Angeles",
+                            FirstName = "Rixit",
+                            IsDeleted = 0,
+                            LastName = "Dobariya",
+                            Phone = "9876543210",
+                            PinCode = "90001",
+                            Region = "Downtown",
+                            State = "CA",
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.CartItem", b =>
@@ -196,6 +224,18 @@ namespace ECommercePlatform.Migrations
                     b.HasKey("OfferId");
 
                     b.ToTable("Offers");
+
+                    b.HasData(
+                        new
+                        {
+                            OfferId = 1,
+                            Discount = 10.00m,
+                            EndDate = new DateOnly(2025, 2, 28),
+                            MinimumAmount = 50.00m,
+                            OfferCode = "DISCOUNT10",
+                            OfferDescription = "Get 10% off on all orders above $50",
+                            StartDate = new DateOnly(2025, 2, 1)
+                        });
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.OrderDetail", b =>
@@ -220,6 +260,24 @@ namespace ECommercePlatform.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderDetails");
+
+                    b.HasData(
+                        new
+                        {
+                            OrderHeaderId = 1,
+                            ProductId = 1,
+                            DiscountAmount = 5.00m,
+                            Price = 50.00m,
+                            Quantity = 2
+                        },
+                        new
+                        {
+                            OrderHeaderId = 2,
+                            ProductId = 2,
+                            DiscountAmount = 0.00m,
+                            Price = 50.00m,
+                            Quantity = 1
+                        });
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.OrderHeader", b =>
@@ -263,6 +321,32 @@ namespace ECommercePlatform.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("OrderHeaders");
+
+                    b.HasData(
+                        new
+                        {
+                            OrderId = 1,
+                            BillingAddressId = 2,
+                            OrderDate = new DateTime(2025, 2, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            OrderStatus = 0,
+                            PaymentMode = 0,
+                            ShippingAddressId = 1,
+                            ShippingCharge = 5.00m,
+                            Subtotal = 100.00m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            OrderId = 2,
+                            BillingAddressId = 2,
+                            OrderDate = new DateTime(2025, 2, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            OrderStatus = 0,
+                            PaymentMode = 0,
+                            ShippingAddressId = 2,
+                            ShippingCharge = 0.00m,
+                            Subtotal = 50.00m,
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.Product", b =>
@@ -279,10 +363,6 @@ namespace ECommercePlatform.Migrations
                     b.Property<decimal>("CostPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
@@ -292,12 +372,20 @@ namespace ECommercePlatform.Migrations
                     b.Property<int>("IsActive")
                         .HasColumnType("int");
 
+                    b.Property<string>("LongDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("SellPrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ShortDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");
@@ -314,12 +402,13 @@ namespace ECommercePlatform.Migrations
                             ProductId = 1,
                             CategoryId = 2,
                             CostPrice = 1200.00m,
-                            Description = "High-end gaming laptop",
                             Discount = 10.0m,
-                            ImageUrl = "th\\Images\\profile.jpg",
+                            ImageUrl = "\\Images\\profile.jpg",
                             IsActive = 1,
+                            LongDescription = "High-end gaming laptop",
                             Name = "Laptop",
                             SellPrice = 1500.00m,
+                            ShortDescription = "High-end gaming laptop",
                             Stock = 10
                         },
                         new
@@ -327,12 +416,13 @@ namespace ECommercePlatform.Migrations
                             ProductId = 2,
                             CategoryId = 3,
                             CostPrice = 600.00m,
-                            Description = "Latest Android smartphone",
                             Discount = 5.0m,
-                            ImageUrl = "th\\Images\\profile.jpg",
+                            ImageUrl = "\\Images\\profile.jpg",
                             IsActive = 1,
+                            LongDescription = "Latest Android smartphone",
                             Name = "Smartphone",
                             SellPrice = 800.00m,
+                            ShortDescription = "Latest Android smartphone",
                             Stock = 20
                         },
                         new
@@ -340,12 +430,13 @@ namespace ECommercePlatform.Migrations
                             ProductId = 3,
                             CategoryId = 5,
                             CostPrice = 12.00m,
-                            Description = "Comfortable cotton t-shirt",
                             Discount = 0.0m,
-                            ImageUrl = "th\\Images\\profile.jpg",
+                            ImageUrl = "\\Images\\profile.jpg",
                             IsActive = 1,
+                            LongDescription = "Comfortable cotton t-shirt",
                             Name = "Men's T-shirt",
                             SellPrice = 20.00m,
+                            ShortDescription = "Comfortable cotton t-shirt",
                             Stock = 50
                         },
                         new
@@ -353,12 +444,13 @@ namespace ECommercePlatform.Migrations
                             ProductId = 4,
                             CategoryId = 6,
                             CostPrice = 25.00m,
-                            Description = "Elegant summer dress",
                             Discount = 10.0m,
-                            ImageUrl = "th\\Images\\profile.jpg",
+                            ImageUrl = "\\Images\\profile.jpg",
                             IsActive = 1,
+                            LongDescription = "Elegant summer dress",
                             Name = "Women's Dress",
                             SellPrice = 35.00m,
+                            ShortDescription = "Elegant summer dress",
                             Stock = 30
                         },
                         new
@@ -366,12 +458,13 @@ namespace ECommercePlatform.Migrations
                             ProductId = 5,
                             CategoryId = 8,
                             CostPrice = 950.00m,
-                            Description = "Energy-efficient refrigerator",
                             Discount = 15.0m,
-                            ImageUrl = "th\\Images\\profile.jpg",
+                            ImageUrl = "\\Images\\profile.jpg",
                             IsActive = 1,
+                            LongDescription = "Energy-efficient refrigerator",
                             Name = "Refrigerator",
                             SellPrice = 1200.00m,
+                            ShortDescription = "Energy-efficient refrigerator",
                             Stock = 15
                         },
                         new
@@ -379,12 +472,13 @@ namespace ECommercePlatform.Migrations
                             ProductId = 6,
                             CategoryId = 9,
                             CostPrice = 400.00m,
-                            Description = "Front-load washing machine",
                             Discount = 5.0m,
-                            ImageUrl = "th\\Images\\profile.jpg",
+                            ImageUrl = "\\Images\\profile.jpg",
                             IsActive = 1,
+                            LongDescription = "Front-load washing machine",
                             Name = "Washing Machine",
                             SellPrice = 500.00m,
+                            ShortDescription = "Front-load washing machine",
                             Stock = 25
                         });
                 });
@@ -513,6 +607,32 @@ namespace ECommercePlatform.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            Email = "Admin@admin.com",
+                            FullName = "Admin",
+                            IsDeleted = false,
+                            IsEmailVerified = true,
+                            Password = "$2a$11$aZsiddJKDzxfpg2rdgqLZOWyxRoVrZUNsJnYFd3EORCmnpoAPKwlm",
+                            Phone = "8732965892",
+                            ProfilePicture = "/Images/users/d8dadcfc-e8b8-480a-94b7-ca496880db91.png",
+                            Role = 0
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            Email = "rixitdobariya05@gmail.com",
+                            FullName = "Rixit Dobariya",
+                            IsDeleted = false,
+                            IsEmailVerified = true,
+                            Password = "$2a$11$aZsiddJKDzxfpg2rdgqLZOWyxRoVrZUNsJnYFd3EORCmnpoAPKwlm",
+                            Phone = "8732965892",
+                            ProfilePicture = "/Images/users/d8dadcfc-e8b8-480a-94b7-ca496880db91.png",
+                            Role = 1
+                        });
                 });
 
             modelBuilder.Entity("ECommercePlatform.Models.UserOTP", b =>
