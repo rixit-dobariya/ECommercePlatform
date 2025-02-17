@@ -58,6 +58,7 @@
 						<div class="form-group col-md-6">
 							<label asp-for="User.ProfilePicture"></label>
 							<input type="file" name="profilePicture" class="form-control" placeholder="Enter User Profile Picture" accept="image/*" />
+							<span class="text-danger" asp-validation-for="User.ProfilePicture"></span>
 							<div class="col-md-3">
 								<img src="@Model.User?.ProfilePicture" class="img-fluid" />
 							</div>

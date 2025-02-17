@@ -114,9 +114,9 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     else
                     {
                         ModelState.AddModelError("User.ProfilePicture", "Profile Picture is not in the correct format. Please choose image.");
+                        return View(userVM);
                     }
                 }
-                userVM.User.Password = PasswordHelper.HashPassword(userVM.User.Password);
                 _unitOfWork.Users.Update(userVM.User);
                 _unitOfWork.Save();
                 TempData["sucess"] = "User updated successfully!";

@@ -6,10 +6,6 @@ using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.VisualBasic;
-using Newtonsoft.Json;
-using static System.Net.WebRequestMethods;
 
 namespace ECommercePlatform.Areas.Customer.Controllers
 {
@@ -230,24 +226,81 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return View(myAccountVM);
         }
         [HttpPost]
+        [AuthCheck]
         public IActionResult ChangePassword(ChangePassword changePassword)
         {
+            MyAccountVM myAccountVM = GetMyAccountVM();
             if (!ModelState.IsValid)
             {
-                return View("MyAccount", new MyAccountVM { ChangePassword = changePassword });
+                myAccountVM.ChangePassword = changePassword;
+                return View("MyAccount", myAccountVM);
             }
-            MyAccountVM myAccountVM = GetMyAccountVM();
+            int? userId = HttpContext.Session.GetInt32("UserId"); 
+            User user = _unitOfWork.Users.Get(u => u.UserId == userId);
+            if (!PasswordHelper.VerifyPassword(changePassword.CurrentPassword, user.Password))
+            {
+                ModelState.AddModelError("ChangePassword.CurrentPassword","It is not your old password");
+                myAccountVM.ChangePassword = changePassword;
+                return View("MyAccount", myAccountVM);
+            }
+            user.Password = PasswordHelper.HashPassword(changePassword.Password);
+            _unitOfWork.Users.Update(user);
+            _unitOfWork.Save();
+            TempData["success"] = "Your password updated successfully!";
             return View("MyAccount", myAccountVM);
         }
         [HttpPost]
-        public IActionResult UpdateProfile(UpdateProfile UpdateProfile)
+        [AuthCheck]
+        public IActionResult UpdateProfile(UpdateProfile updateProfile, IFormFile? profilePicture)
         {
+            MyAccountVM myAccountVM = new MyAccountVM();
+            myAccountVM.UpdateProfile = updateProfile;
+            myAccountVM.UpdateProfile.ProfilePicture = GetMyAccountVM().UpdateProfile.ProfilePicture;
+
             if (!ModelState.IsValid)
             {
-                return View("MyAccount", new MyAccountVM { UpdateProfile = UpdateProfile });
+                return View("MyAccount", myAccountVM);
             }
-            MyAccountVM myAccountVM = GetMyAccountVM();
+            if (profilePicture != null)
+            {
+                if (!profilePicture.ContentType.StartsWith("image/"))
+                {
+                    ModelState.AddModelError("UpdateProfile.ProfilePicture", "Profile Picture is not in the correct format. Please choose image.");
+                    return View("MyAccount", myAccountVM);
+                }
+                else
+                {
+                    string wwwRootPath = _env.WebRootPath;
+                    if (!string.IsNullOrEmpty(updateProfile.ProfilePicture))
+                    {
+                        string oldImagePath = Path.Combine(wwwRootPath, updateProfile.ProfilePicture.TrimStart('\\'));
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(profilePicture.FileName);
+                    string userPath = Path.Combine(_env.WebRootPath, @"Images\users");
+
+                    using (var fileStream = new FileStream(Path.Combine(userPath, fileName), FileMode.Create))
+                    {
+                        profilePicture.CopyTo(fileStream);
+                    }
+                    updateProfile.ProfilePicture = @"\Images\users\" + fileName;
+                }
+            }
+            int userId = (int)HttpContext.Session.GetInt32("UserId");
+            User user = _unitOfWork.Users.Get(u => u.UserId == userId);
+            user.ProfilePicture = updateProfile.ProfilePicture;
+            user.FullName = updateProfile.FullName;
+            user.Email = updateProfile.Email;
+            user.Phone = updateProfile.Phone;
+            _unitOfWork.Users.Update(user);
+            _unitOfWork.Save();
+            TempData["success"] = "User information updated successfully!";
+
             return View("MyAccount", myAccountVM);
+
         }
 
         public IActionResult Logout()

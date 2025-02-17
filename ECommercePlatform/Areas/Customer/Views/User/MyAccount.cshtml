@@ -28,35 +28,38 @@
                                             <h4>My Account Information</h4>
                                             <h5>Your Personal Details</h5>
                                         </div>
-                                        <div class="row">
+                                        <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+                                            <input asp-for="UpdateProfile.ProfilePicture" hidden />
+                                            <div class="row">
                                             <div class="col-lg-6 col-md-6">
                                                 <div class="billing-info">
-                                                    <label>First Name</label>
-                                                    <input type="text">
+                                                    <label asp-for="UpdateProfile.FullName"></label>
+                                                    <input asp-for="UpdateProfile.FullName" />
+                                                    <span asp-validation-for="UpdateProfile.FullName" class="text-danger"></span>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-md-6">
                                                 <div class="billing-info">
-                                                    <label>Last Name</label>
-                                                    <input type="text">
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-12 col-md-12">
-                                                <div class="billing-info">
-                                                    <label>Email Address</label>
-                                                    <input type="email">
+                                                    <label asp-for="UpdateProfile.Email"></label>
+                                                    <input asp-for="UpdateProfile.Email" />
+                                                    <span asp-validation-for="UpdateProfile.Email" class="text-danger"></span>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-md-6">
                                                 <div class="billing-info">
-                                                    <label>Telephone</label>
-                                                    <input type="text">
+                                                    <label asp-for="UpdateProfile.Phone"></label>
+                                                    <input asp-for="UpdateProfile.Phone" />
+                                                    <span asp-validation-for="UpdateProfile.Phone" class="text-danger"></span>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-md-6">
                                                 <div class="billing-info">
-                                                    <label>Fax</label>
-                                                    <input type="text">
+                                                    <label asp-for="UpdateProfile.ProfilePicture"></label>
+                                                        <input type="file" name="profilePicture" class="form-control" placeholder="Enter User Profile Picture" accept="image/*" />
+                                                        <span asp-validation-for="UpdateProfile.ProfilePicture" class="text-danger"></span>
+                                                    <div class="col-md-3">
+                                                        <img src="@Model.UpdateProfile?.ProfilePicture" class="img-fluid" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -68,6 +71,7 @@
                                                 <button type="submit">Continue</button>
                                             </div>
                                         </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -83,17 +87,27 @@
                                             <h4>Change Password</h4>
                                             <h5>Your Password</h5>
                                         </div>
+                                        <form asp-action="ChangePassword" method="post">
                                         <div class="row">
                                             <div class="col-lg-12 col-md-12">
                                                 <div class="billing-info">
-                                                    <label>Password</label>
-                                                    <input type="password">
+                                                    <label asp-for="ChangePassword.CurrentPassword"></label>
+                                                    <input asp-for="ChangePassword.CurrentPassword" />
+                                                    <span asp-validation-for="ChangePassword.CurrentPassword" class="text-danger"></span>
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-md-12">
                                                 <div class="billing-info">
-                                                    <label>Password Confirm</label>
-                                                    <input type="password">
+                                                    <label asp-for="ChangePassword.Password"></label>
+                                                    <input asp-for="ChangePassword.Password" />
+                                                    <span asp-validation-for="ChangePassword.Password" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <div class="billing-info">
+                                                    <label asp-for="ChangePassword.ConfirmPassword"></label>
+                                                    <input asp-for="ChangePassword.ConfirmPassword" />
+                                                    <span asp-validation-for="ChangePassword.ConfirmPassword" class="text-danger"></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -105,6 +119,7 @@
                                                 <button type="submit">Continue</button>
                                             </div>
                                         </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -157,3 +172,6 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

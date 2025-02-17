@@ -53,6 +53,8 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     else
                     {
                         ModelState.AddModelError("Product.ImageUrl", "Product Image is not in the correct format. Please choose image.");
+                        productVM.CategoriesList = GetSelectListItems();
+                        return View(productVM);
                     }
                 }
                 else
@@ -71,6 +73,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 productVM.CategoriesList = GetSelectListItems();
                 return View(productVM);
             }
+            
         }
         [HttpPost]
         public IActionResult Edit(ProductVM productVM)
@@ -102,9 +105,10 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     else
                     {
                         ModelState.AddModelError("Product.ImageUrl", "Product Image is not in the correct format. Please choose image.");
+                        productVM.CategoriesList = GetSelectListItems();
+                        return View(productVM);
                     }
                 }
-                
                 _unitOfWork.Products.Update(productVM.Product);
                 _unitOfWork.Save();
                 TempData["sucess"] = "Product updated successfully!";

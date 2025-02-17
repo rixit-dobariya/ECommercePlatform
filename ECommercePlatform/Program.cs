@@ -1,5 +1,6 @@
 using ECommercePlatform.Data;
 using ECommercePlatform.Helpers.EmailHelper;
+using ECommercePlatform.Models;
 using ECommercePlatform.Repository;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         builder.Configuration.GetConnectionString("DefaultConnection")
         )
     );
+
+builder.Services.Configure<RazorpayConfig>(builder.Configuration.GetSection("Razorpay"));
 
 builder.Services.AddHttpContextAccessor();
 
