@@ -29,7 +29,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             if (productId == 0)
             {
-                return RedirectToActionPermanent("Index");
+                return RedirectToAction("Index");
             }
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -41,7 +41,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             if (checkWishlistItem != null)
             {
                 TempData["error"] = "Product is already available in wishlist!";
-                return RedirectToActionPermanent("Index");
+                return RedirectToAction("Index");
             }
             //add product to wishlist
             WishlistItem wishlistItem = new()
@@ -52,7 +52,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             _unitOfWork.WishlistItems.Add(wishlistItem);
             _unitOfWork.Save();
             TempData["success"] = "Product added to wishlist successfully!";
-            return RedirectToActionPermanent("Index");
+            return RedirectToAction("Index");
         }
         public IActionResult Remove(int productId)
         {
@@ -72,7 +72,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 _unitOfWork.Save();
                 TempData["success"] = "Product removed from wishlist successfully!";
             }
-            return RedirectToActionPermanent("Index");
+            return RedirectToAction("Index");
         }
     }
 }

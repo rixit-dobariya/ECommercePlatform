@@ -131,28 +131,42 @@
                             <div id="my-account-3" class="panel-collapse collapse">
                                 <div class="panel-body">
                                     <div class="myaccount-info-wrapper">
-                                        <div class="account-info-wrapper">
+                                        <div class="account-info-wrapper  d-flex justify-content-between">
                                             <h4>Address Book Entries</h4>
+                                            <a asp-controller="Address" asp-action="Add">Add Address</a>
                                         </div>
                                         <div class="entries-wrapper">
-                                            <div class="row">
-                                                <div class="col-lg-6 col-md-6 d-flex align-items-center justify-content-center">
-                                                    <div class="entries-info text-center">
-                                                        <p>Farhana hayder (shuvo) </p>
-                                                        <p>hastech </p>
-                                                        <p> Road#1 , Block#c </p>
-                                                        <p> Rampura. </p>
-                                                        <p>Dhaka </p>
-                                                        <p>Bangladesh </p>
+                                            @if(Model.Addresses.Count()>0)
+                                            {
+                                                @foreach (var address in Model.Addresses)
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-lg-6 col-md-6 d-flex align-items-center justify-content-center">
+                                                            <div class="entries-info text-center">
+                                                                <p>@address.FirstName @address.LastName </p>
+                                                                <p>@address.Region </p>
+                                                                <p>@address.City </p>
+                                                                <p>@address.State</p>
+                                                                <p>@address.PinCode </p>
+                                                                <p>@address.Phone </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6 col-md-6 d-flex align-items-center justify-content-center">
+                                                            <div class="entries-edit-delete text-center">
+                                                                <a class="edit" asp-controller="Address" asp-action="Update" asp-route-addressId="@address.AddressId">Edit</a>
+                                                                <a asp-controller="Address" asp-action="Delete" asp-route-addressId="@address.AddressId">Delete</a>
+                                                            </div>
+                                                        </div>
                                                     </div>
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                <div>
+                                                    <h3>No addresses found.</h3>
                                                 </div>
-                                                <div class="col-lg-6 col-md-6 d-flex align-items-center justify-content-center">
-                                                    <div class="entries-edit-delete text-center">
-                                                        <a class="edit" href="#">Edit</a>
-                                                        <a href="#">Delete</a>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            }
                                         </div>
                                         <div class="billing-back-btn">
                                             <div class="billing-back">

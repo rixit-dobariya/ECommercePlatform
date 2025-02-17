@@ -259,6 +259,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
 
             if (!ModelState.IsValid)
             {
+                myAccountVM.Addresses = GetMyAccountVM().Addresses;
                 return View("MyAccount", myAccountVM);
             }
             if (profilePicture != null)
@@ -266,6 +267,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 if (!profilePicture.ContentType.StartsWith("image/"))
                 {
                     ModelState.AddModelError("UpdateProfile.ProfilePicture", "Profile Picture is not in the correct format. Please choose image.");
+                    myAccountVM.Addresses = GetMyAccountVM().Addresses;
                     return View("MyAccount", myAccountVM);
                 }
                 else
@@ -298,16 +300,15 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             _unitOfWork.Users.Update(user);
             _unitOfWork.Save();
             TempData["success"] = "User information updated successfully!";
-
+            myAccountVM = GetMyAccountVM();
             return View("MyAccount", myAccountVM);
-
         }
 
         public IActionResult Logout()
         {
             HttpContext.Session.Remove("UserId");
             TempData["success"] = "You have logged out successfully!";
-            return RedirectToActionPermanent("Index","Home");
+            return RedirectToAction("Index","Home");
         }
         #region METHODS
         private MyAccountVM GetMyAccountVM()
@@ -323,6 +324,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                     Phone = user.Phone,
                     ProfilePicture = user.ProfilePicture
                 },
+                Addresses = _unitOfWork.Addresses.GetAll().Where(a => a.IsDeleted!=1 && a.UserId == userId)
             };
             return myAccountVM;
         }

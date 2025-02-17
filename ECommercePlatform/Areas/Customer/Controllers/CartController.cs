@@ -37,7 +37,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             if(productId == 0)
             {
-                return RedirectToActionPermanent("Index");
+                return RedirectToAction("Index");
             }
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -49,7 +49,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             if (checkCartItem != null)
             {
                 TempData["error"] = "Product is already available in cart!";
-                return RedirectToActionPermanent("Index");
+                return RedirectToAction("Index");
             }
             //add product to cart
             CartItem cartItem = new()
@@ -61,7 +61,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             _unitOfWork.CartItems.Add(cartItem);
             _unitOfWork.Save();
             TempData["success"] = "Product added to cart successfully!";
-            return RedirectToActionPermanent("Index");
+            return RedirectToAction("Index");
         }
         [HttpPost]
         public IActionResult Update(CartItem cartItem)
@@ -79,10 +79,10 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 _unitOfWork.CartItems.Update(newCartItem);
                 _unitOfWork.Save();
                 TempData["success"] = "Cart quantity updated successfully!";
-                return RedirectToActionPermanent("Index");
+                return RedirectToAction("Index");
             }
             TempData["error"] = "Cart quantity update failed!";
-            return RedirectToActionPermanent("Index");
+            return RedirectToAction("Index");
         }
         public IActionResult Remove(int productId)
         {
@@ -102,7 +102,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 _unitOfWork.Save();
                 TempData["success"] = "Product removed from cart successfully!";
             }
-            return RedirectToActionPermanent("Index");
+            return RedirectToAction("Index");
         }
     }
 }

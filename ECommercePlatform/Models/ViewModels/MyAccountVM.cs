@@ -8,6 +8,7 @@ namespace ECommercePlatform.Models.ViewModels
     {
         public ChangePassword ChangePassword { get; set; }
         public UpdateProfile UpdateProfile { get; set; }
+        public IEnumerable<Address> Addresses { get; set; }  
     }
     public class ChangePassword
     {

@@ -124,6 +124,13 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 ShippingCharge = checkoutVM.ShippingCharge,
                 Subtotal = checkoutVM.Total - checkoutVM.ShippingCharge
             };
+            //make used address as deleted 
+            Address address = _unitOfWork.Addresses.Get(a => a.AddressId == checkoutVM.ShippingAddressId);
+            address.IsDeleted = 1;
+            _unitOfWork.Addresses.Update(address);
+            address.AddressId = 0;
+            _unitOfWork.Addresses.Add(address);
+
             _unitOfWork.OrderHeaders.Add(orderHeader);
             _unitOfWork.Save();
             List<OrderDetail>  orderDetails = new List<OrderDetail>();
@@ -142,7 +149,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             _unitOfWork.CartItems.RemoveRange(checkoutVM.CartItems);
             _unitOfWork.Save();
             TempData["success"] = "Order placed successfully.";
-            return RedirectToActionPermanent("History");
+            return RedirectToAction("History");
         }
         #region METHODS
         CheckoutVM GetCheckoutVM(int? userId)
