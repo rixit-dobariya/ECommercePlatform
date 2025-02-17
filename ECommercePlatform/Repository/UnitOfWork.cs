@@ -17,6 +17,7 @@ namespace ECommercePlatform.Repository
         public IRepository<Address> Addresses { get; private set; }
         public IRepository<OrderHeader> OrderHeaders { get; private set; }
         public IRepository<OrderDetail> OrderDetails { get; private set; }
+        public IRepository<Review> Reviews { get; private set; }
 
         private ApplicationDbContext _db;
 
@@ -34,6 +35,7 @@ namespace ECommercePlatform.Repository
             Addresses = new Repository<Address>(db);
             OrderHeaders = new Repository<OrderHeader>(db);
             OrderDetails = new Repository<OrderDetail>(db);
+            Reviews = new Repository<Review>(db);
         }
 
         public void Save()

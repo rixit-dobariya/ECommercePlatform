@@ -1,4 +1,5 @@
-﻿<div class="breadcrumb-area pt-35 pb-35 bg-gray-3">
+﻿@model ProductDetailsVM
+<div class="breadcrumb-area pt-35 pb-35 bg-gray-3">
     <div class="container">
         <div class="breadcrumb-content text-center">
             <ul>
@@ -17,48 +18,26 @@
                 <div class="product-details">
                     <div class="product-details-img">
                         <div class="tab-content jump">
-                            <div id="shop-details-1" class="tab-pane large-img-style">
-                                <img src="assets/img/product-details/large-1.jpg" alt="">
-                                <span class="dec-price">-10%</span>
+                            <div id="shop-details-1" class="tab-pane large-img-style active">
+                                <img src="@Model.Product.ImageUrl" alt="">
+                                @if(Model.Product.Discount > 0)
+                                {
+                                    <span class="dec-price">-@Model.Product.Discount%</span>
+                                }
                                 <div class="img-popup-wrap">
-                                    <a class="img-popup" href="assets/img/product-details/b-large-1.jpg"><i class="pe-7s-expand1"></i></a>
+                                    <a class="img-popup" href="@Model.Product.ImageUrl"><i class="pe-7s-expand1"></i></a>
                                 </div>
                             </div>
-                            <div id="shop-details-2" class="tab-pane active large-img-style">
-                                <img src="assets/img/product-details/large-2.jpg" alt="">
-                                <span class="dec-price">-10%</span>
-                                <div class="img-popup-wrap">
-                                    <a class="img-popup" href="assets/img/product-details/b-large-2.jpg"><i class="pe-7s-expand1"></i></a>
-                                </div>
-                            </div>
-                            <div id="shop-details-3" class="tab-pane large-img-style">
-                                <img src="assets/img/product-details/large-3.jpg" alt="">
-                                <span class="dec-price">-10%</span>
-                                <div class="img-popup-wrap">
-                                    <a class="img-popup" href="assets/img/product-details/b-large-3.jpg"><i class="pe-7s-expand1"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="shop-details-tab nav">
-                            <a class="shop-details-overly" href="#shop-details-1" data-toggle="tab">
-                                <img src="assets/img/product-details/small-1.jpg" alt="">
-                            </a>
-                            <a class="shop-details-overly active" href="#shop-details-2" data-toggle="tab">
-                                <img src="assets/img/product-details/small-2.jpg" alt="">
-                            </a>
-                            <a class="shop-details-overly" href="#shop-details-3" data-toggle="tab">
-                                <img src="assets/img/product-details/small-3.jpg" alt="">
-                            </a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
                 <div class="product-details-content ml-70">
-                    <h2>Products Name Here</h2>
+                    <h2>@Model.Product.Name</h2>
                     <div class="product-details-price">
-                        <span>$18.00 </span>
-                        <span class="old">$20.00 </span>
+                        <span>₹@Math.Round(Model.Product.SellPrice - Model.Product.SellPrice * Model.Product.Discount/100, 2) </span>
+                        <span class="old">₹@Math.Round(Model.Product.SellPrice, 2) </span>
                     </div>
                     <div class="pro-details-rating-wrap">
                         <div class="pro-details-rating">
@@ -70,77 +49,49 @@
                         </div>
                         <span><a href="#">3 Reviews</a></span>
                     </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisic elit eiusm tempor incidid ut labore et dolore magna aliqua. Ut enim ad minim venialo quis nostrud exercitation ullamco</p>
-                    <div class="pro-details-list">
-                        <ul>
-                            <li>- 0.5 mm Dail</li>
-                            <li>- Inspired vector icons</li>
-                            <li>- Very modern style  </li>
-                        </ul>
-                    </div>
-                    <div class="pro-details-size-color">
-                        <div class="pro-details-color-wrap">
-                            <span>Color</span>
-                            <div class="pro-details-color-content">
-                                <ul>
-                                    <li class="blue"></li>
-                                    <li class="maroon active"></li>
-                                    <li class="gray"></li>
-                                    <li class="green"></li>
-                                    <li class="yellow"></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="pro-details-size">
-                            <span>Size</span>
-                            <div class="pro-details-size-content">
-                                <ul>
-                                    <li><a href="#">s</a></li>
-                                    <li><a href="#">m</a></li>
-                                    <li><a href="#">l</a></li>
-                                    <li><a href="#">xl</a></li>
-                                    <li><a href="#">xxl</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    <p>
+                        @Html.Raw(Model.Product.ShortDescription)
+                    </p>
+                    <form method="post">
                     <div class="pro-details-quality">
-                        <div class="cart-plus-minus">
-                            <input class="cart-plus-minus-box" type="text" name="qtybutton" value="2">
-                        </div>
-                        <div class="pro-details-cart btn-hover">
-                            <a href="#">Add To Cart</a>
-                        </div>
+                        @if(Model.CartQuantity > 0)
+                        {
+                            <div class="cart-plus-minus">
+                                    <input class="cart-plus-minus-box" name="CartItem.quantity" value="@Model.CartQuantity">
+                            </div>
+                            <div class="pro-details-cart btn-hover">
+                                    <input type="hidden" name="CartItem.productId" value="@Model.Product.ProductId" />
+                                <button type="submit" asp-action="Update" asp-controller="Cart" >Update Cart</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="cart-plus-minus">
+                                <input class="cart-plus-minus-box" name="quantity" value="1">
+                            </div>
+                            <div class="pro-details-cart btn-hover">
+                                <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                <button type="submit" asp-action="Add" asp-controller="Cart" formmethod="get">Add To Cart</button>
+                            </div>
+                        }
+                           
                         <div class="pro-details-wishlist">
-                            <a href="#"><i class="fa fa-heart-o"></i></a>
+                            @if (Model.IsInWishlist)
+                            {
+                                <a title="Remove from wishlist" asp-controller="Wishlist" asp-action="Remove" asp-route-productId="@Model.Product.ProductId"><i class="fa-solid fa-heart"></i></a>
+                            }
+                            else
+                            {
+                                <a title="Add to Wishlist" asp-controller="Wishlist" asp-action="Add" asp-route-productId="@Model.Product.ProductId"><i class="fa-regular fa-heart"></i></a>
+                            }
                         </div>
-                        <div class="pro-details-compare">
-                            <a href="#"><i class="pe-7s-shuffle"></i></a>
-                        </div>
                     </div>
+                    </form>
+
                     <div class="pro-details-meta">
-                        <span>Categories :</span>
+                        <span>Category :</span>
                         <ul>
-                            <li><a href="#">Minimal,</a></li>
-                            <li><a href="#">Furniture,</a></li>
-                            <li><a href="#">Fashion</a></li>
-                        </ul>
-                    </div>
-                    <div class="pro-details-meta">
-                        <span>Tag :</span>
-                        <ul>
-                            <li><a href="#">Fashion, </a></li>
-                            <li><a href="#">Furniture,</a></li>
-                            <li><a href="#">Electronic</a></li>
-                        </ul>
-                    </div>
-                    <div class="pro-details-social">
-                        <ul>
-                            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                            <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
-                            <li><a href="#"><i class="fa fa-pinterest-p"></i></a></li>
-                            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                            <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                            <li><a href="#">@Model.Product.Category.Name</a></li>
                         </ul>
                     </div>
                 </div>
@@ -154,13 +105,12 @@
             <div class="description-review-topbar nav">
                 <a data-toggle="tab" href="#des-details1">Additional information</a>
                 <a class="active" data-toggle="tab" href="#des-details2">Description</a>
-                <a data-toggle="tab" href="#des-details3">Reviews (2)</a>
+                <a data-toggle="tab" href="#des-details3">Reviews (@Model.Reviews.Count)</a>
             </div>
             <div class="tab-content description-review-bottom">
                 <div id="des-details2" class="tab-pane active">
                     <div class="product-description-wrapper">
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit, sed do eiusmod tempor incididunt</p>
-                        <p>ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commo consequat. Duis aute irure dolor in reprehend in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt </p>
+                        @Html.Raw(Model.Product.LongDescription)
                     </div>
                 </div>
                 <div id="des-details1" class="tab-pane ">
@@ -270,183 +220,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="related-product-area pb-95">
-    <div class="container">
-        <div class="section-title text-center mb-50">
-            <h2>Related products</h2>
-        </div>
-        <div class="related-product-active owl-carousel">
-            <div class="product-wrap">
-                <div class="product-img">
-                    <a href="#">
-                        <img class="default-img" src="assets/img/product/pro-1.jpg" alt="">
-                        <img class="hover-img" src="assets/img/product/pro-1-1.jpg" alt="">
-                    </a>
-                    <span class="pink">-10%</span>
-                    <div class="product-action">
-                        <div class="pro-same-action pro-wishlist">
-                            <a title="Wishlist" href="#"><i class="pe-7s-like"></i></a>
-                        </div>
-                        <div class="pro-same-action pro-cart">
-                            <a title="Add To Cart" href="#"><i class="pe-7s-cart"></i> Add to cart</a>
-                        </div>
-                        <div class="pro-same-action pro-quickview">
-                            <a title="Quick View" href="#" data-toggle="modal" data-target="#exampleModal"><i class="pe-7s-look"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-content text-center">
-                    <h3><a href="product-details.html">T- Shirt And Jeans</a></h3>
-                    <div class="product-rating">
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o"></i>
-                        <i class="fa fa-star-o"></i>
-                    </div>
-                    <div class="product-price">
-                        <span>$ 60.00</span>
-                        <span class="old">$ 60.00</span>
-                    </div>
-                </div>
-            </div>
-            <div class="product-wrap">
-                <div class="product-img">
-                    <a href="single-product.html">
-                        <img class="default-img" src="assets/img/product/pro-2.jpg" alt="">
-                        <img class="hover-img" src="assets/img/product/pro-2-1.jpg" alt="">
-                    </a>
-                    <span class="purple">New</span>
-                    <div class="product-action">
-                        <div class="pro-same-action pro-wishlist">
-                            <a title="Wishlist" href="#"><i class="pe-7s-like"></i></a>
-                        </div>
-                        <div class="pro-same-action pro-cart">
-                            <a title="Add To Cart" href="#"><i class="pe-7s-cart"></i> Add to cart</a>
-                        </div>
-                        <div class="pro-same-action pro-quickview">
-                            <a title="Quick View" href="#" data-toggle="modal" data-target="#exampleModal"><i class="pe-7s-look"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-content text-center">
-                    <h3><a href="product-details.html">T- Shirt And Jeans</a></h3>
-                    <div class="product-rating">
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o"></i>
-                        <i class="fa fa-star-o"></i>
-                    </div>
-                    <div class="product-price">
-                        <span>$ 60.00</span>
-                    </div>
-                </div>
-            </div>
-            <div class="product-wrap">
-                <div class="product-img">
-                    <a href="#">
-                        <img class="default-img" src="assets/img/product/pro-3.jpg" alt="">
-                        <img class="hover-img" src="assets/img/product/pro-3-1.jpg" alt="">
-                    </a>
-                    <span class="pink">-10%</span>
-                    <div class="product-action">
-                        <div class="pro-same-action pro-wishlist">
-                            <a title="Wishlist" href="#"><i class="pe-7s-like"></i></a>
-                        </div>
-                        <div class="pro-same-action pro-cart">
-                            <a title="Add To Cart" href="#"><i class="pe-7s-cart"></i> Add to cart</a>
-                        </div>
-                        <div class="pro-same-action pro-quickview">
-                            <a title="Quick View" href="#" data-toggle="modal" data-target="#exampleModal"><i class="pe-7s-look"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-content text-center">
-                    <h3><a href="product-details.html">T- Shirt And Jeans</a></h3>
-                    <div class="product-rating">
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o"></i>
-                        <i class="fa fa-star-o"></i>
-                    </div>
-                    <div class="product-price">
-                        <span>$ 60.00</span>
-                        <span class="old">$ 60.00</span>
-                    </div>
-                </div>
-            </div>
-            <div class="product-wrap">
-                <div class="product-img">
-                    <a href="#">
-                        <img class="default-img" src="assets/img/product/pro-4.jpg" alt="">
-                        <img class="hover-img" src="assets/img/product/pro-4-1.jpg" alt="">
-                    </a>
-                    <span class="purple">New</span>
-                    <div class="product-action">
-                        <div class="pro-same-action pro-wishlist">
-                            <a title="Wishlist" href="#"><i class="pe-7s-like"></i></a>
-                        </div>
-                        <div class="pro-same-action pro-cart">
-                            <a title="Add To Cart" href="#"><i class="pe-7s-cart"></i> Add to cart</a>
-                        </div>
-                        <div class="pro-same-action pro-quickview">
-                            <a title="Quick View" href="#" data-toggle="modal" data-target="#exampleModal"><i class="pe-7s-look"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-content text-center">
-                    <h3><a href="product-details.html">T- Shirt And Jeans</a></h3>
-                    <div class="product-rating">
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o"></i>
-                        <i class="fa fa-star-o"></i>
-                    </div>
-                    <div class="product-price">
-                        <span>$ 60.00</span>
-                    </div>
-                </div>
-            </div>
-            <div class="product-wrap">
-                <div class="product-img">
-                    <a href="#">
-                        <img class="default-img" src="assets/img/product/pro-5.jpg" alt="">
-                        <img class="hover-img" src="assets/img/product/pro-5-1.jpg" alt="">
-                    </a>
-                    <span class="pink">-10%</span>
-                    <div class="product-action">
-                        <div class="pro-same-action pro-wishlist">
-                            <a title="Wishlist" href="#"><i class="pe-7s-like"></i></a>
-                        </div>
-                        <div class="pro-same-action pro-cart">
-                            <a title="Add To Cart" href="#"><i class="pe-7s-cart"></i> Add to cart</a>
-                        </div>
-                        <div class="pro-same-action pro-quickview">
-                            <a title="Quick View" href="#" data-toggle="modal" data-target="#exampleModal"><i class="pe-7s-look"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-content text-center">
-                    <h3><a href="product-details.html">T- Shirt And Jeans</a></h3>
-                    <div class="product-rating">
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o yellow"></i>
-                        <i class="fa fa-star-o"></i>
-                        <i class="fa fa-star-o"></i>
-                    </div>
-                    <div class="product-price">
-                        <span>$ 60.00</span>
-                        <span class="old">$ 60.00</span>
                     </div>
                 </div>
             </div>

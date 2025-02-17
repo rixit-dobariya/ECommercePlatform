@@ -10,10 +10,11 @@
 	OrderHeader
 	OrderDetail
 	Offer
+	Review
 
 
 Extra:
 	Banner
 	PagesContent
 	Response
-	Review
+	Like Dislike for reviews

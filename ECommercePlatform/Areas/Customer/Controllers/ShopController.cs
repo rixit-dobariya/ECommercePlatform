@@ -49,9 +49,25 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }).ToList();
             return View(productDisplays);
         }
-        public IActionResult ProductDetail(int productId)
+        public IActionResult ProductDetails(int productId)
         {
-            return View();
+            ProductDetailsVM productDetailsVM = new()
+            {
+                Product = _unitOfWork.Products.Get(p => p.ProductId == productId, "Category"),
+                Reviews = _unitOfWork.Reviews.GetAll().Where(r => r.ProductId == productId).ToList(),
+                CartQuantity = 0,
+                IsInWishlist = false,
+                HasOrdered = false
+            };
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if(userId != null)
+            {
+                CartItem cartItem= _unitOfWork.CartItems.Get(ci => ci.ProductId == productId && ci.UserId == userId);
+                productDetailsVM.CartQuantity = cartItem == null ? 0 : cartItem.Quantity;
+                productDetailsVM.IsInWishlist = _unitOfWork.WishlistItems.Get(wi => wi.ProductId == productId && wi.UserId==userId) != null;
+                productDetailsVM.HasOrdered = _unitOfWork.OrderHeaders.GetAll("OrderDetails").Any(oh => oh.UserId == userId && oh.OrderDetails.Any(od => od.ProductId == productId));
+            }
+            return View(productDetailsVM);
         }
     }
 }

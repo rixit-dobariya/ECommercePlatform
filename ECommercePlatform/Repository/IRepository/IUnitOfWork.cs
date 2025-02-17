@@ -15,6 +15,7 @@ namespace ECommercePlatform.Repository.IRepository
         IRepository<Address> Addresses { get;}
         IRepository<OrderHeader> OrderHeaders { get; }
         IRepository<OrderDetail> OrderDetails { get; }
+        IRepository<Review> Reviews { get; }
 
         void Save();
     }

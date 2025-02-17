@@ -22,6 +22,7 @@ namespace ECommercePlatform.Data
         DbSet<User> Users { get; set; }
         DbSet<WishlistItem> WishlistItems { get; set; }
         DbSet<UserOTP> UserOTPs { get; set; }
+        DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
