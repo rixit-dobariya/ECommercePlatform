@@ -9,9 +9,12 @@
         public string? ImageUrl { get; set; }
         public int ProductId { get; set; }
         public string Name { get; set; }
+        public string ShortDescription { get; set; }
+        public string CategoryName { get; set; }
+        public int reviewCount { get; set; }
+        public int CartQuantity { get; set; }
 
         public bool IsInWishlist { get; set; } = false;
-        public bool IsInCart { get; set; } = false;
         public double AverageRating { get; set; } = 0;
     }
 }

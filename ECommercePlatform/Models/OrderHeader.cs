@@ -54,6 +54,7 @@ namespace ECommercePlatform.Models
 
         [Required]
         public PaymentMode PaymentMode { get; set; } // Enum type
+        public bool IsDeleted { get; set; } = false;
 
         //Navigation property
         public IEnumerable<OrderDetail> OrderDetails { get; set; }

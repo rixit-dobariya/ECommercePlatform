@@ -14,6 +14,10 @@
 </div>
 <div class="shop-area pt-95 pb-100">
     <div class="container">
+        @if (!string.IsNullOrWhiteSpace(Context.Request.Query["query"]))
+        {
+            <h3>Search Results for: "@Context.Request.Query["query"]"</h3>
+        }
         <div class="row flex-row-reverse">
             <div class="col-lg-12">
                 <div class="shop-top-bar mb-35">
@@ -94,186 +98,149 @@
                 </div>
                 <div class="shop-bottom-area">
                     <div class="row">
-                        @foreach(var product in Model)
+                        @if (Model.Count == 0)
                         {
-                            decimal productPrice = product.SellPrice - (product.SellPrice * product.Discount/100);
-                            decimal? discount = product.Discount > 0 ? product.Discount : null;
-                            <div class="col-xl-3 col-md-6 col-lg-4 col-sm-6">
-                                <div class="product-wrap mb-25 scroll-zoom">
-                                    <div class="product-img">
-                                        <a asp-action="ProductDetails" asp-route-productId="@product.ProductId">
-                                            <img class="default-img" src="@product.ImageUrl" alt="">
-                                            @* <img class="hover-img" src="@product.ImageUrl" alt=""> *@
-                                        </a>
-                                        @if(discount>0 || discount!=null){
-                                            <span class="pink">-@discount%</span>
-                                        }
-                                        <div class="product-action">
-                                            <div class="pro-same-action pro-wishlist">
-                                                @if (product.IsInWishlist)
-                                                {
-                                                    <a title="Remove from wishlist" asp-controller="Wishlist" asp-action="Remove" asp-route-productId="@product.ProductId"><i class="fa-solid fa-heart"></i></a>
-                                                }
-                                                else
-                                                {
-                                                    <a title="Add to Wishlist" asp-controller="Wishlist" asp-action="Add" asp-route-productId="@product.ProductId"><i class="fa-regular fa-heart"></i></a>
-                                                }
-                                            </div>
-                                            <div class="pro-same-action pro-cart">
-                                                @if (product.IsInCart)
-                                                {
-                                                    <a title="Remove from Cart" asp-controller="Cart" asp-action="Remove" asp-route-productId="@product.ProductId"><i class="pe-7s-cart"></i> Remove from cart</a>
-                                                }
-                                                else
-                                                {
-                                                    <a title="Add To Cart" asp-controller="Cart" asp-action="Add" asp-route-productId="@product.ProductId"><i class="pe-7s-cart"></i> Add to cart</a>
-                                                }
-                                            </div>
-                                            <div class="pro-same-action pro-quickview">
-                                                <a title="Quick View" data-toggle="modal" data-target="#modal@product.ProductId"><i class="pe-7s-look"></i></a>
+                            <p>No products found.</p>
+                        }
+                        else
+                        {
+                            @foreach(var product in Model)
+                            {
+                                decimal productPrice = product.SellPrice - (product.SellPrice * product.Discount/100);
+                                decimal? discount = product.Discount > 0 ? product.Discount : null;
+                                <div class="col-xl-3 col-md-6 col-lg-4 col-sm-6">
+                                    <div class="product-wrap mb-25 scroll-zoom">
+                                        <div class="product-img">
+                                            <a asp-action="ProductDetails" asp-route-productId="@product.ProductId">
+                                                <img class="default-img" src="@product.ImageUrl" alt="">
+                                                @* <img class="hover-img" src="@product.ImageUrl" alt=""> *@
+                                            </a>
+                                            @if(discount>0 || discount!=null){
+                                                <span class="pink">-@discount%</span>
+                                            }
+                                            <div class="product-action">
+                                                <div class="pro-same-action pro-wishlist">
+                                                    @if (product.IsInWishlist)
+                                                    {
+                                                        <a title="Remove from wishlist" asp-controller="Wishlist" asp-action="Remove" asp-route-productId="@product.ProductId"><i class="fa-solid fa-heart"></i></a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a title="Add to Wishlist" asp-controller="Wishlist" asp-action="Add" asp-route-productId="@product.ProductId"><i class="fa-regular fa-heart"></i></a>
+                                                    }
+                                                </div>
+                                                <div class="pro-same-action pro-cart">
+                                                    @if (product.CartQuantity > 0)
+                                                    {
+                                                        <a title="Remove from Cart" asp-controller="Cart" asp-action="Remove" asp-route-productId="@product.ProductId"><i class="pe-7s-cart"></i> Remove from cart</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a title="Add To Cart" asp-controller="Cart" asp-action="Add" asp-route-productId="@product.ProductId"><i class="pe-7s-cart"></i> Add to cart</a>
+                                                    }
+                                                </div>
+                                                <div class="pro-same-action pro-quickview">
+                                                    <a title="Quick View" data-toggle="modal" data-target="#modal-@product.ProductId"><i class="pe-7s-look"></i></a>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="product-content text-center">
-                                        <h3><a href="product-details.html">@product.Name</a></h3>
-                                        <div class="product-rating">
-                                            <i class="fa fa-star-o yellow"></i>
-                                            <i class="fa fa-star-o yellow"></i>
-                                            <i class="fa fa-star-o yellow"></i>
-                                            <i class="fa fa-star-o"></i>
-                                            <i class="fa fa-star-o"></i>
-                                        </div>
-                                        <div class="product-price">
-                                            <span>₹ @Math.Round(productPrice, 2)</span>
-                                            <span class="old">₹ @Math.Round(product.SellPrice, 2)</span>
+                                        <div class="product-content text-center">
+                                            <h3><a asp-controller="Shop" asp-action="ProductDetails" asp-route-productId="@product.ProductId">@product.Name</a></h3>
+                                            <div class="product-rating">
+                                                @for(int i=0;i<product.AverageRating;i++)
+                                                {
+                                                    <i class="fa fa-star-o yellow"></i>
+                                                }
+                                                @for(int i=(int)product.AverageRating; i<5;i++)
+                                                {
+                                                    <i class="fa fa-star-o"></i>
+                                                }
+                                            </div>
+                                            <div class="product-price">
+                                                <span>₹ @Math.Round(productPrice, 2)</span>
+                                                <span class="old">₹ @Math.Round(product.SellPrice, 2)</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="modal fade" id="#modal@product.ProductId" tabindex="-1" role="dialog">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-md-5 col-sm-12 col-xs-12">
-                                                    <div class="tab-content quickview-big-img">
-                                                        <div id="pro-1" class="tab-pane fade show active">
-                                                            <img src="assets/img/product/quickview-l1.jpg" alt="">
-                                                        </div>
-                                                        <div id="pro-2" class="tab-pane fade">
-                                                            <img src="assets/img/product/quickview-l2.jpg" alt="">
-                                                        </div>
-                                                        <div id="pro-3" class="tab-pane fade">
-                                                            <img src="assets/img/product/quickview-l3.jpg" alt="">
-                                                        </div>
-                                                        <div id="pro-4" class="tab-pane fade">
-                                                            <img src="assets/img/product/quickview-l2.jpg" alt="">
+                                <div class="modal fade" id="modal-@product.ProductId" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-5 col-sm-12 col-xs-12">
+                                                        <div class="tab-content quickview-big-img">
+                                                            <div id="pro-1" class="tab-pane fade show active">
+                                                                <img src="@product.ImageUrl" alt="">
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <!-- Thumbnail Large Image End -->
-                                                    <!-- Thumbnail Image End -->
-                                                    <div class="quickview-wrap mt-15">
-                                                        <div class="quickview-slide-active owl-carousel nav nav-style-1" role="tablist">
-                                                            <a class="active" data-toggle="tab" href="#pro-1"><img src="assets/img/product/quickview-s1.jpg" alt=""></a>
-                                                            <a data-toggle="tab" href="#pro-2"><img src="assets/img/product/quickview-s2.jpg" alt=""></a>
-                                                            <a data-toggle="tab" href="#pro-3"><img src="assets/img/product/quickview-s3.jpg" alt=""></a>
-                                                            <a data-toggle="tab" href="#pro-4"><img src="assets/img/product/quickview-s2.jpg" alt=""></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-7 col-sm-12 col-xs-12">
-                                                    <div class="product-details-content quickview-content">
-                                                        <h2>Products Name Here</h2>
-                                                        <div class="product-details-price">
-                                                            <span>$18.00 </span>
-                                                            <span class="old">$20.00 </span>
-                                                        </div>
-                                                        <div class="pro-details-rating-wrap">
-                                                            <div class="pro-details-rating">
-                                                                <i class="fa fa-star-o yellow"></i>
-                                                                <i class="fa fa-star-o yellow"></i>
-                                                                <i class="fa fa-star-o yellow"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
+                                                    <div class="col-md-7 col-sm-12 col-xs-12">
+                                                        <div class="product-details-content quickview-content">
+                                                            <h2>@product.Name</h2>
+                                                            <div class="product-details-price">
+                                                                <span>₹ @Math.Round(productPrice, 2)</span>
+                                                                <span class="old">₹ @Math.Round(product.SellPrice, 2)</span>
                                                             </div>
-                                                            <span>3 Reviews</span>
-                                                        </div>
-                                                        <p>Lorem ipsum dolor sit amet, consectetur adipisic elit eiusm tempor incidid ut labore et dolore magna aliqua. Ut enim ad minim venialo quis nostrud exercitation ullamco</p>
-                                                        <div class="pro-details-list">
-                                                            <ul>
-                                                                <li>- 0.5 mm Dail</li>
-                                                                <li>- Inspired vector icons</li>
-                                                                <li>- Very modern style  </li>
-                                                            </ul>
-                                                        </div>
-                                                        <div class="pro-details-size-color">
-                                                            <div class="pro-details-color-wrap">
-                                                                <span>Color</span>
-                                                                <div class="pro-details-color-content">
-                                                                    <ul>
-                                                                        <li class="blue"></li>
-                                                                        <li class="maroon active"></li>
-                                                                        <li class="gray"></li>
-                                                                        <li class="green"></li>
-                                                                        <li class="yellow"></li>
-                                                                        <li class="white"></li>
-                                                                    </ul>
+                                                            <div class="pro-details-rating-wrap">
+                                                                <div class="pro-details-rating">
+                                                                    @for (int i = 0; i < product.AverageRating; i++)
+                                                                    {
+                                                                        <i class="fa fa-star-o yellow"></i>
+                                                                    }
+                                                                    @for (int i = (int)product.AverageRating; i < 5; i++)
+                                                                    {
+                                                                        <i class="fa fa-star-o"></i>
+                                                                    }
                                                                 </div>
+                                                                <span>@product.reviewCount Reviews</span>
                                                             </div>
-                                                            <div class="pro-details-size">
-                                                                <span>Size</span>
-                                                                <div class="pro-details-size-content">
-                                                                    <ul>
-                                                                        <li><a href="#">s</a></li>
-                                                                        <li><a href="#">m</a></li>
-                                                                        <li><a href="#">l</a></li>
-                                                                        <li><a href="#">xl</a></li>
-                                                                        <li><a href="#">xxl</a></li>
-                                                                    </ul>
+                                                            <p>@Html.Raw(product.ShortDescription)</p>
+                                                            <form method="post">
+                                                                <div class="pro-details-quality">
+                                                                    @if (product.CartQuantity > 0)
+                                                                    {
+                                                                        <div class="cart-plus-minus">
+                                                                            <input class="cart-plus-minus-box" name="CartItem.quantity" value="@product.CartQuantity">
+                                                                        </div>
+                                                                        <div class="pro-details-cart btn-hover">
+                                                                            <input type="hidden" name="CartItem.productId" value="@product.ProductId" />
+                                                                            <button type="submit" asp-action="Update" asp-controller="Cart">Update Cart</button>
+                                                                        </div>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <div class="cart-plus-minus">
+                                                                            <input class="cart-plus-minus-box" name="quantity" value="1">
+                                                                        </div>
+                                                                        <div class="pro-details-cart btn-hover">
+                                                                            <input type="hidden" name="productId" value="@product.ProductId" />
+                                                                            <button type="submit" asp-action="Add" asp-controller="Cart" formmethod="get">Add To Cart</button>
+                                                                        </div>
+                                                                    }
+
+                                                                    <div class="pro-details-wishlist">
+                                                                        @if (product.IsInWishlist)
+                                                                        {
+                                                                            <a title="Remove from wishlist" asp-controller="Wishlist" asp-action="Remove" asp-route-productId="@product.ProductId"><i class="fa-solid fa-heart"></i></a>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <a title="Add to Wishlist" asp-controller="Wishlist" asp-action="Add" asp-route-productId="@product.ProductId"><i class="fa-regular fa-heart"></i></a>
+                                                                        }
+                                                                    </div>
                                                                 </div>
+                                                            </form>
+
+                                                            <div class="pro-details-meta">
+                                                                <span>Category :</span>
+                                                                <ul>
+                                                                    <li><a href="#">@product.CategoryName</a></li>
+                                                                </ul>
                                                             </div>
-                                                        </div>
-                                                        <div class="pro-details-quality">
-                                                            <div class="cart-plus-minus">
-                                                                <input class="cart-plus-minus-box" type="text" name="qtybutton" value="2">
-                                                            </div>
-                                                            <div class="pro-details-cart btn-hover">
-                                                                <a href="#">Add To Cart</a>
-                                                            </div>
-                                                            <div class="pro-details-wishlist">
-                                                                <a href="#"><i class="fa fa-heart-o"></i></a>
-                                                            </div>
-                                                            <div class="pro-details-compare">
-                                                                <a href="#"><i class="pe-7s-shuffle"></i></a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="pro-details-meta">
-                                                            <span>Categories :</span>
-                                                            <ul>
-                                                                <li><a href="#">Minimal,</a></li>
-                                                                <li><a href="#">Furniture,</a></li>
-                                                                <li><a href="#">Electronic</a></li>
-                                                            </ul>
-                                                        </div>
-                                                        <div class="pro-details-meta">
-                                                            <span>Tag :</span>
-                                                            <ul>
-                                                                <li><a href="#">Fashion, </a></li>
-                                                                <li><a href="#">Furniture,</a></li>
-                                                                <li><a href="#">Electronic</a></li>
-                                                            </ul>
-                                                        </div>
-                                                        <div class="pro-details-social">
-                                                            <ul>
-                                                                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                                                <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
-                                                                <li><a href="#"><i class="fa fa-pinterest-p"></i></a></li>
-                                                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                                                                <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-                                                            </ul>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -281,7 +248,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         }
                     </div>
                     <div class="pro-pagination-style text-center mt-30">

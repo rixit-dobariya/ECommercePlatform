@@ -78,8 +78,8 @@
                         <div class="same-style header-search">
                             <a class="search-active" href="#"><i class="pe-7s-search"></i></a>
                             <div class="search-content">
-                                <form action="#">
-                                    <input type="text" placeholder="Search" />
+                                <form asp-controller="Shop" asp-action="Search" method="get" class="search-form">
+                                    <input type="text" name="query" value="@Context.Request.Query["query"]" placeholder="Search products..." class="form-control" />
                                     <button class="button-search"><i class="pe-7s-search"></i></button>
                                 </form>
                             </div>

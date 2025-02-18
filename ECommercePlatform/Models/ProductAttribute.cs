@@ -8,7 +8,6 @@ namespace ECommercePlatform.Models
         [Key]
         public int AttributeID { get; set; }
 
-        [Required]
         public int ProductID { get; set; }
 
         [ForeignKey("ProductID")]

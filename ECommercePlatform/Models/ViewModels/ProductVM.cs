@@ -13,5 +13,7 @@ namespace ECommercePlatform.Models.ViewModels
 
         [ValidateNever]
         public IEnumerable<SelectListItem> CategoriesList { get; set; }
+        [ValidateNever]
+        public List<ProductAttribute> ProductAttributes { get; set; } = new List<ProductAttribute> { new ProductAttribute(),new ProductAttribute()};
     }
 }

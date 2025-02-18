@@ -4,6 +4,7 @@ using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Customer.Controllers
 {
@@ -15,9 +16,58 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+        public IActionResult Search(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return View("Index", new List<ProductDisplay>()); // Return an empty list if query is null
+            }
+
+            IEnumerable<Product> products = _unitOfWork.Products.GetAll("Category")
+                .Where(p => p.Name.ToLower().Contains(query.ToLower()) || p.ShortDescription.ToLower().Contains(query.ToLower()) || p.LongDescription.ToLower().Contains(query.ToLower()) || p.Category.Name.ToLower().Contains(query.ToLower()));
+
+            List<ProductDisplay> productDisplays;
+
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                productDisplays = products.Select(p => new ProductDisplay
+                {
+                    SellPrice = p.SellPrice,
+                    Stock = p.Stock,
+                    CostPrice = p.CostPrice,
+                    Discount = p.Discount,
+                    ImageUrl = p.ImageUrl,
+                    ProductId = p.ProductId,
+                    Name = p.Name,
+                    AverageRating = 3,
+                    CategoryName = p.Category.Name,
+                    reviewCount = _unitOfWork.Reviews.GetAll().Where(r => r.ProductId == p.ProductId).Count(),
+                    ShortDescription = p.ShortDescription,
+                }).ToList();
+                return View("Index", productDisplays);
+            }
+            productDisplays = products.Select(p => new ProductDisplay
+            {
+                SellPrice = p.SellPrice,
+                Stock = p.Stock,
+                CostPrice = p.CostPrice,
+                Discount = p.Discount,
+                ImageUrl = p.ImageUrl,
+                ProductId = p.ProductId,
+                Name = p.Name,
+                AverageRating = 3,
+                CategoryName = p.Category.Name,
+                reviewCount = _unitOfWork.Reviews.GetAll().Where(r => r.ProductId == p.ProductId).Count(),
+                ShortDescription = p.ShortDescription,
+                CartQuantity = _unitOfWork.CartItems.Get(ci => ci.ProductId == p.ProductId && ci.UserId == userId)?.Quantity ?? 0,
+                IsInWishlist = _unitOfWork.WishlistItems.Get(wi => wi.ProductId == p.ProductId && wi.UserId == userId) != null
+            }).ToList();
+            return View("Index",productDisplays);
+        }
         public IActionResult Index()
         {
-            List<Product> products = _unitOfWork.Products.GetAll("Category").ToList();
+            IEnumerable<Product> products = _unitOfWork.Products.GetAll("Category").ToList();
             List<ProductDisplay> productDisplays;
 
             int? userId = HttpContext.Session.GetInt32("UserId");
@@ -31,7 +81,10 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                     ImageUrl=p.ImageUrl,
                     ProductId=p.ProductId,
                     Name=p.Name,
-                    //AverageRating=,
+                    AverageRating=3,
+                    CategoryName = p.Category.Name,
+                    reviewCount = _unitOfWork.Reviews.GetAll().Where(r => r.ProductId == p.ProductId).Count(),
+                    ShortDescription = p.ShortDescription,
                 }).ToList();
                 return View(productDisplays);
             }
@@ -44,8 +97,12 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 ImageUrl = p.ImageUrl,
                 ProductId = p.ProductId,
                 Name = p.Name,
-                IsInCart = !(_unitOfWork.CartItems.Get(ci => ci.UserId == userId && ci.ProductId == p.ProductId)==null),
-                IsInWishlist = !(_unitOfWork.WishlistItems.Get(ci => ci.UserId == userId && ci.ProductId == p.ProductId)==null)
+                AverageRating = 3,
+                CategoryName = p.Category.Name,
+                reviewCount = _unitOfWork.Reviews.GetAll().Where(r => r.ProductId == p.ProductId).Count(),
+                ShortDescription = p.ShortDescription,
+                CartQuantity = _unitOfWork.CartItems.Get(ci => ci.ProductId == p.ProductId && ci.UserId == userId)?.Quantity??0,
+                IsInWishlist = _unitOfWork.WishlistItems.Get(wi => wi.ProductId == p.ProductId && wi.UserId == userId)!=null
             }).ToList();
             return View(productDisplays);
         }

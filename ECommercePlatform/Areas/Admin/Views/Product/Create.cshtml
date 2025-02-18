@@ -68,6 +68,28 @@
 							<input class="form-control" asp-for="Product.SellPrice" placeholder="Enter Sell Price" />
 							<span asp-validation-for="Product.SellPrice" class="form-text text-danger"></span>
 						</div>
+						<div class="form-group attributeContainer">
+							<label>Add Product Attributes</label>
+							@for (int i = 0; i < Model.ProductAttributes.Count; i++)
+							{
+								<div class="attribute row mb-2">
+									<div class="col-md-5">
+										<input class="form-control " asp-for="ProductAttributes[i].Name" placeholder="Attribute name" />
+										<span asp-validation-for="ProductAttributes[i].Name" class="form-text text-danger"></span>
+									</div>
+									<div class="col-md-5">
+										<input class="form-control" asp-for="ProductAttributes[i].Value" placeholder="Attribute value" />
+										<span asp-validation-for="ProductAttributes[i].Value" class="form-text text-danger"></span>
+									</div>
+									<div class="col-md-2">
+										<button type="button" class="removeBtn btn btn-danger">Remove</button>
+									</div>	
+								</div>
+							}
+						</div>
+						<div class="form-group">
+							<button type="button" id="addNewAttributeBtn" class="btn btn-info">Add New Attribute</button>
+						</div>
 						<div class="form-group">
 							<label asp-for="Product.ImageUrl"></label>
 							<input type="file" name="productImage" class="form-control" placeholder="Enter Product Image" accept="image/*" />
@@ -83,6 +105,7 @@
 							<textarea id="longDescription" class="form-control" asp-for="Product.LongDescription" placeholder="Enter Product Long Description"></textarea>
 							<span asp-validation-for="Product.LongDescription" class="form-text text-danger"></span>
 						</div>
+
 						<div class="form-group">
 							<button type="submit" class="btn btn-success">Add Product</button>
 						</div>
@@ -102,10 +125,10 @@
 				tabsize: 2,
 				height: 200,
 				toolbar: [
-					['style', ['bold', 'italic', 'underline', 'clear']],
-					['para', ['ul', 'ol', 'paragraph']],
-					['insert', ['link', 'picture']],
-					['view', ['fullscreen', 'codeview']]
+				['style', ['bold', 'italic', 'underline', 'clear']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['insert', ['link', 'picture']],
+				['view', ['fullscreen', 'codeview']]
 				]
 			});
 			$('#longDescription').summernote({
@@ -113,13 +136,59 @@
 				tabsize: 2,
 				height: 200,
 				toolbar: [
-					['style', ['bold', 'italic', 'underline', 'clear']],
-					['para', ['ul', 'ol', 'paragraph']],
-					['insert', ['link', 'picture']],
-					['view', ['fullscreen', 'codeview']]
+				['style', ['bold', 'italic', 'underline', 'clear']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['insert', ['link', 'picture']],
+				['view', ['fullscreen', 'codeview']]
 				]
 			});
+			let attributeIndex = @Model.ProductAttributes.Count; // Starting index for new attributes
+
+			// Add new attribute fields
+			$("#addNewAttributeBtn").click(function () {
+				const newAttribute = `
+					<div class="attribute row mb-2">
+						<div class="col-md-5">
+							<input class="form-control"
+								   name="ProductAttributes[${attributeIndex}].Name"
+								   placeholder="Attribute name"
+								   data-val="true"
+								   data-val-required="Attribute name is required." />
+							<span class="form-text text-danger"></span>
+						</div>
+						<div class="col-md-5">
+							<input class="form-control"
+								   name="ProductAttributes[${attributeIndex}].Value"
+								   placeholder="Attribute value"
+								   data-val="true"
+								   data-val-required="Attribute value is required." />
+							<span class="form-text text-danger"></span>
+						</div>
+						<div class="col-md-2">
+							<button type="button" class="removeBtn btn btn-danger">Remove</button>
+						</div>
+					</div>
+				`;
+				$(".attributeContainer").append(newAttribute);
+				attributeIndex++;  // Increment the index for the next new attribute
+
+				// Reapply validation rules to the newly added fields
+				$("form").validate().element("input[name='ProductAttributes[" + (attributeIndex - 1) + "].Name']");
+				$("form").validate().element("input[name='ProductAttributes[" + (attributeIndex - 1) + "].Value']");
+
+				// Trigger validation for the whole form
+				$("form").valid();
+			});
+
+			// Remove attribute fields
+			$(".attributeContainer").on('click', '.removeBtn', function () {
+				$(this).closest('.attribute').remove();
+				// Trigger validation again after removal
+				$("form").valid();
+			});
 		});
+
 	</script>
+
 	<partial name="_ValidationScriptsPartial" />
 }
