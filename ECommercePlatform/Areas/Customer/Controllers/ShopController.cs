@@ -4,7 +4,6 @@ using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Customer.Controllers
 {
@@ -108,14 +107,20 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         }
         public IActionResult ProductDetails(int productId)
         {
+            var reviews = _unitOfWork.Reviews.GetAll("User")
+                .Where(r => r.ProductId == productId)
+                .ToList(); 
+
             ProductDetailsVM productDetailsVM = new()
             {
                 Product = _unitOfWork.Products.Get(p => p.ProductId == productId, "Category"),
-                Reviews = _unitOfWork.Reviews.GetAll().Where(r => r.ProductId == productId).ToList(),
+                Reviews = reviews,
                 CartQuantity = 0,
                 IsInWishlist = false,
-                HasOrdered = false
+                HasOrdered = false,
+                AverageRating = reviews.Count != 0 ? reviews.Average(r => r.Rating) : 0,
             };
+
             int? userId = HttpContext.Session.GetInt32("UserId");
             if(userId != null)
             {
@@ -123,6 +128,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 productDetailsVM.CartQuantity = cartItem == null ? 0 : cartItem.Quantity;
                 productDetailsVM.IsInWishlist = _unitOfWork.WishlistItems.Get(wi => wi.ProductId == productId && wi.UserId==userId) != null;
                 productDetailsVM.HasOrdered = _unitOfWork.OrderHeaders.GetAll("OrderDetails").Any(oh => oh.UserId == userId && oh.OrderDetails.Any(od => od.ProductId == productId));
+                productDetailsVM.Reviews = _unitOfWork.Reviews.GetAll("User").ToList();
+                productDetailsVM.Review = _unitOfWork.Reviews.Get(r => r.ProductId == productId && r.UserId == userId) ?? new Review();
             }
             return View(productDetailsVM);
         }
