@@ -1,4 +1,5 @@
 ﻿using ECommercePlatform.Constants;
+using ECommercePlatform.Filters;
 using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
     [Area(UserRole.Admin)]
+    [AdminAuthCheck]
     public class CategoryController : Controller
     {
         IUnitOfWork _unitOfWork;

@@ -1,4 +1,5 @@
 ﻿using ECommercePlatform.Constants;
+using ECommercePlatform.Filters;
 using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ECommercePlatform.Areas.Customer.Controllers
 {
     [Area(UserRole.Customer)]
+    [AuthCheck]
     public class OrderController : Controller
     {
         IUnitOfWork _unitOfWork {  get; set; }
@@ -22,11 +24,6 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         public IActionResult Display(int orderId)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                TempData["error"] = "You must be logged in to access this page";
-                return RedirectToAction("Login","User");
-            }
             if (orderId <= 0)
             {
                 return NotFound();
@@ -59,11 +56,6 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         public IActionResult Checkout()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                TempData["error"] = "You must be logged in to access this page";
-                return RedirectToAction("Login", "User");
-            }
             CheckoutVM checkoutVM = GetCheckoutVM(userId);
             if (checkoutVM.CartItems.Count() == 0)
             {

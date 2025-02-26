@@ -1,4 +1,5 @@
 ﻿using ECommercePlatform.Constants;
+using ECommercePlatform.Filters;
 using ECommercePlatform.Models;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
     [Area(UserRole.Admin)]
+    [AdminAuthCheck]
     public class OfferController : Controller
     {
         IUnitOfWork _unitOfWork;

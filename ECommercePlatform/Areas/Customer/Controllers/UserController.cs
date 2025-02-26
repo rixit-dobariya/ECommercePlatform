@@ -102,6 +102,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
 
             // Set session
             HttpContext.Session.SetInt32("UserId", user.UserId);
+            HttpContext.Session.SetString("Role", user.Role.ToString());
             TempData["success"] = "Login successful!";
 
             // Redirect based on role

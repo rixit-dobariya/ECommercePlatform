@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
+using ECommercePlatform.Filters;
 
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
     [Area(UserRole.Admin)]
+    [AdminAuthCheck]
     public class ProductController : Controller
     {
         IUnitOfWork _unitOfWork;
