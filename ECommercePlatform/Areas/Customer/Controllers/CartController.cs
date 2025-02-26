@@ -4,6 +4,7 @@ using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Customer.Controllers
 {
@@ -15,7 +16,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             CartVM cartVM  = new();
             int? userId = HttpContext.Session.GetInt32("UserId");
@@ -24,8 +25,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 TempData["error"] = "You must be logged in to access this page";
                 return RedirectToAction("Login", "User");
             }
-            cartVM.CartItems = _unitOfWork.CartItems.GetAll("Product")
-                .Where(ci => ci.UserId == Convert.ToInt32(userId));
+            cartVM.CartItems = await _unitOfWork.CartItems.GetAll("Product")
+                .Where(ci => ci.UserId == Convert.ToInt32(userId)).ToListAsync();
             cartVM.Total = cartVM.CartItems
                     .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
                     .DefaultIfEmpty(0)
@@ -33,7 +34,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             cartVM.ShippingCharge = cartVM.Total >= 500 ? 0 : 50;
             return View(cartVM);
         }
-        public IActionResult Add(int productId, int quantity=1)
+        public async Task<IActionResult> Add(int productId, int quantity=1)
         {
             if(productId == 0)
             {
@@ -45,7 +46,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 TempData["error"] = "You must be logged in to access this page";
                 return RedirectToAction("Login", "User");
             }
-            CartItem checkCartItem = _unitOfWork.CartItems.Get(ci => productId == ci.ProductId && ci.UserId == Convert.ToInt32(userId));
+            CartItem checkCartItem = await _unitOfWork.CartItems.Get(ci => productId == ci.ProductId && ci.UserId == Convert.ToInt32(userId));
             if (checkCartItem != null)
             {
                 TempData["error"] = "Product is already available in cart!";
@@ -59,12 +60,12 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 UserId = Convert.ToInt32(userId)
             };
             _unitOfWork.CartItems.Add(cartItem);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["success"] = "Product added to cart successfully!";
             return RedirectToAction("Index");
         }
         [HttpPost]
-        public IActionResult Update(CartItem cartItem)
+        public async Task<IActionResult> Update(CartItem cartItem)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -74,17 +75,17 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }
             if (ModelState.IsValid)
             {
-                CartItem newCartItem = _unitOfWork.CartItems.Get(ci => ci.UserId == Convert.ToInt32(userId) && ci.ProductId == cartItem.ProductId);
+                CartItem newCartItem = await _unitOfWork.CartItems.Get(ci => ci.UserId == Convert.ToInt32(userId) && ci.ProductId == cartItem.ProductId);
                 newCartItem.Quantity = cartItem.Quantity;
                 _unitOfWork.CartItems.Update(newCartItem);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["success"] = "Cart quantity updated successfully!";
                 return RedirectToAction("Index");
             }
             TempData["error"] = "Cart quantity update failed!";
             return RedirectToAction("Index");
         }
-        public IActionResult Remove(int productId)
+        public async Task<IActionResult> Remove(int productId)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if(productId == 0)
@@ -97,9 +98,9 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }
             else
             {
-                CartItem cartItem = _unitOfWork.CartItems.Get(ci => ci.ProductId == productId && ci.UserId == Convert.ToInt32(userId));
+                CartItem cartItem = await _unitOfWork.CartItems.Get(ci => ci.ProductId == productId && ci.UserId == Convert.ToInt32(userId));
                 _unitOfWork.CartItems.Remove(cartItem);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["success"] = "Product removed from cart successfully!";
             }
             return RedirectToAction("Index");

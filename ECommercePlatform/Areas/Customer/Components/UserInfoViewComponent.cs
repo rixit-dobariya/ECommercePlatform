@@ -3,6 +3,7 @@ using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Customer.Components
 {
@@ -16,27 +17,29 @@ namespace ECommercePlatform.Areas.Customer.Components
             _unitOfWork = unitOfWork;
         }
 
-        public IViewComponentResult Invoke()
+        public async Task<IViewComponentResult> InvokeAsync()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             UserInfoVM userInfoVM = new();
 
             if (userId != null)
             {
-                userInfoVM.CartItems = _unitOfWork.CartItems.GetAll("Product")
-                    .Where(ci => ci.UserId == userId) ?? new List<CartItem>();
+                userInfoVM.CartItems = await _unitOfWork.CartItems.GetAll("Product")
+                    .Where(ci => ci.UserId == userId).ToListAsync() ?? new List<CartItem>();
 
-                userInfoVM.WishlistCount = _unitOfWork.WishlistItems.GetAll()
-                    ?.Count(wi => wi.UserId == userId) ?? 0;
+                userInfoVM.WishlistCount = await _unitOfWork.WishlistItems
+                    .GetAll()
+                    .CountAsync(wi => wi.UserId == userId);
 
                 userInfoVM.Total = userInfoVM.CartItems
                     .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
                     .DefaultIfEmpty(0)
                     .Sum();
 
-                userInfoVM.ProfilePictureUrl = _unitOfWork.Users.Get(u => u.UserId == userId)?.ProfilePicture
-                    ?? "";
+                var userTemp = await _unitOfWork.Users.Get(u => u.UserId == userId);
+                userInfoVM.ProfilePictureUrl = userTemp?.ProfilePicture ?? "";
             }
+
             userInfoVM.ShippingCharge = userInfoVM.Total >= 500 ? 0 : 50;
             userInfoVM.Total += userInfoVM.ShippingCharge;
 

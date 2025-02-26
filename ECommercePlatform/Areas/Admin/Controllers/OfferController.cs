@@ -3,6 +3,7 @@ using ECommercePlatform.Filters;
 using ECommercePlatform.Models;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
@@ -27,12 +28,12 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Offer offer)
+        public async Task<IActionResult> Create(Offer offer)
         {
             if (ModelState.IsValid)
             {
                 _unitOfWork.Offers.Add(offer);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 return RedirectToAction("Index");
             }
             else
@@ -41,22 +42,22 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             }
         }
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if(id==null || id == 0)
             {
                 return NotFound();
             }
-            Offer offer = _unitOfWork.Offers.Get(o => o.OfferId == id);
+            Offer offer = await _unitOfWork.Offers.Get(o => o.OfferId == id);
             return View(offer);
         }
         [HttpPost]
-        public IActionResult Edit(Offer offer)
+        public async Task<IActionResult> Edit(Offer offer)
         {
             if (ModelState.IsValid)
             {
                 _unitOfWork.Offers.Update(offer);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["success"] = "Offer Updated Successfully!";
                 return RedirectToAction("Index");
             }
@@ -66,15 +67,15 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             }
         }
         #region API ENDPOINTS
-        public JsonResult GetAll()
+        public async Task<JsonResult> GetAll()
         {
-            IEnumerable<Offer> offers = _unitOfWork.Offers.GetAll();
+            IEnumerable<Offer> offers = await _unitOfWork.Offers.GetAll().ToListAsync();
             return Json(new {
                 success=true,
                 data=offers
             });
         }
-        public JsonResult Delete(int? id)
+        public async Task<JsonResult> Delete(int? id)
         {
             if(id==null || id == 0)
             {
@@ -84,9 +85,9 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     message = "No offer found."
                 });
             }
-            Offer offer = _unitOfWork.Offers.Get(o => o.OfferId == id);
+            Offer offer = await _unitOfWork.Offers.Get(o => o.OfferId == id);
             _unitOfWork.Offers.Remove(offer);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return Json(new
             {
                 success = true,

@@ -17,6 +17,6 @@ namespace ECommercePlatform.Repository.IRepository
         IRepository<OrderDetail> OrderDetails { get; }
         IRepository<Review> Reviews { get; }
 
-        void Save();
+        Task Save();
     }
 }

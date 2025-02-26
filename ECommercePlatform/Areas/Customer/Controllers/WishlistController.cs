@@ -2,6 +2,7 @@
 using ECommercePlatform.Models;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Customer.Controllers
 {
@@ -13,7 +14,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        public IActionResult Index(IEnumerable<WishlistItem> wishlistItems)
+        public async Task<IActionResult> Index(IEnumerable<WishlistItem> wishlistItems)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -21,11 +22,11 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 TempData["error"] = "You must be logged in to access this page";
                 return RedirectToAction("Login", "User");
             }
-            wishlistItems = _unitOfWork.WishlistItems.GetAll("Product")
-                .Where(ci => ci.UserId == Convert.ToInt32(userId));
+            wishlistItems = await _unitOfWork.WishlistItems.GetAll("Product")
+                .Where(ci => ci.UserId == Convert.ToInt32(userId)).ToListAsync();
             return View(wishlistItems);
         }
-        public IActionResult Add(int productId, int quantity = 1)
+        public async Task<IActionResult> Add(int productId, int quantity = 1)
         {
             if (productId == 0)
             {
@@ -37,7 +38,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 TempData["error"] = "You must be logged in to access this page";
                 return RedirectToAction("Login", "User");
             }
-            WishlistItem checkWishlistItem = _unitOfWork.WishlistItems.Get(ci => productId == ci.ProductId && ci.UserId == Convert.ToInt32(userId));
+            WishlistItem checkWishlistItem = await _unitOfWork.WishlistItems.Get(ci => productId == ci.ProductId && ci.UserId == Convert.ToInt32(userId));
             if (checkWishlistItem != null)
             {
                 TempData["error"] = "Product is already available in wishlist!";
@@ -50,11 +51,11 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 UserId = Convert.ToInt32(userId)
             };
             _unitOfWork.WishlistItems.Add(wishlistItem);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["success"] = "Product added to wishlist successfully!";
             return RedirectToAction("Index");
         }
-        public IActionResult Remove(int productId)
+        public async Task<IActionResult> Remove(int productId)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (productId == 0)
@@ -67,9 +68,9 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }
             else
             {
-                WishlistItem wishlistItem = _unitOfWork.WishlistItems.Get(ci => ci.ProductId == productId && ci.UserId == Convert.ToInt32(userId));
+                WishlistItem wishlistItem = await _unitOfWork.WishlistItems.Get(ci => ci.ProductId == productId && ci.UserId == Convert.ToInt32(userId));
                 _unitOfWork.WishlistItems.Remove(wishlistItem);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["success"] = "Product removed from wishlist successfully!";
             }
             return RedirectToAction("Index");

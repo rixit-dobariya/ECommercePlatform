@@ -15,7 +15,7 @@ namespace ECommercePlatform.Helpers.EmailHelper
             _config = config;
         }
 
-        public void SendEmail(string to, string subject, string body)
+        public async Task SendEmail(string to, string subject, string body)
         {
             var emailSettings = _config.GetSection("EmailSettings");
 
@@ -28,11 +28,12 @@ namespace ECommercePlatform.Helpers.EmailHelper
             message.Body = bodyBuilder.ToMessageBody();
 
             using var smtp = new SmtpClient();
-            smtp.Connect(emailSettings["SmtpServer"], int.Parse(emailSettings["Port"]), MailKit.Security.SecureSocketOptions.StartTls);
-            smtp.Authenticate(emailSettings["SenderEmail"], emailSettings["Password"]);
-            smtp.Send(message);
-            smtp.Disconnect(true);
+            await smtp.ConnectAsync(emailSettings["SmtpServer"], int.Parse(emailSettings["Port"]), MailKit.Security.SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(emailSettings["SenderEmail"], emailSettings["Password"]);
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
         }
+
 
     }
 

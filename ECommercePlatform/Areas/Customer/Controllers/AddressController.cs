@@ -20,7 +20,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Add(Address address)
+        public async Task<IActionResult> Add(Address address)
         {
             if (!ModelState.IsValid)
             {
@@ -28,15 +28,15 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }
             address.UserId = (int)HttpContext.Session.GetInt32("UserId");
             _unitOfWork.Addresses.Add(address);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["success"] = "Address Added successfully!";
             return RedirectToAction("MyAccount", "User");
         }
-        public IActionResult Update(int addressId)
+        public async Task<IActionResult> Update(int addressId)
         {
             int userId = (int)HttpContext.Session.GetInt32("UserId");
 
-            Address address = _unitOfWork.Addresses.Get(a => a.AddressId == addressId && a.UserId == userId);
+            Address address = await _unitOfWork.Addresses.Get(a => a.AddressId == addressId && a.UserId == userId);
             if (address == null)
             {
                 return NotFound();
@@ -44,7 +44,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return View(address);
         }
         [HttpPost]
-        public IActionResult Update(Address address)
+        public async Task<IActionResult> Update(Address address)
         {
             if (!ModelState.IsValid)
             {
@@ -53,21 +53,21 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             address.UserId = (int)HttpContext.Session.GetInt32("UserId");
 
             _unitOfWork.Addresses.Update(address);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["success"] = "Address Updated successfully!";
             return RedirectToAction("MyAccount","User");
         }
-        public IActionResult Delete(int addressId)
+        public async Task<IActionResult> Delete(int addressId)
         {
             int userId = (int)HttpContext.Session.GetInt32("UserId");
 
-            Address address = _unitOfWork.Addresses.Get(a => a.AddressId == addressId && a.UserId == userId);
+            Address address = await _unitOfWork.Addresses.Get(a => a.AddressId == addressId && a.UserId == userId);
             if (address == null) 
             {
                 return NotFound();
             }
             _unitOfWork.Addresses.Remove(address);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["success"] = "Address deleted successfully";
             return RedirectToAction("MyAccount","User");
         }

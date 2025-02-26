@@ -38,9 +38,9 @@ namespace ECommercePlatform.Repository
             Reviews = new Repository<Review>(db);
         }
 
-        public void Save()
+        public async Task Save()
         {
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
     }
 }

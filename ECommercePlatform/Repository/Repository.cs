@@ -23,7 +23,7 @@ namespace ECommercePlatform.Repository
             dbSet.Update(entity);
         }
 
-        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        public async Task<T> Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             query = query.Where(filter);
@@ -34,12 +34,12 @@ namespace ECommercePlatform.Repository
                     query = query.Include(includeProp);
                 }
             }
-            return query.FirstOrDefault();
+            return await query.FirstOrDefaultAsync();
         }
 
 
 
-        public virtual IEnumerable<T> GetAll(string? includeProperties = null)
+        public virtual IQueryable<T> GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if (!string.IsNullOrEmpty(includeProperties))
@@ -49,7 +49,7 @@ namespace ECommercePlatform.Repository
                     query = query.Include(includeProp);
                 }
             }
-            return query.ToList();
+            return query;
         }
         public void Remove(T entity)
         {

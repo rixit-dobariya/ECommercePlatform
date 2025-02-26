@@ -3,6 +3,7 @@ using ECommercePlatform.Filters;
 using ECommercePlatform.Models;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
@@ -23,9 +24,9 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             return View();
         }
         #region API ENDPOINTS
-        public JsonResult GetAll()
+        public async Task<JsonResult> GetAll()
         {
-            IEnumerable<OrderHeader> orders = _unitOfWork.OrderHeaders.GetAll("User").AsQueryable().Where(o => !o.IsDeleted);
+            IEnumerable<OrderHeader> orders = await _unitOfWork.OrderHeaders.GetAll("User").Where(o => !o.IsDeleted).ToListAsync();
             return Json(new
             {
                 success = true,
@@ -41,7 +42,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 })
             });
         }
-        public JsonResult Delete(int? id)
+        public async Task<JsonResult> Delete(int? id)
         {
             if (id == null || id == 0)
             {
@@ -51,10 +52,10 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     message = "No order found."
                 });
             }
-            OrderHeader orderHeader = _unitOfWork.OrderHeaders.Get(o => o.OrderId == id);
+            OrderHeader orderHeader = await _unitOfWork.OrderHeaders.Get(o => o.OrderId == id);
             orderHeader.IsDeleted = true;
             _unitOfWork.OrderHeaders.Update(orderHeader);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return Json(new
             {
                 success = true,

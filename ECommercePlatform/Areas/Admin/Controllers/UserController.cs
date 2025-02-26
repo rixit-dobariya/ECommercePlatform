@@ -5,6 +5,7 @@ using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
@@ -28,11 +29,10 @@ namespace ECommercePlatform.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-
             return View();
         }
         [HttpPost]
-        public IActionResult Create(UserVM userVM)
+        public async Task<IActionResult> Create(UserVM userVM)
         {
             if (ModelState.IsValid)
             {
@@ -46,7 +46,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
                         using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                         {
-                            userVM.profilePicture.CopyTo(fileStream);
+                            await userVM.profilePicture.CopyToAsync(fileStream);
                         }
                         userVM.User.ProfilePicture = @"\Images\users\" + fileName;
                     }
@@ -64,7 +64,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 userVM.User.Password = PasswordHelper.HashPassword(userVM.User.Password);
                 userVM.User.IsEmailVerified = true;
                 _unitOfWork.Users.Add(userVM.User);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["sucess"] = "User added successfully!";
                 return RedirectToAction("Index");
             }
@@ -74,7 +74,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             }
         }
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if(id==null || id == 0)
             {
@@ -82,12 +82,12 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             }
             UserVM userVM = new()
             {
-                User = _unitOfWork.Users.Get(u => u.UserId == id)
+                User = await _unitOfWork.Users.Get(u => u.UserId == id)
             };
             return View(userVM);
         }
         [HttpPost]
-        public IActionResult Edit(UserVM userVM)
+        public async Task<IActionResult> Edit(UserVM userVM)
         {
             if (ModelState.IsValid)
             {
@@ -109,7 +109,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
                         using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                         {
-                            userVM.profilePicture.CopyTo(fileStream);
+                            await userVM.profilePicture.CopyToAsync(fileStream);
                         }
                         userVM.User.ProfilePicture = @"\Images\users\" + fileName;
                     }
@@ -120,7 +120,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     }
                 }
                 _unitOfWork.Users.Update(userVM.User);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["sucess"] = "User updated successfully!";
                 return RedirectToAction("Index");
             }
@@ -129,15 +129,15 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
         #region API ENDPOINTS
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            List<User> usersList = _unitOfWork.Users.GetAll().Where(u => u.Role==RoleType.User).ToList();
+            List<User> usersList = await _unitOfWork.Users.GetAll().Where(u => u.Role==RoleType.User).ToListAsync();
             return Json(new { data = usersList });
         }
 
 
         [HttpDelete]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || id == 0)
             {
@@ -147,10 +147,10 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     message = "No record found!",
                 });
             }
-            User user = _unitOfWork.Users.Get(u => u.UserId == id);
+            User user = await _unitOfWork.Users.Get(u => u.UserId == id);
             user.IsDeleted = true;
             _unitOfWork.Users.Update(user);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return Json(new
             {
                 success = true,

@@ -10,12 +10,12 @@ namespace ECommercePlatform.Repository
         {
         }
 
-        public IEnumerable<User> GetAll()
+        public IQueryable<User> GetAll()
         {
             return base.GetAll().Where(u => !u.IsDeleted);
         }
 
-        public IEnumerable<User> GetAllDeletedUsers()
+        public IQueryable<User> GetAllDeletedUsers()
         {
             return base.GetAll().Where(u => u.IsDeleted);
         }

@@ -6,6 +6,7 @@ using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Customer.Controllers
 {
@@ -32,11 +33,11 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Register(User user, IFormFile? profilePicture) 
+        public async Task<IActionResult> Register(User user, IFormFile? profilePicture) 
         {
             if (ModelState.IsValid)
             {
-                User checkUser = _unitOfWork.Users.Get(u => u.Email.Equals(user.Email));
+                User checkUser = await _unitOfWork.Users.Get(u => u.Email.Equals(user.Email));
                 if (checkUser!=null)
                 {
                     if (checkUser.IsEmailVerified)
@@ -46,7 +47,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                     }
                     else
                     {
-                        return SendVerificationEmail(checkUser);
+                        return await SendVerificationEmail(checkUser);
                     }
                 }
                 if (profilePicture != null)
@@ -66,8 +67,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 }
                 user.Password = PasswordHelper.HashPassword(user.Password);
                 _unitOfWork.Users.Add(user);
-                _unitOfWork.Save();
-                return SendVerificationEmail(user);
+                await _unitOfWork.Save();
+                return await SendVerificationEmail(user);
             }
             return View(user);
         }
@@ -79,13 +80,13 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Login(LoginVM loginVM)
+        public async Task<IActionResult> Login(LoginVM loginVM)
         {
             if (!ModelState.IsValid)
                 return View(loginVM);
 
             // Check if user exists and is not deleted
-            User user = _unitOfWork.Users.Get(u => u.Email == loginVM.Email && !u.IsDeleted);
+            User user = await _unitOfWork.Users.Get(u => u.Email == loginVM.Email && !u.IsDeleted);
 
             if (user == null || !PasswordHelper.VerifyPassword(loginVM.Password, user.Password))
             {
@@ -111,7 +112,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 : RedirectToAction("Index", "Home");
         }
 
-        public IActionResult OtpVerification()
+        public async Task<IActionResult> OtpVerification()
         {
             int tempUserId = HttpContext.Session.GetInt32("TempUserId")??0;
             if (tempUserId == 0)
@@ -119,17 +120,17 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 TempData["error"] = "You have not requested OTP yet.";
                 return RedirectToAction("Index","User");
             }
-            UserOTP userOTP = _unitOfWork.UserOTPs.Get(uo => uo.UserId == Convert.ToInt32(tempUserId));
+            UserOTP userOTP = await _unitOfWork.UserOTPs.Get(uo => uo.UserId == Convert.ToInt32(tempUserId));
             return View(new UserOTP { ExpirationTime=userOTP.ExpirationTime});
         }
 
         [HttpPost]
-        public IActionResult OTPVerification(UserOTP userOTP)
+        public async Task<IActionResult> OTPVerification(UserOTP userOTP)
         {
             if (!ModelState.IsValid)
                 return View(userOTP);
             int? userId = HttpContext.Session.GetInt32("TempUserId");
-            UserOTP userOTPFetched = _unitOfWork.UserOTPs.Get(uo => uo.UserId==Convert.ToInt32(userId));
+            UserOTP userOTPFetched = await _unitOfWork.UserOTPs.Get(uo => uo.UserId==Convert.ToInt32(userId));
 
             if (userOTPFetched == null)
             {
@@ -156,10 +157,10 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 return RedirectToAction(whereToRedirect);
             }
             // Verify Email
-            User user = _unitOfWork.Users.Get(u => u.UserId == userOTPFetched.UserId);
+            User user = await _unitOfWork.Users.Get(u => u.UserId == userOTPFetched.UserId);
             user.IsEmailVerified = true;
             _unitOfWork.Users.Update(user);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
 
             // Remove OTP after successful verification
             _unitOfWork.UserOTPs.Remove(userOTPFetched);
@@ -170,9 +171,9 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult ResendOTP()
+        public async Task<IActionResult> ResendOTP()
         {
-            return SendVerificationEmail(
+            return await SendVerificationEmail(
                 new User{ Email = HttpContext.Session.GetString("TempEmail") }
                 );
         }
@@ -181,12 +182,12 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult ForgotPassword(ForgotPasswordVM forgotPasswordVM)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordVM forgotPasswordVM)
         {
             if (ModelState.IsValid)
             {
                 HttpContext.Session.SetString("Page", "ResetPassword");
-                return SendVerificationEmail(new User{Email=forgotPasswordVM.Email});
+                return await SendVerificationEmail(new User{Email=forgotPasswordVM.Email});
             }
             return View();
         }
@@ -195,7 +196,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult ResetPassword(ResetPasswordVM resetPasswordVM)
+        public async Task<IActionResult> ResetPassword(ResetPasswordVM resetPasswordVM)
         {
             if (!ModelState.IsValid)
             { 
@@ -212,32 +213,32 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 TempData["error"] = "You cannot access this page without verifing your credentials!";
                 return RedirectToAction("Index", "Home");
             }
-            User user = _unitOfWork.Users.Get(u => u.UserId == Convert.ToInt32(userId));
+            User user = await _unitOfWork.Users.Get(u => u.UserId == Convert.ToInt32(userId));
             user.Password = PasswordHelper.HashPassword(resetPasswordVM.Password);
             _unitOfWork.Users.Update(user);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["success"] = "Your password has been updated successfully!";
             return RedirectToAction("Index","Home");
         }
 
         [AuthCheck]
-        public IActionResult MyAccount()
+        public async Task<IActionResult> MyAccount()
         {
-            MyAccountVM myAccountVM = GetMyAccountVM();
+            MyAccountVM myAccountVM = await GetMyAccountVM();
             return View(myAccountVM);
         }
         [HttpPost]
         [AuthCheck]
-        public IActionResult ChangePassword(ChangePassword changePassword)
+        public async Task<IActionResult> ChangePassword(ChangePassword changePassword)
         {
-            MyAccountVM myAccountVM = GetMyAccountVM();
+            MyAccountVM myAccountVM = await GetMyAccountVM();
             if (!ModelState.IsValid)
             {
                 myAccountVM.ChangePassword = changePassword;
                 return View("MyAccount", myAccountVM);
             }
             int? userId = HttpContext.Session.GetInt32("UserId"); 
-            User user = _unitOfWork.Users.Get(u => u.UserId == userId);
+            User user = await _unitOfWork.Users.Get(u => u.UserId == userId);
             if (!PasswordHelper.VerifyPassword(changePassword.CurrentPassword, user.Password))
             {
                 ModelState.AddModelError("ChangePassword.CurrentPassword","It is not your old password");
@@ -246,21 +247,23 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }
             user.Password = PasswordHelper.HashPassword(changePassword.Password);
             _unitOfWork.Users.Update(user);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["success"] = "Your password updated successfully!";
             return View("MyAccount", myAccountVM);
         }
         [HttpPost]
         [AuthCheck]
-        public IActionResult UpdateProfile(UpdateProfile updateProfile, IFormFile? profilePicture)
+        public async Task<IActionResult> UpdateProfile(UpdateProfile updateProfile, IFormFile? profilePicture)
         {
             MyAccountVM myAccountVM = new MyAccountVM();
             myAccountVM.UpdateProfile = updateProfile;
-            myAccountVM.UpdateProfile.ProfilePicture = GetMyAccountVM().UpdateProfile.ProfilePicture;
+            var myAccountVMTemp = await GetMyAccountVM();
+            myAccountVM.UpdateProfile.ProfilePicture = myAccountVMTemp.UpdateProfile.ProfilePicture;
 
             if (!ModelState.IsValid)
             {
-                myAccountVM.Addresses = GetMyAccountVM().Addresses;
+                myAccountVMTemp = await GetMyAccountVM();
+                myAccountVM.Addresses = myAccountVM.Addresses;
                 return View("MyAccount", myAccountVM);
             }
             if (profilePicture != null)
@@ -268,7 +271,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 if (!profilePicture.ContentType.StartsWith("image/"))
                 {
                     ModelState.AddModelError("UpdateProfile.ProfilePicture", "Profile Picture is not in the correct format. Please choose image.");
-                    myAccountVM.Addresses = GetMyAccountVM().Addresses;
+                    myAccountVMTemp = await GetMyAccountVM();
+                    myAccountVM.Addresses = myAccountVMTemp.Addresses;
                     return View("MyAccount", myAccountVM);
                 }
                 else
@@ -287,21 +291,21 @@ namespace ECommercePlatform.Areas.Customer.Controllers
 
                     using (var fileStream = new FileStream(Path.Combine(userPath, fileName), FileMode.Create))
                     {
-                        profilePicture.CopyTo(fileStream);
+                        await profilePicture.CopyToAsync(fileStream);
                     }
                     updateProfile.ProfilePicture = @"\Images\users\" + fileName;
                 }
             }
             int userId = (int)HttpContext.Session.GetInt32("UserId");
-            User user = _unitOfWork.Users.Get(u => u.UserId == userId);
+            User user = await _unitOfWork.Users.Get(u => u.UserId == userId);
             user.ProfilePicture = updateProfile.ProfilePicture;
             user.FullName = updateProfile.FullName;
             user.Email = updateProfile.Email;
             user.Phone = updateProfile.Phone;
             _unitOfWork.Users.Update(user);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["success"] = "User information updated successfully!";
-            myAccountVM = GetMyAccountVM();
+            myAccountVM = await GetMyAccountVM();
             return View("MyAccount", myAccountVM);
         }
 
@@ -312,10 +316,10 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return RedirectToAction("Index","Home");
         }
         #region METHODS
-        private MyAccountVM GetMyAccountVM()
+        private async Task<MyAccountVM> GetMyAccountVM()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            User user = _unitOfWork.Users.Get(u => u.UserId == userId);
+            User user = await _unitOfWork.Users.Get(u => u.UserId == userId);
             MyAccountVM myAccountVM = new MyAccountVM
             {
                 UpdateProfile = new UpdateProfile
@@ -325,17 +329,16 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                     Phone = user.Phone,
                     ProfilePicture = user.ProfilePicture
                 },
-                Addresses = _unitOfWork.Addresses.GetAll().Where(a => a.IsDeleted!=1 && a.UserId == userId)
+                Addresses = await _unitOfWork.Addresses.GetAll().Where(a => a.IsDeleted!=1 && a.UserId == userId).ToListAsync()
             };
             return myAccountVM;
         }
-        private IActionResult SendVerificationEmail(User user)
+        private async Task<IActionResult> SendVerificationEmail(User user)
         {
-
-            User newUser = _unitOfWork.Users.Get(u => u.Email == user.Email);
+            User newUser = await _unitOfWork.Users.Get(u => u.Email == user.Email);
             int userId = newUser.UserId;
 
-            UserOTP userOTP = _unitOfWork.UserOTPs.Get(uo => uo.UserId == userId);
+            UserOTP userOTP = await _unitOfWork.UserOTPs.Get(uo => uo.UserId == userId);
             //either user has expired otp or user do not have otp
             if (userOTP == null || userOTP.ExpirationTime < DateTime.UtcNow)
             {
@@ -357,14 +360,14 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 string subject = "OTP For email verification!";
                 string body = $"<h1>Hi {user.FullName},</h1><p>Your OTP is {userOTP.OTP}!</p>";
 
-                _emailService.SendEmail(user.Email, subject, body);
+                await _emailService.SendEmail(user.Email, subject, body);
 
                 // Set session
                 HttpContext.Session.SetInt32("TempUserId", userId);
                 HttpContext.Session.SetString("TempEmail", user.Email);
 
                 _unitOfWork.UserOTPs.Add(userOTP);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["sucess"] = "Mail sent successfully!";
             }
             else

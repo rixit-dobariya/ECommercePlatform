@@ -3,11 +3,9 @@ using ECommercePlatform.Filters;
 using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository.IRepository;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
@@ -15,7 +13,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
     [AdminAuthCheck]
     public class CategoryController : Controller
     {
-        IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         public CategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -25,41 +23,41 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             ViewData["ActiveMenu"] = "Category";
             return View();
         }
-        int getChildCount(int? id)
+        async Task<int> getChildCount(int? id)
         {
-            return _unitOfWork.Categories
+            return await _unitOfWork.Categories
                     .GetAll()
-                    .Count(c => c.ParentCategoryId == id);
+                    .CountAsync(c => c.ParentCategoryId == id);
         }
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             CategoryVM categoryVM = new CategoryVM
             {
-                Category = _unitOfWork.Categories.Get(c => c.CategoryId == id),
+                Category = await _unitOfWork.Categories.Get(c => c.CategoryId == id),
             };
 
             //If a category has no child only, then it can have a parent category
-            if (getChildCount(id) == 0)
+            if (await getChildCount(id) == 0)
             {
-                categoryVM.CategoriesList = _unitOfWork.Categories
+                categoryVM.CategoriesList = await _unitOfWork.Categories
                                                 .GetAll("ParentCategory")
                                                 .Where(c => c.CategoryId != id && c.ParentCategoryId == null)
                                                 .Select(c => new SelectListItem
                                                 {
                                                     Text = c.Name,
                                                     Value = c.CategoryId.ToString()
-                                                });
+                                                }).ToListAsync();
             }
             return View(categoryVM);
         }
 
         [HttpPost]
-        public IActionResult Edit(CategoryVM categoryVM)
+        public async Task<IActionResult> Edit(CategoryVM categoryVM)
         {
             if (ModelState.IsValid) { 
                 _unitOfWork.Categories.Update(categoryVM.Category);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["sucess"] = "Category updated successfully!";
                 return RedirectToAction("Index");
             }
@@ -69,30 +67,30 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             }
         }
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             CategoryVM categoryVM = new CategoryVM
             {
                 //parent categories
-                CategoriesList = _unitOfWork.Categories
+                CategoriesList = await _unitOfWork.Categories
                 .GetAll("ParentCategory")
                 .Where(c => c.ParentCategoryId == null)
                 .Select(c => new SelectListItem
                 {
                     Text = c.Name,
                     Value = c.CategoryId.ToString()
-                })
+                }).ToListAsync()
             };
             return View(categoryVM);
         }
 
         [HttpPost]
-        public IActionResult Create(CategoryVM categoryVM)
+        public async Task<IActionResult> Create(CategoryVM categoryVM)
         {
             if (ModelState.IsValid)
             {
                 _unitOfWork.Categories.Add(categoryVM.Category);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["sucess"] = "Category created successfully!";
                 return RedirectToAction("Index");
             }
@@ -104,17 +102,17 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
         #region API ENDPOINTS
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var categoriesList = _unitOfWork.Categories
-                                    .GetAll(includeProperties: "ParentCategory")
-                                    .ToList().Select(c => new
-                                    {
-                                        c.CategoryId,
-                                        c.Name,
-                                        c.ParentCategory,
-                                        childCount=getChildCount(c.CategoryId)
-                                    });
+            var categories = await _unitOfWork.Categories
+                                    .GetAll(includeProperties: "ParentCategory").ToListAsync();
+            var categoriesList = await Task.WhenAll(categories.Select(async c => new
+            {
+                c.CategoryId,
+                c.Name,
+                ParentCategory = c.ParentCategory != null ? c.ParentCategory.Name : null,
+                childCount = await getChildCount(c.CategoryId)
+            }));
             return Json(new
             {
                 data = categoriesList
@@ -123,7 +121,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
 
         [HttpDelete]
-        public IActionResult Delete(int? id) 
+        public async Task<IActionResult> Delete(int? id) 
         { 
             if(id==null || id == 0)
             {
@@ -132,10 +130,10 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     message ="No record found!", 
                 });
             }
-            Category category = _unitOfWork.Categories.Get(c=>c.CategoryId==id);
+            Category category = await _unitOfWork.Categories.Get(c=>c.CategoryId==id);
 
             _unitOfWork.Categories.Remove(category);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
 
             return Json(new { 
                 success = true,

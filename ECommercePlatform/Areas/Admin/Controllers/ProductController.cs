@@ -6,6 +6,7 @@ using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
 using ECommercePlatform.Filters;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
@@ -25,16 +26,16 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             ViewData["ActiveMenu"] = "Product";
             return View();
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             ProductVM productVM = new()
             {
-                CategoriesList = GetSelectListItems()
+                CategoriesList = await GetSelectListItems()
             };
             return View(productVM);
         }
         [HttpPost]
-        public IActionResult Create(ProductVM productVM)
+        public async Task<IActionResult> Create(ProductVM productVM)
         {
             if (ModelState.IsValid)
             {
@@ -48,37 +49,37 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
                         using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                         {
-                            productVM.productImage.CopyTo(fileStream);
+                            await productVM.productImage.CopyToAsync(fileStream);
                         }
                         productVM.Product.ImageUrl = @"\Images\products\" + fileName;
                     }
                     else
                     {
                         ModelState.AddModelError("Product.ImageUrl", "Product Image is not in the correct format. Please choose image.");
-                        productVM.CategoriesList = GetSelectListItems();
+                        productVM.CategoriesList = await GetSelectListItems();
                         return View(productVM);
                     }
                 }
                 else
                 {
                     ModelState.AddModelError("Product.ImageUrl", "Product Image must not be empty.");
-                    productVM.CategoriesList = GetSelectListItems();
+                    productVM.CategoriesList = await GetSelectListItems();
                     return View(productVM);
                 }
                 _unitOfWork.Products.Add(productVM.Product);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["sucess"] = "Product added successfully!";
                 return RedirectToAction("Index");
             }
             else
             {
-                productVM.CategoriesList = GetSelectListItems();
+                productVM.CategoriesList = await GetSelectListItems();
                 return View(productVM);
             }
             
         }
         [HttpPost]
-        public IActionResult Edit(ProductVM productVM)
+        public async Task<IActionResult> Edit(ProductVM productVM)
         {
             if (ModelState.IsValid)
             {
@@ -100,29 +101,29 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
                         using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                         {
-                            productVM.productImage.CopyTo(fileStream);
+                            await productVM.productImage.CopyToAsync(fileStream);
                         }
                         productVM.Product.ImageUrl = @"\Images\products\" + fileName;
                     }
                     else
                     {
                         ModelState.AddModelError("Product.ImageUrl", "Product Image is not in the correct format. Please choose image.");
-                        productVM.CategoriesList = GetSelectListItems();
+                        productVM.CategoriesList = await GetSelectListItems();
                         return View(productVM);
                     }
                 }
                 _unitOfWork.Products.Update(productVM.Product);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["sucess"] = "Product updated successfully!";
                 return RedirectToAction("Index");
             }
             else
             {
-                productVM.CategoriesList = GetSelectListItems();
+                productVM.CategoriesList = await GetSelectListItems();
                 return View(productVM);
             }
         }
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || id == 0)
             {
@@ -132,19 +133,19 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             {
                 ProductVM productVM = new()
                 {
-                    Product = _unitOfWork.Products.Get(p => p.ProductId == id),
-                    CategoriesList = GetSelectListItems()
+                    Product = await _unitOfWork.Products.Get(p => p.ProductId == id),
+                    CategoriesList = await GetSelectListItems()
                 };
                 return View(productVM);
             }
         }
         #region METHODS
-        IEnumerable<SelectListItem> GetSelectListItems()
+        async Task<IEnumerable<SelectListItem>> GetSelectListItems()
         {
-            var categories = _unitOfWork.Categories
+            var categories = await _unitOfWork.Categories
                 .GetAll("ParentCategory")
                 .Where(c => c.ParentCategoryId != null && c.ParentCategory != null)
-                .ToList();
+                .ToListAsync();
 
             var groupDictionary = new Dictionary<string, SelectListGroup>();
 
@@ -164,16 +165,16 @@ namespace ECommercePlatform.Areas.Admin.Controllers
         #endregion
         #region API ENDPOINTS
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            List<Product> productsList = _unitOfWork.Products.GetAll(includeProperties: "Category").ToList();
+            List<Product> productsList = await _unitOfWork.Products.GetAll(includeProperties: "Category").ToListAsync();
             return Json(new { data = productsList });
            
         }
 
 
         [HttpDelete]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || id == 0)
             {
@@ -183,10 +184,10 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     message = "No record found!",
                 });
             }
-            Product product = _unitOfWork.Products.Get(p => p.ProductId == id);
+            Product product = await _unitOfWork.Products.Get(p => p.ProductId == id);
             product.IsActive = 0;
             _unitOfWork.Products.Update(product);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return Json(new
             {
                 success = true,

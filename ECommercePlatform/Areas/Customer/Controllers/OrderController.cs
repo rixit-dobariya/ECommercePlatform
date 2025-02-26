@@ -5,6 +5,7 @@ using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Customer.Controllers
 {
@@ -21,14 +22,14 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             return View();
         }
-        public IActionResult Display(int orderId)
+        public async Task<IActionResult> Display(int orderId)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (orderId <= 0)
             {
                 return NotFound();
             }
-            OrderHeader orderHeader = _unitOfWork.OrderHeaders.Get(oh=>oh.OrderId==orderId, "User,ShippingAddress,OrderDetails");
+            OrderHeader orderHeader = await _unitOfWork.OrderHeaders.Get(oh=>oh.OrderId==orderId, "User,ShippingAddress,OrderDetails");
             if (orderHeader.UserId != userId)
             {
                 TempData["error"] = "You are not allowed to see this order";
@@ -36,13 +37,12 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }
             foreach (var orderDetail in orderHeader.OrderDetails)
             {
-                orderDetail.Product = _unitOfWork.Products.Get(p => p.ProductId == orderDetail.ProductId);
+                orderDetail.Product = await _unitOfWork.Products.Get(p => p.ProductId == orderDetail.ProductId);
             }
-
             return View(orderHeader);
         }
 
-        public IActionResult History()
+        public async Task<IActionResult> History()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -50,13 +50,13 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 TempData["error"] = "You must be logged in to view orders";
                 return RedirectToAction("Login", "User");
             }
-            IEnumerable<OrderHeader> orderHeaders = _unitOfWork.OrderHeaders.GetAll().Where(oh => oh.UserId == userId);
+            IEnumerable<OrderHeader> orderHeaders = await _unitOfWork.OrderHeaders.GetAll().Where(oh => oh.UserId == userId).ToListAsync();
             return View(orderHeaders);
         }
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            CheckoutVM checkoutVM = GetCheckoutVM(userId);
+            CheckoutVM checkoutVM = await GetCheckoutVM(userId);
             if (checkoutVM.CartItems.Count() == 0)
             {
                 TempData["error"] = "Your cart is empty, so add products to order them";
@@ -65,7 +65,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return View(checkoutVM);
         }
         [HttpPost]
-        public IActionResult AddAddress(Address address)
+        public async Task<IActionResult> AddAddress(Address address)
         {
             if (ModelState.IsValid)
             {
@@ -73,21 +73,20 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 if (address.UserId > 0)
                 {
                     _unitOfWork.Addresses.Add(address);
-                    _unitOfWork.Save();
+                    await _unitOfWork.Save();
                     TempData["success"] = "Address added successfully.";
-
                 }
                 else
                 {
                     TempData["error"] = "You need to login first to add address";
                     return RedirectToAction("Login","User");
                 }
-                return RedirectPermanent("Checkout");
+                return RedirectToAction("Checkout");
             }
             return Redirect("Checkout");
         }
         [HttpPost]
-        public IActionResult Checkout(CheckoutVM checkoutVM)
+        public async Task<IActionResult> Checkout(CheckoutVM checkoutVM)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -97,7 +96,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 return RedirectToAction("Login","User");
             }
 
-            CheckoutVM fetchedCheckoutVM = GetCheckoutVM(userId);
+            CheckoutVM fetchedCheckoutVM = await GetCheckoutVM(userId);
 
             if (checkoutVM.ShippingAddressId <= 0)
             {
@@ -117,14 +116,14 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 Subtotal = checkoutVM.Total - checkoutVM.ShippingCharge
             };
             //make used address as deleted 
-            Address address = _unitOfWork.Addresses.Get(a => a.AddressId == checkoutVM.ShippingAddressId);
+            Address address = await _unitOfWork.Addresses.Get(a => a.AddressId == checkoutVM.ShippingAddressId);
             address.IsDeleted = 1;
             _unitOfWork.Addresses.Update(address);
             address.AddressId = 0;
             _unitOfWork.Addresses.Add(address);
 
             _unitOfWork.OrderHeaders.Add(orderHeader);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             List<OrderDetail>  orderDetails = new List<OrderDetail>();
             foreach(var cartItem in checkoutVM.CartItems)
             {
@@ -139,17 +138,17 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 _unitOfWork.OrderDetails.Add(orderDetail);
             }
             _unitOfWork.CartItems.RemoveRange(checkoutVM.CartItems);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["success"] = "Order placed successfully.";
             return RedirectToAction("History");
         }
         #region METHODS
-        CheckoutVM GetCheckoutVM(int? userId)
+        async Task<CheckoutVM> GetCheckoutVM(int? userId)
         {
             CheckoutVM checkoutVM = new()
             {
-                CartItems = _unitOfWork.CartItems.GetAll("Product").Where(ci => ci.UserId == userId),
-                Addresses = _unitOfWork.Addresses.GetAll().Where(a => a.UserId == userId),
+                CartItems = await _unitOfWork.CartItems.GetAll("Product").Where(ci => ci.UserId == userId).ToListAsync(),
+                Addresses = await _unitOfWork.Addresses.GetAll().Where(a => a.UserId == userId).ToListAsync(),
             };
             checkoutVM.Total = checkoutVM.CartItems
                     .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
