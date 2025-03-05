@@ -13,7 +13,7 @@ function loadCategoryData() {
         columns: [
             { data: 'categoryId', title: 'Category Id', width: "15%" },
             { data: 'name', title: 'Category Name', width: "15%" },
-            { data: 'parentCategory.name', title: 'Parent Category', defaultContent: '-', width: "15%" },
+            { data: 'parentCategory', title: 'Parent Category', defaultContent: '-', width: "15%" },
             {
                 data: null,
                 render: function (data) {

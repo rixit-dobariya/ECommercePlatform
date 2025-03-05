@@ -20,6 +20,15 @@
     <!-- Modernizer JS -->
     <script src="~/assets/js/vendor/modernizr-2.8.3.min.js"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> 
+    <script>
+            function changeLanguage(lang) {
+            var select = document.querySelector(".goog-te-combo");
+            if (select) {
+                select.value = lang;
+                select.dispatchEvent(new Event("change"));
+            }
+        }
+    </script>
     @* <link rel="stylesheet" href="~/ECommercePlatform.styles.css" asp-append-version="true" /> *@
     <style>
         /* Hide radio buttons */
@@ -90,6 +99,7 @@
                         <nav>
                             <ul>
                                 <li><a asp-controller="Shop" asp-action="Index"> Shop </a></li>
+                                <li><a asp-controller="Home" asp-action="Contact"> Contact </a></li>
                             </ul>
                         </nav>
                     </div>
@@ -107,6 +117,8 @@
                         </div>
                         @await Component.InvokeAsync("UserInfo")
                     </div>
+                    
+                    
                 </div>
             </div>
             <div class="mobile-menu-area">
@@ -338,7 +350,8 @@
     <script src="~/assets/js/main.js"></script>
     <!-- Toastr JS-->
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
+   
+    @RenderSection("Scripts", required: false)
     <partial name="_ToastPartial" />
 </body>
 </html>

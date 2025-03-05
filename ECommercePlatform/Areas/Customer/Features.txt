@@ -1,0 +1,15 @@
+﻿
+User
+
+Apply offers
+Order delete
+Shop filter
+Pagination
+Display Categoroies
+Display product attributes in product-details page
+Display banners
+
+
+extra:
+website in 3 languages
+add services 

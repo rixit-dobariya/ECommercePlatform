@@ -16,6 +16,7 @@ namespace ECommercePlatform.Repository.IRepository
         IRepository<OrderHeader> OrderHeaders { get; }
         IRepository<OrderDetail> OrderDetails { get; }
         IRepository<Review> Reviews { get; }
+        IRepository<Response> Responses { get; }
 
         Task Save();
     }

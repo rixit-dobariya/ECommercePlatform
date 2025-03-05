@@ -1,0 +1,8 @@
+﻿
+Admin
+
+Display order details
+Reply contact responses
+Manage about, contact page content
+Manage product attribites with product
+Manage banners

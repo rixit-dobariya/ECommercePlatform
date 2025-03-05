@@ -11,10 +11,9 @@
 	OrderDetail
 	Offer
 	Review
-
+	Response
 
 Extra:
 	Banner
 	PagesContent
-	Response
 	Like Dislike for reviews

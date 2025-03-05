@@ -70,22 +70,6 @@
 						</div>
 						<div class="form-group attributeContainer">
 							<label>Add Product Attributes</label>
-							@for (int i = 0; i < Model.ProductAttributes.Count; i++)
-							{
-								<div class="attribute row mb-2">
-									<div class="col-md-5">
-										<input class="form-control " asp-for="ProductAttributes[i].Name" placeholder="Attribute name" />
-										<span asp-validation-for="ProductAttributes[i].Name" class="form-text text-danger"></span>
-									</div>
-									<div class="col-md-5">
-										<input class="form-control" asp-for="ProductAttributes[i].Value" placeholder="Attribute value" />
-										<span asp-validation-for="ProductAttributes[i].Value" class="form-text text-danger"></span>
-									</div>
-									<div class="col-md-2">
-										<button type="button" class="removeBtn btn btn-danger">Remove</button>
-									</div>	
-								</div>
-							}
 						</div>
 						<div class="form-group">
 							<button type="button" id="addNewAttributeBtn" class="btn btn-info">Add New Attribute</button>
@@ -119,74 +103,81 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.js"></script>
 
 	<script>
-		$(document).ready(function () {
-			$('#shortDescription').summernote({
+						$(document).ready(function () {
+			$('#shortDescription, #longDescription').summernote({
 				placeholder: 'Enter description...',
 				tabsize: 2,
 				height: 200,
 				toolbar: [
-				['style', ['bold', 'italic', 'underline', 'clear']],
-				['para', ['ul', 'ol', 'paragraph']],
-				['insert', ['link', 'picture']],
-				['view', ['fullscreen', 'codeview']]
+					['style', ['bold', 'italic', 'underline', 'clear']],
+					['para', ['ul', 'ol', 'paragraph']],
+					['insert', ['link', 'picture']],
+					['view', ['fullscreen', 'codeview']]
 				]
 			});
-			$('#longDescription').summernote({
-				placeholder: 'Enter description...',
-				tabsize: 2,
-				height: 200,
-				toolbar: [
-				['style', ['bold', 'italic', 'underline', 'clear']],
-				['para', ['ul', 'ol', 'paragraph']],
-				['insert', ['link', 'picture']],
-				['view', ['fullscreen', 'codeview']]
-				]
-			});
+
 			let attributeIndex = @Model.ProductAttributes.Count; // Starting index for new attributes
+			const attributeContainer = $(".attributeContainer");
 
-			// Add new attribute fields
-			$("#addNewAttributeBtn").click(function () {
-				const newAttribute = `
-					<div class="attribute row mb-2">
-						<div class="col-md-5">
-							<input class="form-control"
-								   name="ProductAttributes[${attributeIndex}].Name"
-								   placeholder="Attribute name"
-								   data-val="true"
-								   data-val-required="Attribute name is required." />
-							<span class="form-text text-danger"></span>
-						</div>
-						<div class="col-md-5">
-							<input class="form-control"
-								   name="ProductAttributes[${attributeIndex}].Value"
-								   placeholder="Attribute value"
-								   data-val="true"
-								   data-val-required="Attribute value is required." />
-							<span class="form-text text-danger"></span>
-						</div>
-						<div class="col-md-2">
-							<button type="button" class="removeBtn btn btn-danger">Remove</button>
-						</div>
+			// Function to create attribute fields
+					function createAttributeField(index) {
+			return `
+				<div class="attribute row mb-2">
+					<div class="col-md-5">
+						<input class="form-control attribute-name"
+							   name="ProductAttributes[${index}].Name"
+							   placeholder="Attribute name"
+							   data-val="true"
+							   data-val-required="Attribute name is required"
+							   aria-describedby="ProductAttributes[${index}].Name-error"
+							   />
+						<span class="text-danger field-validation-valid"
+							  data-valmsg-for="ProductAttributes[${index}].Name"
+							  data-valmsg-replace="true"></span>
 					</div>
-				`;
-				$(".attributeContainer").append(newAttribute);
-				attributeIndex++;  // Increment the index for the next new attribute
+					<div class="col-md-5">
+						<input class="form-control attribute-value"
+							   name="ProductAttributes[${index}].Value"
+							   placeholder="Attribute value"
+							   data-val="true"
+							   data-val-required="Attribute value is required"
+							   aria-describedby="ProductAttributes[${index}].Name-error"
+							   />
+						<span class="text-danger field-validation-valid"
+							  data-valmsg-for="ProductAttributes[${index}].Value"
+							  data-valmsg-replace="true"></span>
+					</div>
+					<div class="col-md-2">
+						<button type="button" class="removeBtn btn btn-danger">Remove</button>
+					</div>
+				</div>
+			`;
+		}
 
-				// Reapply validation rules to the newly added fields
-				$("form").validate().element("input[name='ProductAttributes[" + (attributeIndex - 1) + "].Name']");
-				$("form").validate().element("input[name='ProductAttributes[" + (attributeIndex - 1) + "].Value']");
 
-				// Trigger validation for the whole form
-				$("form").valid();
+			// Add two default attributes on page load
+			for (let i = 0; i < 2; i++) {
+				attributeContainer.append(createAttributeField(attributeIndex++));
+			}
+
+			// Add new attribute fields dynamically
+			$("#addNewAttributeBtn").click(function () {
+				attributeContainer.append(createAttributeField(attributeIndex++));
+				$.validator.unobtrusive.parse("form"); // Apply ASP.NET Core validation to new fields
 			});
 
-			// Remove attribute fields
-			$(".attributeContainer").on('click', '.removeBtn', function () {
-				$(this).closest('.attribute').remove();
-				// Trigger validation again after removal
-				$("form").valid();
+			// Remove attribute fields (ensures at least two remain)
+			attributeContainer.on('click', '.removeBtn', function () {
+				if ($(".attribute").length > 2) {
+					$(this).closest('.attribute').remove();
+				} else {
+					alert("At least two attributes are required.");
+				}
 			});
 		});
+
+
+				
 
 	</script>
 

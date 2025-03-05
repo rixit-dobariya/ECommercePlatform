@@ -23,12 +23,6 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             ViewData["ActiveMenu"] = "Category";
             return View();
         }
-        async Task<int> getChildCount(int? id)
-        {
-            return await _unitOfWork.Categories
-                    .GetAll()
-                    .CountAsync(c => c.ParentCategoryId == id);
-        }
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -38,7 +32,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             };
 
             //If a category has no child only, then it can have a parent category
-            if (await getChildCount(id) == 0)
+            if (getChildCount(id) == 0)
             {
                 categoryVM.CategoriesList = await _unitOfWork.Categories
                                                 .GetAll("ParentCategory")
@@ -99,20 +93,26 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 return View(categoryVM);
             }
         }
-
+        private int getChildCount(int? id)
+        {
+            return _unitOfWork.Categories
+                    .GetAll()
+                    .Count(c => c.ParentCategoryId == id);
+        }
         #region API ENDPOINTS
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var categories = await _unitOfWork.Categories
-                                    .GetAll(includeProperties: "ParentCategory").ToListAsync();
-            var categoriesList = await Task.WhenAll(categories.Select(async c => new
-            {
-                c.CategoryId,
-                c.Name,
-                ParentCategory = c.ParentCategory != null ? c.ParentCategory.Name : null,
-                childCount = await getChildCount(c.CategoryId)
-            }));
+                                    .GetAll("ParentCategory").ToListAsync();
+            var categoriesList = 
+                categories.Select( c => new
+                {
+                    c.CategoryId,
+                    c.Name,
+                    ParentCategory = c.ParentCategory?.Name,
+                    childCount = getChildCount(c.CategoryId)
+                });
             return Json(new
             {
                 data = categoriesList

@@ -1,0 +1,49 @@
+﻿@{
+	ViewData["Title"] = "Response Management";
+}
+@* <div class="page-header"> *@
+<div class="row">
+	<div class="col-md-9 page-header">
+		<h3 class="fw-bold mb-3">Response Management</h3>
+		<ul class="breadcrumbs mb-3 d-flex align-items-center">
+			<li class="nav-home">
+				<a asp-controller="Home" asp-action="Index">
+					<i class="icon-home"></i>
+				</a>
+			</li>
+			<li class="separator">
+				<i class="icon-arrow-right"></i>
+			</li>
+			<li class="nav-item">
+				<a asp-controller="Response" asp-action="Index">Response</a>
+			</li>
+			<li class="separator">
+				<i class="icon-arrow-right"></i>
+			</li>
+			<li class="nav-item">
+				<a asp-controller="Response" asp-action="Index">Home</a>
+			</li>
+		</ul>
+	</div>
+</div>
+
+@* </div> *@
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Responses</h4>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table id="responseTbl">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script src="~/js/datatables/response.js"></script>
+}

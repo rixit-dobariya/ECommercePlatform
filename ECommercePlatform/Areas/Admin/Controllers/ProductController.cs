@@ -43,9 +43,9 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 {
                     if (productVM.productImage.ContentType.StartsWith("image/"))
                     {
-                        string wwwRootPath = _env.WebRootPath;
-                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(productVM.productImage.FileName);
                         string productPath = Path.Combine(_env.WebRootPath, @"Images\products");
+
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(productVM.productImage.FileName);
 
                         using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                         {
@@ -76,7 +76,6 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 productVM.CategoriesList = await GetSelectListItems();
                 return View(productVM);
             }
-            
         }
         [HttpPost]
         public async Task<IActionResult> Edit(ProductVM productVM)

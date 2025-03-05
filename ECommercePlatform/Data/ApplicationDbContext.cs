@@ -23,6 +23,7 @@ namespace ECommercePlatform.Data
         DbSet<WishlistItem> WishlistItems { get; set; }
         DbSet<UserOTP> UserOTPs { get; set; }
         DbSet<Review> Reviews { get; set; }
+        DbSet<Response> Responses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
