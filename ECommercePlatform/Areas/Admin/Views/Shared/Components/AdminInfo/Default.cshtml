@@ -1,0 +1,38 @@
+﻿@model AdminInfoVM
+<li class="nav-item topbar-user dropdown hidden-caret">
+	<a class="dropdown-toggle profile-pic"
+	   data-bs-toggle="dropdown" href="#" aria-expanded="false">
+		<div class="avatar-sm">
+			<img src="@Model.ProfilePictureUrl"
+				 alt="..."
+				 class="avatar-img rounded-circle" />
+		</div>
+		<span class="profile-username">
+			<span class="op-7">Hi,</span>
+			<span class="fw-bold">@Model.Name</span>
+		</span>
+	</a>
+	<ul class="dropdown-menu dropdown-user animated fadeIn">
+		<div class="dropdown-user-scroll scrollbar-outer">
+			<li>
+				<div class="user-box">
+					<div class="avatar-lg">
+						<img src="@Model.ProfilePictureUrl"
+							 alt="image profile"
+							 class="avatar-img rounded" />
+					</div>
+					<div class="u-text">
+						<h4>@Model.Name</h4>
+						<p class="text-muted">
+							@Model.Email
+						</p>
+					</div>
+				</div>
+			</li>
+			<li>
+				<a class="dropdown-item" asp-controller="Profile" asp-action="Edit">My Profile</a>
+				<a class="dropdown-item" asp-controller="Profile" asp-action="Logout">Logout</a>
+			</li>
+		</div>
+	</ul>
+</li>

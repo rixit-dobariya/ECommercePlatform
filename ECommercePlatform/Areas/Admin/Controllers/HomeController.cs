@@ -15,5 +15,6 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
             return View();
         }
+        
     }
 }

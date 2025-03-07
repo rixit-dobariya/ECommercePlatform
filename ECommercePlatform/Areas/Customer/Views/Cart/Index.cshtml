@@ -53,7 +53,7 @@
                                             <input hidden asp-for="@cartItem.ProductId" />
                                         <td class="product-thumbnail">
                                             <a asp-controller="Shop" asp-action="ProductDetails" asp-route-productId="@cartItem.ProductId">
-                                                <img src="@cartItem.Product.ImageUrl" alt="@cartItem.Product.Name">
+                                                <img width="70" src="@cartItem.Product.ImageUrl" alt="@cartItem.Product.Name">
                                             </a>
                                         </td>
                                         <td class="product-name">

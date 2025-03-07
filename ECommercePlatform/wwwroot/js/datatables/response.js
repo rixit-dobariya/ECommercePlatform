@@ -18,8 +18,11 @@ function loadResponseData() {
             { data: 'message', title: 'Message', width: "30%" },
             {
                 data: 'responseId',
-                render: function (data) {
+                render: function (data, type, row) {
                     return `
+                            <button onClick="openReplyModal(${data}, '${row.name}', '${row.email}')" class="btn btn-link btn-primary">
+                                <i class="fa fa-reply"></i> Reply
+                            </button>
                             <button onClick="deleteItem('response/delete/${data}', 'responseTbl')" class="btn btn-link btn-danger">
                                 <i class="fa fa-times"></i>
                             </button>
@@ -53,4 +56,11 @@ function deleteItem(url, tableId) {
             });
         }
     });
+}
+function openReplyModal(responseId, name, email) {
+    $('#responseId').val(responseId);
+    $('#userName').val(name);
+    $('#userEmail').val(email);
+    $('#replyMessage').val(''); // Clear previous message
+    $('#replyModal').modal('show');
 }

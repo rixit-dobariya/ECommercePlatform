@@ -62,24 +62,24 @@
                             </div>
                         </div>
                     </div>
-                    @if(Model.BillingAddressId.HasValue)
-                    {
-                        <div class="col-lg-4 col-md-12">
-                            <div class="grand-totall">
-                                <div class="">
-                                    <h4 class="font-weight-semibold section-bg-gary-cart">Billing Address</h4>
-                                </div>
-                                <div class="total-shipping">
-                                    <address>
-                                        Name: @Model.BillingAddress.FirstName @Model.BillingAddress.LastName 
-                                        @Model.BillingAddress.Region @Model.BillingAddress.City 
-                                        @Model.BillingAddress.State Pin Code: @Model.BillingAddress.PinCode 
-                                        Phone: @Model.BillingAddress.Phone
-                                    </address>
-                                </div>
-                            </div>
-                        </div>
-                    }
+                    @* @if(Model.BillingAddressId.HasValue) *@
+                    @* { *@
+                    @*     <div class="col-lg-4 col-md-12"> *@
+                    @*         <div class="grand-totall"> *@
+                    @*             <div class=""> *@
+                    @*                 <h4 class="font-weight-semibold section-bg-gary-cart">Billing Address</h4> *@
+                    @*             </div> *@
+                    @*             <div class="total-shipping"> *@
+                    @*                 <address> *@
+                    @*                     Name: @Model.BillingAddress.FirstName @Model.BillingAddress.LastName  *@
+                    @*                     @Model.BillingAddress.Region @Model.BillingAddress.City  *@
+                    @*                     @Model.BillingAddress.State Pin Code: @Model.BillingAddress.PinCode  *@
+                    @*                     Phone: @Model.BillingAddress.Phone *@
+                    @*                 </address> *@
+                    @*             </div> *@
+                    @*         </div> *@
+                    @*     </div> *@
+                    @* } *@
                 </div>
             </div>
             <h3 class="cart-page-title">Your ordered items</h3>
@@ -102,7 +102,7 @@
                                 <tr>
                                     <td class="product-thumbnail">
                                         <a asp-controller="Shop" asp-action="ProductDetails" asp-route-productId="@orderDetail.ProductId">
-                                            <img src="@orderDetail.Product.ImageUrl" alt="@orderDetail.Product.Name">
+                                            <img width="75" src="@orderDetail.Product.ImageUrl" alt="@orderDetail.Product.Name">
                                         </a>
                                     </td>
                                     <td class="product-name">
@@ -116,21 +116,18 @@
                                     </td>
                                     <td class="product-subtotal">₹@Math.Round(orderDetail.Quantity * orderDetail.Price, 2)</td>
                                     <td class="product-subtotal">₹@Math.Round(orderDetail.Quantity * orderDetail.Price, 2)</td>
-                            </tr>
+                                </tr>
                             }
                             <tr>
-                                <td colspan="3"></td>
-                                <td>Subtotal</td>
+                                <td colspan="4" class="text-right">Subtotal</td>
                                 <td>@Model.Subtotal</td>
                             </tr>
                             <tr>
-                                <td colspan="3"></td>
-                                <td>Shipping Charge</td>
+                                <td colspan="4" class="text-right">Shipping Charge</td>
                                 <td>@Model.ShippingCharge</td>
                             </tr>
                             <tr>
-                                <td colspan="3"></td>
-                                <td>Total</td>
+                                <td colspan="4" class="text-right">Total</td>
                                 <td>@(Model.Subtotal + Model.ShippingCharge)</td>
                             </tr>
                         </tbody>

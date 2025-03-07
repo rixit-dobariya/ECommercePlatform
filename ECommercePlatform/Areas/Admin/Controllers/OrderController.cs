@@ -23,6 +23,15 @@ namespace ECommercePlatform.Areas.Admin.Controllers
 
             return View();
         }
+        public async Task<IActionResult> Details(int id)
+        {
+            OrderHeader orderHeader = await _unitOfWork.OrderHeaders.Get(o => o.OrderId == id, "User,ShippingAddress,OrderDetails");
+            foreach (var orderDetail in orderHeader.OrderDetails)
+            {
+                orderDetail.Product = await _unitOfWork.Products.Get(p => p.ProductId == orderDetail.ProductId);
+            }
+            return View(orderHeader);
+        }
         #region API ENDPOINTS
         public async Task<JsonResult> GetAll()
         {

@@ -1,8 +1,13 @@
 ﻿
 Admin
 
-Display order details
+update status
 Reply contact responses
 Manage about, contact page content
-Manage product attribites with product
+Manage product attributes with product
 Manage banners
+manage reviews
+
+extra: 
+manage user cart
+manage user wishlist

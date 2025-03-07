@@ -1,0 +1,145 @@
+﻿@model OrderHeader
+<div class="row">
+	<div class="col-md-9 page-header">
+		<h3 class="fw-bold mb-3">Order Details</h3>
+		<ul class="breadcrumbs mb-3 d-flex align-items-center">
+			<li class="nav-home">
+				<a asp-controller="Home" asp-action="Index">
+					<i class="icon-home"></i>
+				</a>
+			</li>
+			<li class="separator">
+				<i class="icon-arrow-right"></i>
+			</li>
+			<li class="nav-item">
+				<a asp-controller="Order" asp-action="Index">Orders</a>
+			</li>
+			<li class="separator">
+				<i class="icon-arrow-right"></i>
+			</li>
+			<li class="nav-item">
+				<a>Order Details</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="row row-demo-grid">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+								<h4 class="mb-2">Order #@Model.OrderId</h4>
+								<div class="mb-2">Order Status: @Model.OrderStatus</div>
+								<div class="mb-2">Placed On: @DateOnly.FromDateTime(Model.OrderDate)</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<div class="row row-demo-grid">
+					<div class="col-xl-4">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="mb-2">User Details</h5>
+								<div class="row">
+									<div class="col-4 mb-2">Full name: </div><div class="col-8 mb-2">@Model.User.FullName </div>
+									<div class="col-4 mb-2">Email: </div><div class="col-8 mb-2">@Model.User.Email </div>
+									<div class="col-4 mb-2">Phone: </div><div class="col-8 mb-2">@Model.User.Phone </div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-4">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="mb-2">Shipping address</h5>
+								<div class="d-flex flex-column gap-2">
+									<div>@Model.ShippingAddress.FirstName @Model.ShippingAddress.LastName</div>
+									<div>@Model.ShippingAddress.Region</div>
+									<div>@Model.ShippingAddress.City, @Model.ShippingAddress.State</div>
+									<div>Pin: @Model.ShippingAddress.PinCode</div>
+									<div>Phone: @Model.ShippingAddress.Phone</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					@* @if (Model.BillingAddressId.HasValue) *@
+					@* { *@
+					@* 	<div class="col-xl-4"> *@
+					@* 		<div class="card"> *@
+					@* 			<div class="card-body"> *@
+					@* 				<h5 class="mb-2">Billing address</h5> *@
+					@* 				<div class="d-flex flex-column gap-2"> *@
+					@* 					<div>@Model.BillingAddress.FirstName @Model.BillingAddress.LastName</div> *@
+					@* 					<div>@Model.BillingAddress.Region</div> *@
+					@* 					<div>@Model.BillingAddress.City, @Model.BillingAddress.State</div> *@
+					@* 					<div>Pin: @Model.BillingAddress.PinCode</div> *@
+					@* 					<div>Phone: @Model.BillingAddress.Phone</div> *@
+					@* 				</div> *@
+					@* 			</div> *@
+					@* 		</div> *@
+					@* 	</div> *@
+					@* } *@
+				</div>
+			</div>
+			<div class="card-body">
+				<div class="card-header">
+					<div class="card-title">Ordered Items</div>
+				</div>
+				<div class="card-body">
+					<table class="table mt-3">
+						<thead>
+							<tr>
+								<th>Image</th>
+								<th>Product Name</th>
+								<th>Unit Price</th>
+								<th>Qty</th>
+								<th>Subtotal</th>
+								<th>Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var orderDetail in Model.OrderDetails)
+							{
+								<tr>
+									<td>
+										<a asp-controller="Shop" asp-action="ProductDetails" asp-route-productId="@orderDetail.ProductId">
+											<img width="75" src="@orderDetail.Product.ImageUrl" alt="@orderDetail.Product.Name">
+										</a>
+									</td>
+									<td>
+										<a asp-controller="Shop" asp-action="ProductDetails" asp-route-productId="@orderDetail.ProductId">
+											@orderDetail.Product.Name
+										</a>
+									</td>
+									<td><span>₹@Math.Round(orderDetail.Price, 2)</span></td>
+									<td>
+										@orderDetail.Quantity
+									</td>
+									<td>₹@Math.Round(orderDetail.Quantity * orderDetail.Price, 2)</td>
+									<td>₹@Math.Round(orderDetail.Quantity * orderDetail.Price, 2)</td>
+								</tr>
+							}
+							<tr>
+								<td colspan="5" class="text-right">Subtotal</td>
+								<td>@Model.Subtotal</td>
+							</tr>
+							<tr>
+								<td colspan="5" class="text-right">Shipping Charge</td>
+								<td>@Model.ShippingCharge</td>
+							</tr>
+							<tr>
+								<td colspan="5" class="text-right">Total</td>
+								<td>@(Model.Subtotal + Model.ShippingCharge)</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

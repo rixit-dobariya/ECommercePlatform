@@ -26,8 +26,6 @@ namespace ECommercePlatform.Models
 
         [Required]
         public int UserId { get; set; }
-        [ForeignKey("UserId")]
-        public User User { get; set; }
 
         [Required]
         public OrderStatus OrderStatus { get; set; } // Enum type
@@ -37,12 +35,8 @@ namespace ECommercePlatform.Models
 
         [Required]
         public int ShippingAddressId { get; set; }
-        [ForeignKey("ShippingAddressId")]
-        public Address ShippingAddress { get; set; }
 
         public int? BillingAddressId { get; set; }  // Nullable for optional billing address
-        [ForeignKey("BillingAddressId")]
-        public Address BillingAddress { get; set; }
 
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "Shipping Charge must be greater than zero.")]
@@ -57,6 +51,12 @@ namespace ECommercePlatform.Models
         public bool IsDeleted { get; set; } = false;
 
         //Navigation property
+        [ForeignKey("UserId")]
+        public User User { get; set; }
+        [ForeignKey("ShippingAddressId")]
+        public Address ShippingAddress { get; set; }
+        [ForeignKey("BillingAddressId")]
+        public Address BillingAddress { get; set; }
         public IEnumerable<OrderDetail> OrderDetails { get; set; }
     }
 }

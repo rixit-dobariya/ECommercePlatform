@@ -1,0 +1,87 @@
+﻿@model AdminProfileVM
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+
+<div class="page-header">
+	<h3 class="fw-bold mb-3">My Profile</h3>
+	<ul class="breadcrumbs mb-3">
+		<li class="nav-home">
+			<a asp-controller="Home">
+				<i class="icon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="icon-arrow-right"></i>
+		</li>
+		<li class="nav-item">
+			<a asp-controller="Profile" asp-action="Edit">
+				Edit Profile
+			</a>
+		</li>
+	</ul>
+</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+				<form method="post" asp-action="UpdateInfo" enctype="multipart/form-data">
+					<div class="card-header">
+						<div class="card-title">Edit Profile</div>
+					</div>
+					<div class="card-body">
+						<div class="row">
+							<input hidden asp-for="AdminEditProfileVM.ProfilePictureUrl" />
+							<div class="form-group col-md-6">
+								<label asp-for="AdminEditProfileVM.FullName"></label>
+								<input class="form-control" asp-for="AdminEditProfileVM.FullName" placeholder="Enter your full name" />
+								<span asp-validation-for="AdminEditProfileVM.FullName" class="form-text text-danger"></span>
+							</div>
+							<div class="form-group col-md-6">
+								<label asp-for="AdminEditProfileVM.ProfilePicture"></label>
+								<input type="file" asp-for="AdminEditProfileVM.ProfilePicture" class="form-control" placeholder="Enter Your profile picture" accept="image/*" />
+								<span class="text-danger" asp-validation-for="AdminEditProfileVM.ProfilePicture"></span>
+								<div class="col-md-3">
+									<img src="@Model.AdminEditProfileVM.ProfilePictureUrl" class="img-fluid" />
+								</div>
+							</div>
+							<div class="form-group">
+								<button type="submit" class="btn btn-primary">Update Profile</button>
+							</div>
+						</div>
+					</div>
+				</form>
+				<form method="post" asp-action="UpdatePassword">
+				<div class="card-header">
+					<div class="card-title">Change Password</div>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="form-group ">
+							<label asp-for="ChangePassword.CurrentPassword"></label>
+							<input class="form-control" asp-for="ChangePassword.CurrentPassword" placeholder="Enter your old password" />
+							<span asp-validation-for="ChangePassword.CurrentPassword" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group">
+							<label asp-for="ChangePassword.Password"></label>
+							<input class="form-control" asp-for="ChangePassword.Password" placeholder="Enter new password" />
+							<span asp-validation-for="ChangePassword.Password" class="form-text text-danger"></span>
+						</div>
+						<div class="form-group ">
+							<label asp-for="ChangePassword.ConfirmPassword"></label>
+							<input class="form-control" asp-for="ChangePassword.ConfirmPassword" placeholder="Confirm password" />
+							<span asp-validation-for="ChangePassword.ConfirmPassword" class="form-text text-danger"></span>
+						</div>
+
+						<div class="form-group">
+							<button type="submit" class="btn btn-primary">Update Password</button>
+						</div>
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}
