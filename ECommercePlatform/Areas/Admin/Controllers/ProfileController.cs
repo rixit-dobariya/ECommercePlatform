@@ -1,4 +1,5 @@
 ﻿using ECommercePlatform.Constants;
+using ECommercePlatform.Filters;
 using ECommercePlatform.Helpers;
 using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ECommercePlatform.Areas.Admin.Controllers
 {
     [Area(UserRole.Admin)]
+    [AdminAuthCheck]
     public class ProfileController : Controller
     {
         private IWebHostEnvironment _env;

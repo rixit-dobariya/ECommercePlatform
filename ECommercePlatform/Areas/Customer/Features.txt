@@ -8,9 +8,7 @@ Display Categoroies
 Display product attributes in product-details page
 Display banners
 Add pagination in all pages
-make contact page dynamic
 make home page dynamic
-make about page dynamic
 make footer dynamic
 
 extra:

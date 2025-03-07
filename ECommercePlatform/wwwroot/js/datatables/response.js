@@ -19,14 +19,18 @@ function loadResponseData() {
             {
                 data: 'responseId',
                 render: function (data, type, row) {
-                    return `
-                            <button onClick="openReplyModal(${data}, '${row.name}', '${row.email}')" class="btn btn-link btn-primary">
-                                <i class="fa fa-reply"></i> Reply
-                            </button>
+                    let htmlContent = "";
+                    if (row.reply === null || row.reply === "") {
+                        htmlContent += `<a href="Response/Reply/${data}" class="btn btn-link btn-primary btn-lg">
+                                <i class="fas fa-reply"></i>
+                            </a>`;
+                    }
+                    htmlContent+= `
                             <button onClick="deleteItem('response/delete/${data}', 'responseTbl')" class="btn btn-link btn-danger">
                                 <i class="fa fa-times"></i>
                             </button>
                         `;
+                    return htmlContent;
                 },
                 title: 'Action',
                 width: "20%"
@@ -56,11 +60,4 @@ function deleteItem(url, tableId) {
             });
         }
     });
-}
-function openReplyModal(responseId, name, email) {
-    $('#responseId').val(responseId);
-    $('#userName').val(name);
-    $('#userEmail').val(email);
-    $('#replyMessage').val(''); // Clear previous message
-    $('#replyModal').modal('show');
 }

@@ -18,12 +18,14 @@ namespace ECommercePlatform.Data
         DbSet<CartItem> CartItems { get; set; }
         DbSet<Offer> Offers { get; set; }
         DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<OrderHeader> OrderHeaders { get; set; }
+        DbSet<OrderHeader> OrderHeaders { get; set; }
         DbSet<User> Users { get; set; }
         DbSet<WishlistItem> WishlistItems { get; set; }
         DbSet<UserOTP> UserOTPs { get; set; }
         DbSet<Review> Reviews { get; set; }
         DbSet<Response> Responses { get; set; }
+        DbSet<ContactDetails> ContactDetails { get; set; }
+        DbSet<AboutPageContent> AboutPageContent { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -2,8 +2,6 @@
 Admin
 
 update status
-Reply contact responses
-Manage about, contact page content
 Manage product attributes with product
 Manage banners
 manage reviews

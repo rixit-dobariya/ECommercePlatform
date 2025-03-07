@@ -24,17 +24,19 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             return View();
         }
-        public IActionResult NotFound()
+        public async Task<IActionResult> About()
         {
-            return View();
+            AboutPageContent aboutPageContent= await _unitOfWork.AboutPageContent.Get(a => a.Id == 1);
+            return View(aboutPageContent);
         }
-        public IActionResult About()
+        public async Task<IActionResult> Contact()
         {
-            return View();
-        }
-        public IActionResult Contact()
-        {
-            return View();
+            ContactDetails contactDetails = await _unitOfWork.ContactDetails.Get(c => c.Id == 1);
+            return View(new ContactVM { 
+                PhoneNumbers = contactDetails.PhoneNumbers.Split(","),
+                Emails = contactDetails.Emails.Split(","),
+                Address = contactDetails.Address
+            });
         }
         [HttpPost]
         public async Task<IActionResult> Contact(Response response)
@@ -48,7 +50,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 _unitOfWork.Responses.Add(response);
                 await _unitOfWork.Save();
                 TempData["success"] = "Your response has been stored successfully!";
-                return View();
+                return Redirect(Request.Headers["Referer"].ToString());
             }
         }
 

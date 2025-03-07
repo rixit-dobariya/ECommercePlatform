@@ -19,6 +19,8 @@ namespace ECommercePlatform.Repository
         public IRepository<OrderDetail> OrderDetails { get; private set; }
         public IRepository<Review> Reviews { get; private set; }
         public IRepository<Response> Responses { get; private set; }
+        public IRepository<ContactDetails> ContactDetails { get; private set; }
+        public IRepository<AboutPageContent> AboutPageContent { get; private set; }
 
         private ApplicationDbContext _db;
 
@@ -38,6 +40,8 @@ namespace ECommercePlatform.Repository
             OrderDetails = new Repository<OrderDetail>(db);
             Reviews = new Repository<Review>(db);
             Responses = new Repository<Response>(db);
+            ContactDetails = new Repository<ContactDetails>(db);
+            AboutPageContent = new Repository<AboutPageContent>(db);
         }
 
         public async Task Save()
