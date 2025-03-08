@@ -32,8 +32,11 @@ function loadProductData() {
                 data: 'productId',
                 render: function (data) {
                     return `
-                            <a href="Product/Edit/${data}" class="btn btn-link btn-primary btn-lg">
+                            <a href="Product/Edit/${data}" class="btn btn-link btn-primary btn-md">
                                 <i class="fa fa-edit"></i>
+                            </a>
+                            <a href="Product/Details/${data}" class="btn btn-link btn-primary btn-md">
+                                <i class="fa fa-eye"></i>
                             </a>
                             <button onClick="deleteItem('product/delete/${data}', 'productTbl')" class="btn btn-link btn-danger">
                                 <i class="fa fa-times"></i>

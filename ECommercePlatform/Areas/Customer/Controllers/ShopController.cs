@@ -55,9 +55,9 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             {
                 CartItem cartItem= await _unitOfWork.CartItems.Get(ci => ci.ProductId == productId && ci.UserId == userId);
                 productDetailsVM.CartQuantity = cartItem == null ? 0 : cartItem.Quantity;
-                productDetailsVM.IsInWishlist = _unitOfWork.WishlistItems.Get(wi => wi.ProductId == productId && wi.UserId==userId) != null;
+                productDetailsVM.IsInWishlist = await _unitOfWork.WishlistItems.Get(wi => wi.ProductId == productId && wi.UserId==userId) != null;
                 productDetailsVM.HasOrdered = _unitOfWork.OrderHeaders.GetAll("OrderDetails").Any(oh => oh.UserId == userId && oh.OrderDetails.Any(od => od.ProductId == productId));
-                productDetailsVM.Reviews = _unitOfWork.Reviews.GetAll("User").ToList();
+                productDetailsVM.Reviews = await _unitOfWork.Reviews.GetAll("User").ToListAsync();
                 productDetailsVM.Review = await _unitOfWork.Reviews.Get(r => r.ProductId == productId && r.UserId == userId) ?? new Review();
             }
             return View(productDetailsVM);

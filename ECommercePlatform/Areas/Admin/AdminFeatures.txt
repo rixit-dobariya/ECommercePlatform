@@ -1,0 +1,7 @@
+﻿Manage product attributes with product
+Manage banners
+if review is replied from one page then user should be redirected back there not index one
+
+extra: 
+manage user cart
+manage user wishlist

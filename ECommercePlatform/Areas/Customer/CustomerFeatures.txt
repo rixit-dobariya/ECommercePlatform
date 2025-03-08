@@ -1,6 +1,8 @@
 ﻿
 User
 
+product detais -> admin reply
+only one review should be added per user
 Apply offers
 Shop filter
 Pagination

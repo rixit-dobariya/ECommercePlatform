@@ -3,6 +3,7 @@ using ECommercePlatform.Filters;
 using ECommercePlatform.Models;
 using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommercePlatform.Areas.Admin.Controllers
@@ -31,6 +32,20 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 orderDetail.Product = await _unitOfWork.Products.Get(p => p.ProductId == orderDetail.ProductId);
             }
             return View(orderHeader);
+        }
+        public async Task<IActionResult> UpdateOrderStatus(OrderHeader orderHeader)
+        {
+            if (orderHeader.OrderId < 1)
+            {
+                return NotFound("No such order exists");
+            }
+            OrderHeader orderHeaderToBeUpdated = await _unitOfWork.OrderHeaders.Get(o=>o.OrderId == orderHeader.OrderId);
+            orderHeaderToBeUpdated.OrderStatus = orderHeader.OrderStatus;
+
+            _unitOfWork.OrderHeaders.Update(orderHeaderToBeUpdated);
+            await _unitOfWork.Save();
+            TempData["success"] = "Order status updated successfully!";
+            return RedirectToAction("Details", new { id = orderHeader.OrderId});
         }
         #region API ENDPOINTS
         public async Task<JsonResult> GetAll()

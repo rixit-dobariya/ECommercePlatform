@@ -24,7 +24,7 @@ function loadOrderData() {
         },
         columns: [
             { data: 'orderId', title: 'Order Id', width:"5%"},
-            { data: 'userFullName', title: 'User Name', width:"15%" },
+            { data: 'userFullName', title: 'User Name', width:"20%" },
             { data: 'orderDate', title: 'Order Date', width:"10%" },
             { data: 'orderStatus', title: 'Order Status', width:"10%" },
             { data: 'paymentMode', title: 'Payment Mode', width:"10%" },
@@ -35,9 +35,6 @@ function loadOrderData() {
                 data: 'orderId',
                 render: function (data) {
                     return `
-                            <a href="Order/Edit/${data}" class="btn btn-link btn-primary btn-md">
-                                <i class="fa fa-edit"></i>
-                            </a>
                             <a href="Order/Details/${data}" class="btn btn-link btn-primary btn-md">
                                 <i class="fa fa-eye"></i>
                             </a>
@@ -47,7 +44,7 @@ function loadOrderData() {
                         `;
                 },
                 title: 'Action',
-                width: "20%"
+                width: "15%"
             },
         ]
     });

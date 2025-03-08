@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Reviews";
+}
+
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Reviews</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a asp-controller="Home">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a asp-controller="Review" asp-action="Index">Reviews</a>
+        </li>
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Product Reviews</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="reviewTbl" class="table table-bordered">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/datatables/ReviewMain.js"></script>
+}

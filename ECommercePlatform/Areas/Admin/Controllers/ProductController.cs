@@ -138,6 +138,15 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 return View(productVM);
             }
         }
+        public async Task<IActionResult> Details(int id)
+        {
+            if (id < 1)
+            {
+                return NotFound("No such product exists");
+            }
+            Product product = await _unitOfWork.Products.Get(p => p.ProductId == id, "Category");
+            return View(product);
+        }
         #region METHODS
         async Task<IEnumerable<SelectListItem>> GetSelectListItems()
         {
