@@ -1,5 +1,6 @@
 using ECommercePlatform.Data;
 using ECommercePlatform.Helpers.EmailHelper;
+using ECommercePlatform.Helpers.PaymentHelper;
 using ECommercePlatform.Models;
 using ECommercePlatform.Repository;
 using ECommercePlatform.Repository.IRepository;
@@ -23,7 +24,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddTransient<IPaymentService, PaymentService>();
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Add session services
 builder.Services.AddDistributedMemoryCache(); // Store session in memory (server side)

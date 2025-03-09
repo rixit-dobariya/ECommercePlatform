@@ -1,0 +1,55 @@
+﻿@model MerchantOrder
+
+<button id="Rzp_btn" hidden>Pay</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    var options = {
+        "key": "@Html.DisplayFor(model => model.RazorpayKey)", // Enter the Key ID from the Razorpay Dashboard
+        "amount": "@Html.DisplayFor(model => model.Amount)", // Amount in currency subunits (default in INR paise)
+        "currency": "@Html.DisplayFor(model => model.Currency)",
+        "name": "@Html.DisplayFor(model => model.Name)",
+        "description": "@Html.DisplayFor(model => model.Description)",
+        "image": "https://avatars.githubusercontent.com/u/85504583?v=4", // Your logo URL
+        "order_id": "@Html.DisplayFor(model => model.OrderId)", // Razorpay Order ID
+        "handler": function (response) {
+            // After successful payment, the response will contain the payment ID
+            document.getElementById('rzp_paymentid').value = response.razorpay_payment_id;
+            document.getElementById('rzp_orderid').value = response.razorpay_order_id;
+
+            // Auto-submit the form
+            document.getElementById('rzp-paymentresponse').click();
+        },
+        "prefill": { // Prefill customer details for a better UX
+            "name": "@Html.DisplayFor(model => model.Name)",
+            "email": "@Html.DisplayFor(model => model.Email)",
+            "contact": "@Html.DisplayFor(model => model.PhoneNumber)"
+        },
+        "notes": {
+            "address": "@Html.DisplayFor(model => model.Address)"
+        },
+        "theme": {
+            "color": "#F37254"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+
+    // Auto-trigger the payment button on page load
+    window.onload = function () {
+        document.getElementById("Rzp_btn").click();
+    };
+
+    document.getElementById("Rzp_btn").onclick = function (e) {
+        rzp1.open();
+        e.preventDefault(); // Prevent default button action
+    };
+</script>
+
+<form action="CompleteOrderProcess" method="post" asp-antiforgery="true">
+    <input type="hidden" id="rzp_paymentid" name="rzp_paymentid" />
+    <input type="hidden" id="rzp_orderid" name="rzp_orderid" />
+
+    <button type="submit" id="rzp-paymentresponse" class="btn btn-primary" hidden>Submit</button>
+</form>

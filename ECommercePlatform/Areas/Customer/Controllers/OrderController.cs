@@ -1,5 +1,6 @@
 ﻿using ECommercePlatform.Constants;
 using ECommercePlatform.Filters;
+using ECommercePlatform.Helpers.PaymentHelper;
 using ECommercePlatform.Models;
 using ECommercePlatform.Models.ViewModels;
 using ECommercePlatform.Repository;
@@ -13,10 +14,14 @@ namespace ECommercePlatform.Areas.Customer.Controllers
     [AuthCheck]
     public class OrderController : Controller
     {
-        IUnitOfWork _unitOfWork {  get; set; }
-        public OrderController(IUnitOfWork unitOfWork) 
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IPaymentService _paymentService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public OrderController(IUnitOfWork unitOfWork, IPaymentService paymentService, IHttpContextAccessor httpContextAccessor) 
         {
             _unitOfWork = unitOfWork;
+            _paymentService = paymentService;
+            _httpContextAccessor = httpContextAccessor;
         }
         public IActionResult Index()
         {
@@ -85,38 +90,24 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             }
             return Redirect("Checkout");
         }
-        [HttpPost]
-        public async Task<IActionResult> Checkout(CheckoutVM checkoutVM)
+        public async Task CompleteOrder()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
-            if (userId == null)
-            {
-                TempData["error"] = "You must be logged in to place order.";
-                return RedirectToAction("Login","User");
-            }
-
             CheckoutVM fetchedCheckoutVM = await GetCheckoutVM(userId);
-
-            if (checkoutVM.ShippingAddressId <= 0)
-            {
-                ModelState.AddModelError("ShippingAddressId","You must select address to place order.");
-                return View(fetchedCheckoutVM);
-            }
-
-            fetchedCheckoutVM.ShippingAddressId = checkoutVM.ShippingAddressId;
-            checkoutVM = fetchedCheckoutVM;
+            int shippingAddressId = (int)HttpContext.Session.GetInt32("ShippingAddressId");
+            fetchedCheckoutVM.ShippingAddressId = shippingAddressId;
 
             OrderHeader orderHeader = new()
             {
                 UserId = (int)userId,
                 OrderStatus= OrderStatus.Pending,
-                ShippingAddressId = checkoutVM.ShippingAddressId,
-                ShippingCharge = checkoutVM.ShippingCharge,
-                Subtotal = checkoutVM.Total - checkoutVM.ShippingCharge
+                ShippingAddressId = fetchedCheckoutVM.ShippingAddressId,
+                ShippingCharge = fetchedCheckoutVM.ShippingCharge,
+                Subtotal = fetchedCheckoutVM.Total - fetchedCheckoutVM.ShippingCharge
             };
             //make used address as deleted 
-            Address address = await _unitOfWork.Addresses.Get(a => a.AddressId == checkoutVM.ShippingAddressId);
+            Address address = await _unitOfWork.Addresses.Get(a => a.AddressId == shippingAddressId);
             address.IsDeleted = 1;
             _unitOfWork.Addresses.Update(address);
             address.AddressId = 0;
@@ -125,7 +116,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             _unitOfWork.OrderHeaders.Add(orderHeader);
             await _unitOfWork.Save();
             List<OrderDetail>  orderDetails = new List<OrderDetail>();
-            foreach(var cartItem in checkoutVM.CartItems)
+            foreach(var cartItem in fetchedCheckoutVM.CartItems)
             {
                 OrderDetail orderDetail = new()
                 {
@@ -137,10 +128,9 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 };
                 _unitOfWork.OrderDetails.Add(orderDetail);
             }
-            _unitOfWork.CartItems.RemoveRange(checkoutVM.CartItems);
+            _unitOfWork.CartItems.RemoveRange(fetchedCheckoutVM.CartItems);
             await _unitOfWork.Save();
             TempData["success"] = "Order placed successfully.";
-            return RedirectToAction("History");
         }
         #region METHODS
         async Task<CheckoutVM> GetCheckoutVM(int? userId)
@@ -150,6 +140,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 CartItems = await _unitOfWork.CartItems.GetAll("Product").Where(ci => ci.UserId == userId).ToListAsync(),
                 Addresses = await _unitOfWork.Addresses.GetAll().Where(a => a.UserId == userId).ToListAsync(),
             };
+            
             checkoutVM.Total = checkoutVM.CartItems
                     .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
                     .DefaultIfEmpty(0)
@@ -159,5 +150,71 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             return checkoutVM;
         }
         #endregion
+
+        [HttpPost]
+        public async Task<IActionResult> ProcessOrderRequest(CheckoutVM checkoutVM)
+        {
+            try
+            {
+                int? userId = HttpContext.Session.GetInt32("UserId");
+
+                if (userId == null)
+                {
+                    TempData["error"] = "You must be logged in to place order.";
+                    return RedirectToAction("Login", "User");
+                }
+
+                CheckoutVM fetchedCheckoutVM = await GetCheckoutVM(userId);
+
+                if (checkoutVM.ShippingAddressId <= 0)
+                {
+                    ModelState.AddModelError("ShippingAddressId", "You must select address to place order.");
+                    return View(fetchedCheckoutVM);
+                }
+                HttpContext.Session.SetInt32("ShippingAddressId",checkoutVM.ShippingAddressId);
+                User user = await _unitOfWork.Users.Get(u => u.UserId == userId);
+                Address address = await _unitOfWork.Addresses.Get(a=> a.AddressId == checkoutVM.ShippingAddressId);
+                PaymentRequest paymentRequest = new PaymentRequest()
+                {
+                    Address = $"{address.FirstName} {address.LastName} \n {address.Region}\n{address.City}, {address.State}\nPin Code:{address.PinCode}\nPhone:{address.Phone}",
+                    Amount = fetchedCheckoutVM.Total,
+                    Email = user.Email,
+                    Name = user.FullName,
+                    PhoneNumber = user.Phone
+                };   
+                MerchantOrder _merchantOrder = await _paymentService.ProcessMerchantOrder(paymentRequest);
+                return View("Payment", _merchantOrder);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return RedirectToAction("Failed");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteOrderProcess()
+        {
+            try
+            {
+                string paymentMessage = await _paymentService.CompleteOrderProcess(_httpContextAccessor);
+                if(paymentMessage == "captured")
+                {
+                    await CompleteOrder();
+                    return RedirectToAction("History");
+                }
+                else
+                {
+                    TempData["error"] = "Order failed";
+                    return RedirectToAction("Index","Home");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return RedirectToAction("Failed");
+            }
+        }
+
     }
 }
