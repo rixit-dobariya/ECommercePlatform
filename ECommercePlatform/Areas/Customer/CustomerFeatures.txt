@@ -1,18 +1,24 @@
-﻿
-User
-
-product detais -> admin reply
+﻿product detais -> admin reply(image should be displayed)
 only one review should be added per user
+
 Apply offers
+
 Shop filter
 Pagination
+
 Display Categoroies
+
 Display product attributes in product-details page
-Display banners
+
 Add pagination in all pages
+
 make home page dynamic
+
 make footer dynamic
+
+add payment gateway 
 
 extra:
 website in 3 languages
 add services 
+Display banners

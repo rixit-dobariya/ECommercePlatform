@@ -137,31 +137,34 @@
                             {
                                 foreach(Review review in Model.Reviews)
                                 {
-                                    <div class="review-wrapper">
-                                        <div class="single-review">
+                                    <div class="review-wrapper mb-5">
+                                        <div class="single-review mb-3 w-100">
                                             <div class="review-img">
                                                 <img src="@review.User.ProfilePicture" alt="" width="50px">
                                             </div>
-                                            <div class="review-content">
-                                                <div class="review-top-wrap">
-                                                    <div class="review-left">
-                                                        <div class="review-name">
-                                                            <h4>@review.User.FullName</h4>
+                                            <div class="review-content w-100">
+                                                <div class="review-top-wrap w-100">
+                                                    <div class="d-flex align-items-center w-100 justify-content-between">
+                                                        <div class="review-left">
+                                                            <div class="review-name">
+                                                                <h4>@review.User.FullName</h4>
+                                                            </div>
+                                                            <div class="review-rating">
+                                                                @for (int i = 0; i < review.Rating; i++)
+                                                                {
+                                                                    <i class="fa fa-star-o yellow"></i>
+                                                                }
+                                                                @for (int i = review.Rating; i < 5; i++)
+                                                                {
+                                                                    <i class="fa fa-star-o"></i>
+                                                                }
+
+                                                            </div>
                                                         </div>
-                                                        <div class="review-rating">
-                                                            @for (int i = 0; i < review.Rating; i++)
-                                                            {
-                                                                <i class="fa fa-star-o yellow"></i>
-                                                            }
-                                                            @for (int i = review.Rating; i < 5; i++)
-                                                            {
-                                                                <i class="fa fa-star-o"></i>
-                                                            }
-                                                            @if(Context.Session.GetInt32("UserId")!=null)
-                                                            {
-                                                                <a asp-controller="Review" asp-action="Delete" asp-route-reviewId="@review.ReviewId" class="btn btn-danger">Delete</a>
-                                                            }
-                                                        </div>
+                                                        @if (Model.UserId == review.UserId)
+                                                        {
+                                                            <a asp-controller="Review" asp-action="Delete" asp-route-reviewId="@review.ReviewId" class="btn btn-danger"><i class="fa fa-times"></i></a>
+                                                        }
                                                     </div>
                                                 </div>
                                                 <div class="review-bottom">
@@ -172,11 +175,14 @@
                                         @if(!string.IsNullOrEmpty(review.ReplyText))
                                         {
                                             <div class="single-review child-review">
+                                                <div class="review-img">
+                                                    <img src="@Model.AdminProfilePicture" alt="" width="50px">
+                                                </div>
                                                 <div class="review-content">
                                                     <div class="review-top-wrap">
                                                         <div class="review-left">
                                                             <div class="review-name">
-                                                                <h4>Admin</h4>
+                                                                <h4>@Model.AdminName</h4>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -231,7 +237,7 @@
                                                         }
                                                     <textarea asp-for="Review.ReviewText" placeholder="Message"></textarea>
                                                     <span asp-validation-for="Review.ReviewText" class="text-danger"></span>
-                                                    <input type="submit" value="Submit">
+                                                        <input type="submit" value="@(Model.Review.ReviewId!=0 ? "Update" : "Add") Review">
                                                 </div>
                                             </div>
                                         </div>

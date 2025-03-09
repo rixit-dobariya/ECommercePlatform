@@ -38,8 +38,9 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             var reviews = await _unitOfWork.Reviews.GetAll("User")
                 .Where(r => r.ProductId == productId)
-                .ToListAsync(); 
+                .ToListAsync();
 
+            User admin = await _unitOfWork.Users.Get(u=> u.Role == RoleType.Admin);
             ProductDetailsVM productDetailsVM = new()
             {
                 Product = await _unitOfWork.Products.Get(p => p.ProductId == productId, "Category"),
@@ -48,11 +49,14 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 IsInWishlist = false,
                 HasOrdered = false,
                 AverageRating = reviews.Count != 0 ? reviews.Average(r => r.Rating) : 0,
+                AdminName = admin.FullName,
+                AdminProfilePicture = admin.ProfilePicture
             };
 
             int? userId = HttpContext.Session.GetInt32("UserId");
             if(userId != null)
             {
+                productDetailsVM.UserId = (int)userId;
                 CartItem cartItem= await _unitOfWork.CartItems.Get(ci => ci.ProductId == productId && ci.UserId == userId);
                 productDetailsVM.CartQuantity = cartItem == null ? 0 : cartItem.Quantity;
                 productDetailsVM.IsInWishlist = await _unitOfWork.WishlistItems.Get(wi => wi.ProductId == productId && wi.UserId==userId) != null;

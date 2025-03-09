@@ -10,5 +10,9 @@
         public double AverageRating { get; set; }
         public List<Review> Reviews { get; set; }
         public Review Review { get; set; }
+        public int UserId { get; set; }
+
+        public string AdminName { get;set; }
+        public string AdminProfilePicture { get; set; }
     }
 }
