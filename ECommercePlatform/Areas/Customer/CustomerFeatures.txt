@@ -1,12 +1,11 @@
-﻿product detais -> admin reply(image should be displayed)
-only one review should be added per user
+﻿Make login code faster
 
 Apply offers
 
 Shop filter
 Pagination
 
-Display Categoroies
+Display Categoroies (footer, filter, product display link)
 
 Display product attributes in product-details page
 

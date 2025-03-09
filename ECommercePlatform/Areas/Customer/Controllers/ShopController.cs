@@ -61,8 +61,16 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 productDetailsVM.CartQuantity = cartItem == null ? 0 : cartItem.Quantity;
                 productDetailsVM.IsInWishlist = await _unitOfWork.WishlistItems.Get(wi => wi.ProductId == productId && wi.UserId==userId) != null;
                 productDetailsVM.HasOrdered = _unitOfWork.OrderHeaders.GetAll("OrderDetails").Any(oh => oh.UserId == userId && oh.OrderDetails.Any(od => od.ProductId == productId));
-                productDetailsVM.Reviews = await _unitOfWork.Reviews.GetAll("User").ToListAsync();
-                productDetailsVM.Review = await _unitOfWork.Reviews.Get(r => r.ProductId == productId && r.UserId == userId) ?? new Review();
+                productDetailsVM.Reviews = await _unitOfWork.Reviews.GetAll("User").OrderByDescending(r=>r.ReviewId).ToListAsync();
+                Review? review = productDetailsVM.Reviews.Find(r => r.ProductId == productId && r.UserId == userId);
+                if (review != null)
+                {
+                    productDetailsVM.Review = review;
+                    if (productDetailsVM.Reviews.Remove(review))
+                    {
+                        productDetailsVM.Reviews.Insert(0, review);
+                    }
+                }
             }
             return View(productDetailsVM);
         }
