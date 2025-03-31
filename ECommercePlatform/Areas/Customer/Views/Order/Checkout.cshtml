@@ -33,8 +33,9 @@
                                         <input class="form-check-input" type="radio" asp-for="ShippingAddressId" value="@address.AddressId">
                                         <label class="form-check-label w-100 p-2" for="address1">
                                             <strong>@address.FirstName @address.LastName</strong><br>
-                                            @address.Region, @address.City, @address.State, <br />
-                                            Pin Code: @address.PinCode<br>
+                                                @address.Region, @address.City,<br>
+                                                @address.State, <br />
+                                            Pin Code: @address.PinCode<br />
                                             Phone: @address.Phone
                                         </label>
                                     </div>
