@@ -68,12 +68,12 @@
 							<input class="form-control" asp-for="Product.SellPrice" placeholder="Enter Sell Price" />
 							<span asp-validation-for="Product.SellPrice" class="form-text text-danger"></span>
 						</div>
-						<div class="form-group attributeContainer">
-							<label>Add Product Attributes</label>
-						</div>
-						<div class="form-group">
-							<button type="button" id="addNewAttributeBtn" class="btn btn-info">Add New Attribute</button>
-						</div>
+						@* <div class="form-group attributeContainer"> *@
+						@* 	<label>Add Product Attributes</label> *@
+						@* </div> *@
+						@* <div class="form-group"> *@
+						@* 	<button type="button" id="addNewAttributeBtn" class="btn btn-info">Add New Attribute</button> *@
+						@* </div> *@
 						<div class="form-group">
 							<label asp-for="Product.ImageUrl"></label>
 							<input type="file" name="productImage" class="form-control" placeholder="Enter Product Image" accept="image/*" />
@@ -103,7 +103,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.js"></script>
 
 	<script>
-						$(document).ready(function () {
+		$(document).ready(function () {
 			$('#shortDescription, #longDescription').summernote({
 				placeholder: 'Enter description...',
 				tabsize: 2,
@@ -116,64 +116,64 @@
 				]
 			});
 
-			let attributeIndex = @Model.ProductAttributes.Count; // Starting index for new attributes
-			const attributeContainer = $(".attributeContainer");
+		// 	let attributeIndex = @Model.ProductAttributes.Count; Starting index for new attributes
+		// 	const attributeContainer = $(".attributeContainer");
 
-			// Function to create attribute fields
-					function createAttributeField(index) {
-			return `
-				<div class="attribute row mb-2">
-					<div class="col-md-5">
-						<input class="form-control attribute-name"
-							   name="ProductAttributes[${index}].Name"
-							   placeholder="Attribute name"
-							   data-val="true"
-							   data-val-required="Attribute name is required"
-							   aria-describedby="ProductAttributes[${index}].Name-error"
-							   />
-						<span class="text-danger field-validation-valid"
-							  data-valmsg-for="ProductAttributes[${index}].Name"
-							  data-valmsg-replace="true"></span>
-					</div>
-					<div class="col-md-5">
-						<input class="form-control attribute-value"
-							   name="ProductAttributes[${index}].Value"
-							   placeholder="Attribute value"
-							   data-val="true"
-							   data-val-required="Attribute value is required"
-							   aria-describedby="ProductAttributes[${index}].Name-error"
-							   />
-						<span class="text-danger field-validation-valid"
-							  data-valmsg-for="ProductAttributes[${index}].Value"
-							  data-valmsg-replace="true"></span>
-					</div>
-					<div class="col-md-2">
-						<button type="button" class="removeBtn btn btn-danger">Remove</button>
-					</div>
-				</div>
-			`;
-		}
+		// 	Function to create attribute fields
+		// 			function createAttributeField(index) {
+		// 	return `
+		// 		<div class="attribute row mb-2">
+		// 			<div class="col-md-5">
+		// 				<input class="form-control attribute-name"
+		// 					   name="ProductAttributes[${index}].Name"
+		// 					   placeholder="Attribute name"
+		// 					   data-val="true"
+		// 					   data-val-required="Attribute name is required"
+		// 					   aria-describedby="ProductAttributes[${index}].Name-error"
+		// 					   />
+		// 				<span class="text-danger field-validation-valid"
+		// 					  data-valmsg-for="ProductAttributes[${index}].Name"
+		// 					  data-valmsg-replace="true"></span>
+		// 			</div>
+		// 			<div class="col-md-5">
+		// 				<input class="form-control attribute-value"
+		// 					   name="ProductAttributes[${index}].Value"
+		// 					   placeholder="Attribute value"
+		// 					   data-val="true"
+		// 					   data-val-required="Attribute value is required"
+		// 					   aria-describedby="ProductAttributes[${index}].Name-error"
+		// 					   />
+		// 				<span class="text-danger field-validation-valid"
+		// 					  data-valmsg-for="ProductAttributes[${index}].Value"
+		// 					  data-valmsg-replace="true"></span>
+		// 			</div>
+		// 			<div class="col-md-2">
+		// 				<button type="button" class="removeBtn btn btn-danger">Remove</button>
+		// 			</div>
+		// 		</div>
+		// 	`;
+		// }
 
 
-			// Add two default attributes on page load
-			for (let i = 0; i < 2; i++) {
-				attributeContainer.append(createAttributeField(attributeIndex++));
-			}
+		// 	Add two default attributes on page load
+		// 	for (let i = 0; i < 2; i++) {
+		// 		attributeContainer.append(createAttributeField(attributeIndex++));
+		// 	}
 
-			// Add new attribute fields dynamically
-			$("#addNewAttributeBtn").click(function () {
-				attributeContainer.append(createAttributeField(attributeIndex++));
-				$.validator.unobtrusive.parse("form"); // Apply ASP.NET Core validation to new fields
-			});
+		// 	Add new attribute fields dynamically
+		// 	$("#addNewAttributeBtn").click(function () {
+		// 		attributeContainer.append(createAttributeField(attributeIndex++));
+		// 		$.validator.unobtrusive.parse("form"); Apply ASP.NET Core validation to new fields
+		// 	});
 
-			// Remove attribute fields (ensures at least two remain)
-			attributeContainer.on('click', '.removeBtn', function () {
-				if ($(".attribute").length > 2) {
-					$(this).closest('.attribute').remove();
-				} else {
-					alert("At least two attributes are required.");
-				}
-			});
+		// 	Remove attribute fields (ensures at least two remain)
+		// 	attributeContainer.on('click', '.removeBtn', function () {
+		// 		if ($(".attribute").length > 2) {
+		// 			$(this).closest('.attribute').remove();
+		// 		} else {
+		// 			alert("At least two attributes are required.");
+		// 		}
+		// 	});
 		});
 
 

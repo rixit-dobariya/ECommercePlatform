@@ -1,11 +1,7 @@
-﻿Make login code faster
-
-Add pagination in all pages
+﻿Add pagination in all pages
  - order history
  - review page
  - shop
-
-make home page dynamic
 
 Apply offers
 
@@ -15,16 +11,13 @@ Display Categoroies (footer, filter, product display link)
 
 improve code of payment gateway
 
-
-
 make footer dynamic
 
 Display product attributes in product-details page
-
-make update shopping cart button work
 
 
 extra:
 website in 3 languages
 add services 
 Display banners
+make update shopping cart button work

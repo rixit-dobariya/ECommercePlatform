@@ -106,7 +106,7 @@
     <div class="container">
         <div class="description-review-wrapper">
             <div class="description-review-topbar nav">
-                <a data-toggle="tab" href="#des-details1">Additional information</a>
+                @* <a data-toggle="tab" href="#des-details1">Additional information</a> *@
                 <a class="active" data-toggle="tab" href="#des-details2">Description</a>
                 <a data-toggle="tab" href="#des-details3">Reviews (@Model.Reviews.Count)</a>
             </div>
@@ -116,16 +116,16 @@
                         @Html.Raw(Model.Product.LongDescription)
                     </div>
                 </div>
-                <div id="des-details1" class="tab-pane ">
-                    <div class="product-anotherinfo-wrapper">
-                        <ul>
-                            <li><span>Weight</span> 400 g</li>
-                            <li><span>Dimensions</span>10 x 10 x 15 cm </li>
-                            <li><span>Materials</span> 60% cotton, 40% polyester</li>
-                            <li><span>Other Info</span> American heirloom jean shorts pug seitan letterpress</li>
-                        </ul>
-                    </div>
-                </div>
+                @* <div id="des-details1" class="tab-pane "> *@
+                @*     <div class="product-anotherinfo-wrapper"> *@
+                @*         <ul> *@
+                @*             <li><span>Weight</span> 400 g</li> *@
+                @*             <li><span>Dimensions</span>10 x 10 x 15 cm </li> *@
+                @*             <li><span>Materials</span> 60% cotton, 40% polyester</li> *@
+                @*             <li><span>Other Info</span> American heirloom jean shorts pug seitan letterpress</li> *@
+                @*         </ul> *@
+                @*     </div> *@
+                @* </div> *@
                 <div id="des-details3" class="tab-pane">
                     <div class="row">
                         <div class="col-lg-7">
