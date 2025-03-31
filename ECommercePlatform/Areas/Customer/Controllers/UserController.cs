@@ -1,4 +1,5 @@
 ﻿using ECommercePlatform.Constants;
+using ECommercePlatform.Data;
 using ECommercePlatform.Filters;
 using ECommercePlatform.Helpers;
 using ECommercePlatform.Helpers.EmailHelper;
@@ -8,15 +9,15 @@ using ECommercePlatform.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ECommercePlatform.Areas.Customer.Controllers
-{
+namespace ECommercePlatform.Areas.Customer.Controllers { 
     [Area(UserRole.Customer)]
     public class UserController : Controller
     {
         IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _env;
         private readonly IEmailService _emailService;
-        public UserController(IUnitOfWork unitOfWork, IWebHostEnvironment env,IEmailService emailService)
+
+        public UserController(IUnitOfWork unitOfWork, IWebHostEnvironment env,IEmailService emailService, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
             _env = env;

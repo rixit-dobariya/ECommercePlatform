@@ -16,7 +16,7 @@
         <div class="welcome-content text-center">
             <h5>Who Are We</h5>
             <h1>Welcome To Flone</h1>
-            <p>@Model.Description</p>
+            <p>@Html.Raw(Model.Description)</p>
         </div>
     </div>
 </div>
@@ -62,19 +62,19 @@
             <div class="col-lg-4 col-md-4">
                 <div class="single-mission mb-30">
                     <h3>Our vision</h3>
-                    <p>@Model.Vision</p>
+                    <p>@Html.Raw(Model.Vision)</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4">
                 <div class="single-mission mb-30">
                     <h3>Our mission </h3>
-                    <p>@Model.Mission</p>
+                    <p>@Html.Raw(Model.Mission)</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4">
                 <div class="single-mission mb-30">
                     <h3>Our goal</h3>
-                    <p>@Model.Goal</p>
+                    <p>@Html.Raw(Model.Goal)</p>
                 </div>
             </div>
         </div>

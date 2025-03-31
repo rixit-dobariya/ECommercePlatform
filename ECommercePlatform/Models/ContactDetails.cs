@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace ECommercePlatform.Models
 {
@@ -6,11 +7,18 @@ namespace ECommercePlatform.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
-        public string PhoneNumbers{ get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Phone number is required.")]
+        [DisplayName("Phone Numbers")]
+        public string PhoneNumbers { get; set; }
+
+        [Required(ErrorMessage = "Email address is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
+        [DisplayName("Email Addresses")]
         public string Emails { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Address is required.")]
+        [DisplayName("Company Address")]
         public string Address { get; set; }
     }
 }

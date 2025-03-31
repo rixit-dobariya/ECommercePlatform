@@ -15,5 +15,3 @@
 
 Extra:
 	Banner
-	PagesContent
-	Like Dislike for reviews

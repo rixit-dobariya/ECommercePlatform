@@ -12,12 +12,12 @@ namespace ECommercePlatform.Repository
 
         public override IQueryable<Product> GetAll(string? includeProperties = null)
         {
-            return base.GetAll(includeProperties).Where(p => p.IsActive == 1);
+            return base.GetAll(includeProperties).Where(p => p.IsActive);
         }
 
         public IQueryable<Product> GetAllDeletedProducts(string? includeProperties = null)
         {
-            return base.GetAll(includeProperties).Where(p => p.IsActive == 0);
+            return base.GetAll(includeProperties).Where(p => p.IsActive);
 
         }
     }

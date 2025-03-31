@@ -10,7 +10,7 @@ namespace ECommercePlatform.Models
         [Key]
         public int CategoryId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Category Name is required.")]
         [DisplayName("Category Name")]
         public string Name { get; set; }
 
@@ -19,8 +19,6 @@ namespace ECommercePlatform.Models
 
         [ValidateNever]
         [ForeignKey("ParentCategoryId")]
-        public Category ParentCategory { get; set; }
-
-
+        public Category? ParentCategory { get; set; }
     }
 }

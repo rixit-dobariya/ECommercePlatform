@@ -23,9 +23,15 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 return View("Index", new List<ProductDisplay>()); // Return an empty list if query is null
             }
 
-            IEnumerable<Product> products = await _unitOfWork.Products.GetAll("Category")
-                .Where(p => p.Name.ToLower().Contains(query.ToLower()) || p.ShortDescription.ToLower().Contains(query.ToLower()) || p.LongDescription.ToLower().Contains(query.ToLower()) || p.Category.Name.ToLower().Contains(query.ToLower())).ToListAsync();
-            IEnumerable<ProductDisplay> productDisplays = await GetProductDisplays(products);
+            string lowerQuery = query.ToLower();
+
+            var products = await _unitOfWork.Products.GetAll("Category")
+                .Where(p => p.Name.ToLower().Contains(lowerQuery) ||
+                            p.ShortDescription.ToLower().Contains(lowerQuery) ||
+                            p.LongDescription.ToLower().Contains(lowerQuery) ||
+                            (p.Category != null && p.Category.Name.ToLower().Contains(lowerQuery)))
+                .ToListAsync();
+            var productDisplays = await GetProductDisplays(products);
             return View("Index",productDisplays);
         }
         public async Task<IActionResult> Index()

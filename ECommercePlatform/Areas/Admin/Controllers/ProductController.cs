@@ -193,7 +193,7 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 });
             }
             Product product = await _unitOfWork.Products.Get(p => p.ProductId == id);
-            product.IsActive = 0;
+            product.IsActive = false;
             _unitOfWork.Products.Update(product);
             await _unitOfWork.Save();
             return Json(new

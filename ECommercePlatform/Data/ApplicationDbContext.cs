@@ -87,7 +87,7 @@ namespace ECommercePlatform.Data
                     CostPrice = 1200.00m,
                     Discount = 10.0m,
                     ImageUrl = "\\Images\\profile.jpg",
-                    IsActive = 1
+                    IsActive = true
                 },
                 new Product
                 {
@@ -101,7 +101,7 @@ namespace ECommercePlatform.Data
                     CostPrice = 600.00m,
                     Discount = 5.0m,
                     ImageUrl = "\\Images\\profile.jpg",
-                    IsActive = 1
+                    IsActive = true
                 },
 
                 // Products for Fashion category
@@ -117,7 +117,7 @@ namespace ECommercePlatform.Data
                     CostPrice = 12.00m,
                     Discount = 0.0m,
                     ImageUrl = "\\Images\\profile.jpg",
-                    IsActive = 1
+                    IsActive = true 
                 },
                 new Product
                 {
@@ -131,7 +131,7 @@ namespace ECommercePlatform.Data
                     CostPrice = 25.00m,
                     Discount = 10.0m,
                     ImageUrl = "\\Images\\profile.jpg",
-                    IsActive = 1
+                    IsActive = true
                 },
 
                 // Products for Home Appliances category
@@ -147,7 +147,7 @@ namespace ECommercePlatform.Data
                     CostPrice = 950.00m,
                     Discount = 15.0m,
                     ImageUrl = "\\Images\\profile.jpg",
-                    IsActive = 1
+                    IsActive = true
                 },
                 new Product
                 {
@@ -161,7 +161,7 @@ namespace ECommercePlatform.Data
                     CostPrice = 400.00m,
                     Discount = 5.0m,
                     ImageUrl = "\\Images\\profile.jpg",
-                    IsActive = 1
+                    IsActive = true
                 }
             );
             //product attributes
@@ -288,6 +288,26 @@ namespace ECommercePlatform.Data
                     DiscountAmount = 0.00m
                 }
             );
+            modelBuilder.Entity<ContactDetails>().HasData(
+                new ContactDetails()
+                {
+                    Id = 1,
+                    Address = "Rk University, <br>Tramba<br>Phone: 8732965892",
+                    Emails = "purebite@gmail.com,purebitegrocery@gmail.com",
+                    PhoneNumbers = "+91 87329 65892,+91 97370 74939"
+                }
+            );
+            modelBuilder.Entity<AboutPageContent>().HasData(
+            new AboutPageContent()
+            {
+                Id = 1,
+                Description = "<p>Welcome to <strong>Flone</strong>, your one-stop destination for quality products at the best prices. We are committed to offering a seamless shopping experience with a diverse range of categories to explore.</p>",
+                Goal = "<p>At <strong>Flone</strong>, our goal is to revolutionize online shopping by providing top-quality products, unbeatable deals, and excellent customer service.</p>",
+                Mission = "<p>Our mission is to build a trusted eCommerce platform where customers can shop with confidence, knowing they are getting the best products and services.</p>",
+                Vision = "<p>We envision <strong>Flone</strong> as a leading eCommerce brand, known for its reliability, affordability, and customer satisfaction.</p>"
+            }
+        );
+
         }
 
     }

@@ -12,7 +12,7 @@ namespace ECommercePlatform.Filters
             if (userId == null)
             {
                 var controller = (Controller)context.Controller;
-                controller.TempData["ErrorMessage"] = "You must be logged in to access this page!";
+                controller.TempData["error"] = "You must be logged in to access this page!";
                 context.Result = new RedirectToActionResult("Login", "User", null);
             }
 

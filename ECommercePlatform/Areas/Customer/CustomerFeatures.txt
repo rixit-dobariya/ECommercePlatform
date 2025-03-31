@@ -1,21 +1,28 @@
 ﻿Make login code faster
 
-Apply offers
-
-Shop filter
-Pagination
-
-Display Categoroies (footer, filter, product display link)
-
-Display product attributes in product-details page
-
 Add pagination in all pages
+ - order history
+ - review page
+ - shop
 
 make home page dynamic
 
+Apply offers
+
+Shop filter
+
+Display Categoroies (footer, filter, product display link)
+
+improve code of payment gateway
+
+
+
 make footer dynamic
 
-add payment gateway 
+Display product attributes in product-details page
+
+make update shopping cart button work
+
 
 extra:
 website in 3 languages
