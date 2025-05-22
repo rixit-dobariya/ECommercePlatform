@@ -35,7 +35,7 @@ function loadOrderData() {
                 data: 'orderId',
                 render: function (data) {
                     return `
-                            <a href="Order/Details/${data}" class="btn btn-link btn-primary btn-md">
+                            <a href="/Admin/Order/Details/${data}" class="btn btn-link btn-primary btn-md">
                                 <i class="fa fa-eye"></i>
                             </a>
                             <button onClick="deleteItem('order/delete/${data}', 'orderTbl')" class="btn btn-link btn-danger">

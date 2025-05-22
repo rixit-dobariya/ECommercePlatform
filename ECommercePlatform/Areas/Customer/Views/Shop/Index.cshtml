@@ -112,7 +112,7 @@
                                     <div class="product-wrap mb-25 scroll-zoom">
                                         <div class="product-img">
                                             <a asp-action="ProductDetails" asp-route-productId="@product.ProductId">
-                                                <img class="default-img" src="@product.ImageUrl" alt="">
+                                                <img class="default-img" src="@product.ImageUrl" alt="" height="300px">
                                                 @* <img class="hover-img" src="@product.ImageUrl" alt=""> *@
                                             </a>
                                             @if(discount>0 || discount!=null){
