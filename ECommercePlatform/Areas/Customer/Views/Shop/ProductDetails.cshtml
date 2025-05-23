@@ -50,7 +50,7 @@
                                 <i class="fa fa-star-o"></i>
                             }
                         </div>
-                        <span><a>@Model.Reviews.Count Reviews</a></span>
+                        <span><a>@Model?.Reviews.Count Reviews</a></span>
                     </div>
                     <p>
                         @Html.Raw(Model.Product.ShortDescription)
@@ -108,7 +108,7 @@
             <div class="description-review-topbar nav">
                 @* <a data-toggle="tab" href="#des-details1">Additional information</a> *@
                 <a class="active" data-toggle="tab" href="#des-details2">Description</a>
-                <a data-toggle="tab" href="#des-details3">Reviews (@Model.Reviews.Count)</a>
+                <a data-toggle="tab" href="#des-details3">Reviews (@Model?.Reviews.Count)</a>
             </div>
             <div class="tab-content description-review-bottom">
                 <div id="des-details2" class="tab-pane active">
@@ -129,13 +129,13 @@
                 <div id="des-details3" class="tab-pane">
                     <div class="row">
                         <div class="col-lg-7">
-                            @if(Model.Reviews.Count == 0)
+                            @if(Model?.Reviews.Count == 0)
                             {
                                 <h2>There are no reviews for this product!</h2>
                             }
                             else
                             {
-                                foreach(Review review in Model.Reviews)
+                                foreach(Review review in Model?.Reviews)
                                 {
                                     <div class="review-wrapper mb-5">
                                         <div class="single-review mb-3 w-100">
@@ -214,7 +214,7 @@
                             <div class="ratting-form-wrapper pl-50">
                                 <h3>Add a Review</h3>
                                 <div class="ratting-form">
-                                    <form asp-controller="Review" asp-action="@(Model.Review.ReviewId!=0 ? "Update" : "Add")" method="post">
+                                    <form asp-controller="Review" asp-action="@(Model?.Review.ReviewId!=0 ? "Update" : "Add")" method="post">
                                         <div class="star-box">
                                             <span>Your rating:</span>
                                                 <div class="rating">
@@ -231,13 +231,13 @@
                                             <div class="col-md-12">
                                                 <div class="rating-form-style form-submit">
                                                         <input type="hidden" asp-for="Review.ProductId" value="@Model.Product.ProductId" />
-                                                        @if(Model.Review.ReviewId!=0)
+                                                        @if(Model?.Review.ReviewId!=0)
                                                         {
                                                             <input type="hidden" asp-for="Review.ReviewId"/>
                                                         }
                                                     <textarea asp-for="Review.ReviewText" placeholder="Message"></textarea>
                                                     <span asp-validation-for="Review.ReviewText" class="text-danger"></span>
-                                                        <input type="submit" value="@(Model.Review.ReviewId!=0 ? "Update" : "Add") Review">
+                                                        <input type="submit" value="@(Model?.Review.ReviewId!=0 ? "Update" : "Add") Review">
                                                 </div>
                                             </div>
                                         </div>

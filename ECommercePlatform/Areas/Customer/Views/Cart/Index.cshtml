@@ -95,30 +95,38 @@
                         <div class="col-lg-4 col-md-6">
                         </div>
                         <div class="col-lg-4 col-md-6">
-                            @* <div class="discount-code-wrapper"> *@
-                            @*     <div class="title-wrap"> *@
-                            @*         <h4 class="cart-bottom-title section-bg-gray">Use Coupon Code</h4> *@
-                            @*     </div> *@
-                            @*     <div class="discount-code"> *@
-                            @*         <p>Enter your coupon code if you have one.</p> *@
-                            @*         <form> *@
-                            @*             <input type="text" required="" name="name">  *@
-                            @*             <button class="cart-btn-2" type="submit">Apply Coupon</button>  *@
-                            @*          </form> *@
-                            @*      </div> *@
-                            @*  </div> *@
+                            <div class="discount-code-wrapper mb-4">
+                                <div class="title-wrap">
+                                    <h4 class="cart-bottom-title section-bg-gray">Use Promo Code</h4>
+                                </div>
+                                <div class="discount-code">
+                                    <form asp-controller="Cart" asp-action="ApplyCoupon" method="post">
+                                        <input type="text" name="couponCode" placeholder="Enter promo code" required />
+                                        <button type="submit" class="cart-btn-2 ms-2">Apply</button>
+                                    </form>
+                                </div>
+                                @if (TempData["CouponMessage"] != null)
+                                {
+                                    <div class="alert alert-info mt-2">@TempData["CouponMessage"]</div>
+                                }
+                            </div>
                         </div>
                         <div class="col-lg-4 col-md-12">
                             <div class="grand-totall">
                                 <div class="title-wrap">
                                     <h4 class="cart-bottom-title section-bg-gary-cart">Cart Total</h4>
                                 </div>
-                                <h5>Total products <span>₹@Math.Round(Model.Total, 2)</span></h5>
+                                <h5>Subtotal <span>₹@Math.Round(Model.Total + Model.Discount, 2)</span></h5>
+                                @if (Model.Discount > 0)
+                                {
+                                    <h5>Discount <span>-₹@Math.Round(Model.Discount, 2)</span></h5>
+                                }
                                 <h5>Shipping charge <span>₹@Math.Round(Model.ShippingCharge, 2)</span></h5>
                                 <h4 class="grand-totall-title">Grand Total  <span>₹@Math.Round(Model.Total + Model.ShippingCharge, 2)</span></h4>
                                 <a asp-controller="Order" asp-action="Checkout">Proceed to Checkout</a>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

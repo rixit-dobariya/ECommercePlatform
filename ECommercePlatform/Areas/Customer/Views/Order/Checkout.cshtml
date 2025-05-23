@@ -72,6 +72,15 @@
                                     }
                                 </ul>
                             </div>
+                                @if (Model.Discount > 0)
+                                {
+                                    <div class="your-order-bottom text-danger mb-1">
+                                        <ul>
+                                            <li class="your-order-shipping">Discount</li>
+                                            <li>- ₹ @(Math.Round(Model.Discount, 2))</li>
+                                        </ul>
+                                    </div>
+                                }
                             <div class="your-order-bottom">
                                 <ul>
                                     <li class="your-order-shipping">Shipping</li>

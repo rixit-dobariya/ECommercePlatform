@@ -44,6 +44,14 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             {
                 orderDetail.Product = await _unitOfWork.Products.Get(p => p.ProductId == orderDetail.ProductId);
             }
+            decimal actualSubtotal = orderHeader.OrderDetails
+    .Select(od => (od.Product.SellPrice - (od.Product.SellPrice * od.Product.Discount / 100)) * od.Quantity)
+    .DefaultIfEmpty(0)
+    .Sum();
+
+            decimal discountAmount = Math.Round(actualSubtotal - orderHeader.Subtotal, 2);
+            ViewBag.DiscountAmount = discountAmount;
+
             return View(orderHeader);
         }
 
@@ -133,22 +141,40 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             TempData["success"] = "Order placed successfully.";
         }
         #region METHODS
-        async Task<CheckoutVM> GetCheckoutVM(int? userId)
+        public async Task<CheckoutVM> GetCheckoutVM(int? userId)
         {
             CheckoutVM checkoutVM = new()
             {
                 CartItems = await _unitOfWork.CartItems.GetAll("Product").Where(ci => ci.UserId == userId).ToListAsync(),
                 Addresses = await _unitOfWork.Addresses.GetAll().Where(a => a.UserId == userId).ToListAsync(),
             };
-            
+
+            // Calculate total before shipping and discount
             checkoutVM.Total = checkoutVM.CartItems
-                    .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
-                    .DefaultIfEmpty(0)
-                    .Sum();
+                .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+            // Retrieve discount from session and convert to decimal
+            string discountString = _httpContextAccessor.HttpContext?.Session.GetString("Discount");
+            decimal discount = 0;
+
+            if (!string.IsNullOrEmpty(discountString) && decimal.TryParse(discountString, out decimal parsedDiscount))
+            {
+                discount = parsedDiscount;
+            }
+
+            checkoutVM.Discount = discount;
+
+            // Apply shipping charge
             checkoutVM.ShippingCharge = checkoutVM.Total >= 500 ? 0 : 50;
-            checkoutVM.Total += checkoutVM.ShippingCharge;
+
+            // Apply discount to total before adding shipping
+            checkoutVM.Total = checkoutVM.Total - discount + checkoutVM.ShippingCharge;
+
             return checkoutVM;
         }
+
         #endregion
 
         [HttpPost]

@@ -20,15 +20,25 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            CartVM cartVM  = new();
+            CartVM cartVM = new();
             int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Shop", "Index"); // or some login redirect
+
             cartVM.CartItems = await _unitOfWork.CartItems.GetAll("Product")
-                .Where(ci => ci.UserId == Convert.ToInt32(userId)).ToListAsync();
-            cartVM.Total = cartVM.CartItems
-                    .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
-                    .DefaultIfEmpty(0)
-                    .Sum();
+                .Where(ci => ci.UserId == userId.Value).ToListAsync();
+
+            decimal subTotal = cartVM.CartItems
+                .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+            decimal discount = Decimal.Parse(HttpContext.Session.GetString("Discount") ?? "0") ;
+
+            cartVM.Total = subTotal - discount;
             cartVM.ShippingCharge = cartVM.Total >= 500 ? 0 : 50;
+            cartVM.Discount = discount; // Add this property in your CartVM
+
             return View(cartVM);
         }
         public async Task<IActionResult> Add(int productId, int quantity=1)
@@ -97,31 +107,61 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             TempData["success"] = "Cart cleared successfully!";
             return RedirectToAction("Index");
         }
-
+        [HttpPost]
         public async Task<IActionResult> ApplyCoupon(string couponCode)
         {
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-
+            string couponCodeLower = couponCode.ToLower();
 
             Offer offer = await _unitOfWork.Offers.Get(o =>
-    o.OfferCode.Equals(couponCode) && o.StartDate <= today && today <= o.EndDate);
+                o.OfferCode.ToLower() == couponCodeLower && o.StartDate <= today && today <= o.EndDate);
 
-            if (offer != null)
+            if (offer == null)
             {
-                CartVM cartVM = new();
-                int? userId = HttpContext.Session.GetInt32("UserId");
-                cartVM.CartItems = await _unitOfWork.CartItems.GetAll("Product")
-                    .Where(ci => ci.UserId == Convert.ToInt32(userId)).ToListAsync();
-                cartVM.Total = cartVM.CartItems
-                        .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
-                        .DefaultIfEmpty(0)
-                        .Sum();
-                if (cartVM.Total >= offer.MinimumAmount)
-                {
-                    HttpContext.Session.SetInt32("Discount", (int)offer.Discount);
-                }
+                TempData["CouponMessage"] = "Invalid or expired promo code.";
+                HttpContext.Session.Remove("Discount");
+                return RedirectToAction("Index");
             }
+
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                TempData["CouponMessage"] = "User not logged in.";
+                return RedirectToAction("Index");
+            }
+
+            var cartItems = await _unitOfWork.CartItems.GetAll("Product")
+                .Where(ci => ci.UserId == userId.Value).ToListAsync();
+
+            decimal total = cartItems
+                .Select(ci => (ci.Product.SellPrice - ci.Product.SellPrice * ci.Product.Discount / 100) * ci.Quantity)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+            if (total < offer.MinimumAmount)
+            {
+                TempData["CouponMessage"] = $"Cart total must be at least ₹{offer.MinimumAmount} to apply this promo.";
+                HttpContext.Session.Remove("Discount");
+                return RedirectToAction("Index");
+            }
+
+            // Calculate the discount amount
+            decimal discountAmount = (total * offer.Discount) / 100;
+
+            // Apply max discount limit
+            if (discountAmount > offer.MaxDiscountAmount)
+            {
+                discountAmount = offer.MaxDiscountAmount;
+            }
+
+            // Save the flat discount amount in session (store as int cents or decimal as needed)
+            // Here storing as decimal by serializing as string since session only stores strings/byte[]
+            HttpContext.Session.SetString("Discount", discountAmount.ToString("F2")); // 2 decimal places
+
+            TempData["CouponMessage"] = $"Promo code applied! You get ₹{discountAmount:F2} off.";
+
             return RedirectToAction("Index");
         }
+
     }
 }

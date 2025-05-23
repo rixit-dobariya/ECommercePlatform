@@ -7,6 +7,7 @@
         public IEnumerable<CartItem> CartItems { get; set; }
         public decimal Total { get; set; }
         public decimal ShippingCharge { get; set; }
+        public decimal Discount { get; set; }
         public Address Address{ get; set; }
         public int ShippingAddressId { get; set; }
     }
