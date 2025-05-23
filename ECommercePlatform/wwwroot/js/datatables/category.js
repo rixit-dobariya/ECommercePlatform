@@ -22,7 +22,7 @@ function loadCategoryData() {
                                 <i class="fa fa-edit"></i>
                             </a>
                         `;
-                    if (data.childCount == 0) {
+                    if (data.childCount == 0 && data.productscount ==0) {
                         htmlContent += `
                         <button onClick="deleteItem('category/delete/${data.categoryId}', 'categoryTbl')" class="btn btn-link btn-danger">
                                 <i class="fa fa-times"></i>
@@ -45,7 +45,7 @@ function loadCategoryData() {
 
 function displayMessage() {
     Swal.fire({
-        text: "Parent category with child categories cannot be deleted!",
+        text: "Parent category with child categories and category with products cannot be deleted!",
         icon: "error"
     });
 }

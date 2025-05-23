@@ -111,12 +111,25 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                     c.CategoryId,
                     c.Name,
                     ParentCategory = c.ParentCategory?.Name,
-                    childCount = getChildCount(c.CategoryId)
+                    childCount = getChildCount(c.CategoryId),
+                    productsCount=getProductsCount(c.CategoryId)
                 });
             return Json(new
             {
                 data = categoriesList
             });
+        }
+
+        private int getProductsCount(int categoryId)
+        {
+            int count = _unitOfWork.Products
+                .GetAll()
+                .Count();
+            count += _unitOfWork.Products
+                .GetAllDeletedProducts()
+                .Count();
+
+            return  count;
         }
 
 
