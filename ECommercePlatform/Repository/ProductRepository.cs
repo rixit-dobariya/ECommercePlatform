@@ -17,7 +17,7 @@ namespace ECommercePlatform.Repository
 
         public IQueryable<Product> GetAllDeletedProducts(string? includeProperties = null)
         {
-            return base.GetAll(includeProperties).Where(p => p.IsActive);
+            return base.GetAll(includeProperties).Where(p => !p.IsActive);
 
         }
     }

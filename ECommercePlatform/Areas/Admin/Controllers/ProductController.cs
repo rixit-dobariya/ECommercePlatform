@@ -179,6 +179,13 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             return Json(new { data = productsList });
            
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllDeletedProducts()
+        {
+            List<Product> productsList = await _unitOfWork.Products.GetAllDeletedProducts(includeProperties: "Category").ToListAsync();
+            return Json(new { data = productsList });
+
+        }
 
 
         [HttpDelete]
@@ -202,6 +209,39 @@ namespace ECommercePlatform.Areas.Admin.Controllers
                 message = "Delete Successful!",
             });
         }
+        [HttpPost]
+        public async Task<IActionResult> Restore(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "No record found!",
+                });
+            }
+
+            Product product = await _unitOfWork.Products.Get(p => p.ProductId == id);
+            if (product == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Product not found!",
+                });
+            }
+
+            product.IsActive = true;
+            _unitOfWork.Products.Update(product);
+            await _unitOfWork.Save();
+
+            return Json(new
+            {
+                success = true,
+                message = "Product restored successfully!",
+            });
+        }
+
         #endregion
     }
 }

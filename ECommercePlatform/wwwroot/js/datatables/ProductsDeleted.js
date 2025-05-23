@@ -1,14 +1,14 @@
 ﻿$(document).ready(function () {
-    loadProductData();
+    loadDeletedProductData();
 });
 
 var productDataTable;
 
-function loadProductData() {
-    productDataTable = $('#productTbl').DataTable({
+function loadDeletedProductData() {
+    productDataTable = $('#deletedProductTbl').DataTable({
         processing: true,
         ajax: {
-            url: '/admin/product/getall',
+            url: '/admin/product/GetAllDeletedProducts',
         },
         columns: [
             { data: 'productId', title: 'Product Id', width: "5%" },
@@ -38,8 +38,8 @@ function loadProductData() {
                         <a href="Product/Details/${data}" class="btn btn-link btn-primary btn-md">
                             <i class="fa fa-eye"></i>
                         </a>
-                        <button onClick="deleteItem('product/delete/${data}', 'productTbl')" class="btn btn-link btn-danger">
-                            <i class="fa fa-times"></i>
+                        <button onClick="restoreItem('product/restore/${data}', 'productTbl')" class="btn btn-link btn-success">
+                            <i class="fa fa-undo"></i>
                         </button>
                     `;
                 },
@@ -50,20 +50,21 @@ function loadProductData() {
     });
 }
 
-function deleteItem(url, tableId) {
+// Restore function
+function restoreItem(url, tableId) {
     Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
+        title: "Restore this product?",
+        text: "It will be available for customers again.",
+        icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
+        confirmButtonColor: "#28a745",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: "Yes, restore it!"
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
                 url: url,
-                type: "DELETE",
+                type: "POST",
                 success: function (data) {
                     productDataTable.ajax.reload();
                     toastr.success(data.message);
