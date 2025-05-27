@@ -30,7 +30,8 @@ namespace ECommercePlatform.Areas.Customer.Controllers
             {
                 NewArrivals = productDisplays.OrderByDescending(p => p.ProductId).Take(10).ToList(),
                 BestSellers = productDisplays.OrderByDescending(p => GetTotalQuantitySold(p.ProductId)).Take(10).ToList(),
-                SaleItems = productDisplays.OrderByDescending(p => p.Discount).Take(10).ToList()
+                SaleItems = productDisplays.OrderByDescending(p => p.Discount).Take(10).ToList(),
+                Banners = await _unitOfWork.Banners.GetAll().ToListAsync()
             };
 
             return View(homeVM);

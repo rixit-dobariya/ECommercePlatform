@@ -15,7 +15,7 @@ namespace ECommercePlatform.Filters
             {
                 var controller = (Controller)context.Controller;
                 controller.TempData["error"] = "You must be logged in to access this page!";
-                context.Result = new RedirectToActionResult("Login", "User", null);
+                context.Result = new RedirectToActionResult("Login", "User", new {area="Customer"});
             }
             if (userRole == null || userRole != RoleType.Admin.ToString())
             {

@@ -19,6 +19,7 @@ namespace ECommercePlatform.Repository.IRepository
         IRepository<Response> Responses { get; }
         IRepository<ContactDetails> ContactDetails { get; }
         IRepository<AboutPageContent> AboutPageContent { get; }
+        IRepository<Banner> Banners { get; }
         Task Save();
     }
 }

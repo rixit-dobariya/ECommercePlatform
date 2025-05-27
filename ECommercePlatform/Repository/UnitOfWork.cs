@@ -21,6 +21,7 @@ namespace ECommercePlatform.Repository
         public IRepository<Response> Responses { get; private set; }
         public IRepository<ContactDetails> ContactDetails { get; private set; }
         public IRepository<AboutPageContent> AboutPageContent { get; private set; }
+        public IRepository<Banner> Banners { get; private set; }
 
         private ApplicationDbContext _db;
 
@@ -42,6 +43,7 @@ namespace ECommercePlatform.Repository
             Responses = new Repository<Response>(db);
             ContactDetails = new Repository<ContactDetails>(db);
             AboutPageContent = new Repository<AboutPageContent>(db);
+            Banners = new Repository<Banner>(db);
         }
 
         public async Task Save()
