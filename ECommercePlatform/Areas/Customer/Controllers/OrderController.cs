@@ -102,58 +102,30 @@ namespace ECommercePlatform.Areas.Customer.Controllers
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
-            if (userId == null)
-            {
-                TempData["error"] = "User not logged in.";
-                return;
-            }
-
             CheckoutVM fetchedCheckoutVM = await GetCheckoutVM(userId);
-            int? shippingAddressId = HttpContext.Session.GetInt32("ShippingAddressId");
-
-            if (shippingAddressId == null)
-            {
-                TempData["error"] = "Shipping address not found.";
-                return;
-            }
-
-            // Check stock availability
-            foreach (var cartItem in fetchedCheckoutVM.CartItems)
-            {
-                var product = await _unitOfWork.Products.Get(p => p.ProductId == cartItem.ProductId);
-                if (product == null || product.Stock < cartItem.Quantity)
-                {
-                    TempData["error"] = $"Stock not available for product '{cartItem.Product?.Name ?? "Unknown"}'.";
-                    return;
-                }
-            }
-
-            fetchedCheckoutVM.ShippingAddressId = (int)shippingAddressId;
+            int shippingAddressId = (int)HttpContext.Session.GetInt32("ShippingAddressId");
+            fetchedCheckoutVM.ShippingAddressId = shippingAddressId;
 
             OrderHeader orderHeader = new()
             {
                 UserId = (int)userId,
-                OrderStatus = OrderStatus.Pending,
+                OrderStatus= OrderStatus.Pending,
                 ShippingAddressId = fetchedCheckoutVM.ShippingAddressId,
                 ShippingCharge = fetchedCheckoutVM.ShippingCharge,
                 Subtotal = fetchedCheckoutVM.Total - fetchedCheckoutVM.ShippingCharge
             };
-
-            // Mark address as used (soft-delete) and clone it
+            //make used address as deleted 
             Address address = await _unitOfWork.Addresses.Get(a => a.AddressId == shippingAddressId);
             address.IsDeleted = 1;
             _unitOfWork.Addresses.Update(address);
-
             address.AddressId = 0;
             _unitOfWork.Addresses.Add(address);
 
             _unitOfWork.OrderHeaders.Add(orderHeader);
             await _unitOfWork.Save();
-
-            foreach (var cartItem in fetchedCheckoutVM.CartItems)
+            List<OrderDetail>  orderDetails = new List<OrderDetail>();
+            foreach(var cartItem in fetchedCheckoutVM.CartItems)
             {
-                var product = await _unitOfWork.Products.Get(p => p.ProductId == cartItem.ProductId);
-
                 OrderDetail orderDetail = new()
                 {
                     OrderHeaderId = orderHeader.OrderId,
@@ -162,18 +134,10 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                     Price = cartItem.Product.SellPrice - cartItem.Product.SellPrice * cartItem.Product.Discount / 100,
                     Quantity = cartItem.Quantity,
                 };
-
                 _unitOfWork.OrderDetails.Add(orderDetail);
-
-                // Update product stock
-                product.Stock -= cartItem.Quantity;
-                _unitOfWork.Products.Update(product);
             }
-
-            // Clear cart
             _unitOfWork.CartItems.RemoveRange(fetchedCheckoutVM.CartItems);
             await _unitOfWork.Save();
-
             TempData["success"] = "Order placed successfully.";
         }
         #region METHODS
@@ -222,7 +186,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
 
                 if (userId == null)
                 {
-                    TempData["error"] = "You must be logged in to place an order.";
+                    TempData["error"] = "You must be logged in to place order.";
                     return RedirectToAction("Login", "User");
                 }
 
@@ -230,33 +194,12 @@ namespace ECommercePlatform.Areas.Customer.Controllers
 
                 if (checkoutVM.ShippingAddressId <= 0)
                 {
-                    ModelState.AddModelError("ShippingAddressId", "You must select an address to place an order.");
+                    ModelState.AddModelError("ShippingAddressId", "You must select address to place order.");
                     return View(fetchedCheckoutVM);
                 }
-
-                // ✅ Validate stock availability before proceeding
-                foreach (var cartItem in fetchedCheckoutVM.CartItems)
-                {
-                    Product? product = await _unitOfWork.Products.Get(p => p.ProductId == cartItem.ProductId);
-
-                    if (product == null)
-                    {
-                        TempData["error"] = $"Product with ID {cartItem.ProductId} not found.";
-                        return RedirectToAction("Index", "Cart");
-                    }
-
-                    if (product.Stock < cartItem.Quantity)
-                    {
-                        TempData["error"] = $"Stock is not available for product '{product.Name}'. Only {product.Stock} left.";
-                        return RedirectToAction("Index", "Cart");
-                    }
-                }
-
-                HttpContext.Session.SetInt32("ShippingAddressId", checkoutVM.ShippingAddressId);
-
+                HttpContext.Session.SetInt32("ShippingAddressId",checkoutVM.ShippingAddressId);
                 User user = await _unitOfWork.Users.Get(u => u.UserId == userId);
-                Address address = await _unitOfWork.Addresses.Get(a => a.AddressId == checkoutVM.ShippingAddressId);
-
+                Address address = await _unitOfWork.Addresses.Get(a=> a.AddressId == checkoutVM.ShippingAddressId);
                 PaymentRequest paymentRequest = new PaymentRequest()
                 {
                     Address = $"{address.FirstName} {address.LastName} \n {address.Region}\n{address.City}, {address.State}\nPin Code:{address.PinCode}\nPhone:{address.Phone}",
@@ -264,8 +207,7 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                     Email = user.Email,
                     Name = user.FullName,
                     PhoneNumber = user.Phone
-                };
-
+                };   
                 MerchantOrder _merchantOrder = await _paymentService.ProcessMerchantOrder(paymentRequest);
                 return View("Payment", _merchantOrder);
             }
@@ -274,7 +216,6 @@ namespace ECommercePlatform.Areas.Customer.Controllers
                 // Log the exception
                 return RedirectToAction("Failed");
             }
-
         }
 
         [HttpPost]

@@ -74,10 +74,11 @@ namespace ECommercePlatform.Data
             );
 
             //products
+            // products
             modelBuilder.Entity<Product>().HasData(
                 new Product
                 {
-                    ProductId=1,
+                    ProductId = 1,
                     Name = "Laptop",
                     LongDescription = "High-end gaming laptop",
                     ShortDescription = "High-end gaming laptop",
@@ -86,7 +87,7 @@ namespace ECommercePlatform.Data
                     SellPrice = 1500.00m,
                     CostPrice = 1200.00m,
                     Discount = 10.0m,
-                    ImageUrl = "\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\products\\laptop.webp",
                     IsActive = true
                 },
                 new Product
@@ -100,11 +101,9 @@ namespace ECommercePlatform.Data
                     SellPrice = 800.00m,
                     CostPrice = 600.00m,
                     Discount = 5.0m,
-                    ImageUrl = "\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\products\\smartphone.jpg",
                     IsActive = true
                 },
-
-                // Products for Fashion category
                 new Product
                 {
                     ProductId = 3,
@@ -116,8 +115,8 @@ namespace ECommercePlatform.Data
                     SellPrice = 20.00m,
                     CostPrice = 12.00m,
                     Discount = 0.0m,
-                    ImageUrl = "\\Images\\profile.jpg",
-                    IsActive = true 
+                    ImageUrl = "\\Images\\products\\men shirt.webp",
+                    IsActive = true
                 },
                 new Product
                 {
@@ -130,11 +129,9 @@ namespace ECommercePlatform.Data
                     SellPrice = 35.00m,
                     CostPrice = 25.00m,
                     Discount = 10.0m,
-                    ImageUrl = "\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\products\\women dress.webp",
                     IsActive = true
                 },
-
-                // Products for Home Appliances category
                 new Product
                 {
                     ProductId = 5,
@@ -146,7 +143,7 @@ namespace ECommercePlatform.Data
                     SellPrice = 1200.00m,
                     CostPrice = 950.00m,
                     Discount = 15.0m,
-                    ImageUrl = "\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\products\\fridge.webp",
                     IsActive = true
                 },
                 new Product
@@ -160,10 +157,137 @@ namespace ECommercePlatform.Data
                     SellPrice = 500.00m,
                     CostPrice = 400.00m,
                     Discount = 5.0m,
-                    ImageUrl = "\\Images\\profile.jpg",
+                    ImageUrl = "\\Images\\products\\washing machine.webp",
+                    IsActive = true
+                },
+                new Product
+                {
+                    ProductId = 7,
+                    Name = "Gaming Mouse",
+                    ShortDescription = "High precision gaming mouse",
+                    LongDescription = "Ergonomic design with RGB lighting",
+                    CategoryId = 2,
+                    Stock = 40,
+                    SellPrice = 50.00m,
+                    CostPrice = 30.00m,
+                    Discount = 5.0m,
+                    ImageUrl = "\\Images\\products\\mouse.webp",
+                    IsActive = true
+                },
+                new Product
+                {
+                    ProductId = 8,
+                    Name = "Bluetooth Headphones",
+                    ShortDescription = "Noise-cancelling headphones",
+                    LongDescription = "Over-ear Bluetooth headphones with long battery life",
+                    CategoryId = 3,
+                    Stock = 35,
+                    SellPrice = 120.00m,
+                    CostPrice = 90.00m,
+                    Discount = 8.0m,
+                    ImageUrl = "\\Images\\products\\headphone.webp",
+                    IsActive = true
+                },
+                new Product
+                {
+                    ProductId = 9,
+                    Name = "Men's Jacket",
+                    ShortDescription = "Waterproof winter jacket",
+                    LongDescription = "Stylish and warm men's winter jacket",
+                    CategoryId = 5,
+                    Stock = 25,
+                    SellPrice = 80.00m,
+                    CostPrice = 60.00m,
+                    Discount = 10.0m,
+                    ImageUrl = "\\Images\\products\\men jacket.webp",
+                    IsActive = true
+                },
+                new Product
+                {
+                    ProductId = 10,
+                    Name = "Women's Handbag",
+                    ShortDescription = "Leather handbag",
+                    LongDescription = "Spacious and stylish leather handbag",
+                    CategoryId = 6,
+                    Stock = 18,
+                    SellPrice = 150.00m,
+                    CostPrice = 100.00m,
+                    Discount = 15.0m,
+                    ImageUrl = "\\Images\\products\\women handbag.webp",
+                    IsActive = true
+                },
+                new Product
+                {
+                    ProductId = 11,
+                    Name = "Microwave Oven",
+                    ShortDescription = "Compact microwave oven",
+                    LongDescription = "900W microwave oven with multiple settings",
+                    CategoryId = 7,
+                    Stock = 22,
+                    SellPrice = 200.00m,
+                    CostPrice = 160.00m,
+                    Discount = 10.0m,
+                    ImageUrl = "\\Images\\products\\microwave oven.webp",
+                    IsActive = true
+                },
+                new Product
+                {
+                    ProductId = 12,
+                    Name = "Men's Jeans",
+                    ShortDescription = "Slim fit jeans",
+                    LongDescription = "Stylish and comfortable slim fit jeans",
+                    CategoryId = 5,
+                    Stock = 60,
+                    SellPrice = 45.00m,
+                    CostPrice = 30.00m,
+                    Discount = 5.0m,
+                    ImageUrl = "\\Images\\products\\men jeans.webp",
+                    IsActive = true
+                },
+                new Product
+                {
+                    ProductId = 13,
+                    Name = "Women's Heels",
+                    ShortDescription = "High heel sandals",
+                    LongDescription = "Elegant heels perfect for parties",
+                    CategoryId = 6,
+                    Stock = 28,
+                    SellPrice = 70.00m,
+                    CostPrice = 45.00m,
+                    Discount = 10.0m,
+                    ImageUrl = "\\Images\\products\\women heels.jpg",
+                    IsActive = true
+                },
+                new Product
+                {
+                    ProductId = 14,
+                    Name = "Smartwatch",
+                    ShortDescription = "Fitness and notification tracking",
+                    LongDescription = "Smartwatch with heart-rate monitor and notification sync",
+                    CategoryId = 3,
+                    Stock = 20,
+                    SellPrice = 199.99m,
+                    CostPrice = 150.00m,
+                    Discount = 5.0m,
+                    ImageUrl = "\\Images\\products\\smartwatch.webp",
+                    IsActive = true
+                },
+                new Product
+                {
+                    ProductId = 15,
+                    Name = "Air Conditioner",
+                    ShortDescription = "1.5 Ton Split AC",
+                    LongDescription = "Energy-saving split air conditioner with fast cooling",
+                    CategoryId = 7,
+                    Stock = 10,
+                    SellPrice = 650.00m,
+                    CostPrice = 500.00m,
+                    Discount = 12.0m,
+                    ImageUrl = "\\Images\\products\\ac.webp",
                     IsActive = true
                 }
             );
+
             //product attributes
             modelBuilder.Entity<ProductAttribute>().HasData(
                 new ProductAttribute { AttributeID=1, ProductID = 1, Name = "Brand", Value = "BrandX" },
