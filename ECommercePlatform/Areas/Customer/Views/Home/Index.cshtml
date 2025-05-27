@@ -1,33 +1,26 @@
 ﻿@model HomeVM
 <div class="slider-area">
     <div class="slider-active owl-carousel nav-style-1">
-        @if (!Model.Banners.Any())
-        {
-            <p>No banners available.</p>
-        }
-        @foreach (var banner in Model.Banners)
-{
-    <div class="single-slider slider-height-1 bg-purple">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-6 col-12 col-sm-6">
-                    <div class="slider-content slider-animated-1">
-                        <h3 class="animated">@banner.Title</h3>
-                        <h1 class="animated">@banner.Text</h1>
-                        <div class="slider-btn btn-hover">
-                            <a class="animated" asp-controller="Shop" asp-action="Index">SHOP NOW</a>
+        <div class="single-slider slider-height-1 bg-purple">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-12 col-sm-6">
+                        <div class="slider-content slider-animated-1">
+                            <h3 class="animated">Smart Products</h3>
+                            <h1 class="animated">Summer Offer <br>2025 Collection</h1>
+                            <div class="slider-btn btn-hover">
+                                <a class="animated" asp-controller="Shop">SHOP NOW</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-12 col-sm-6">
-                    <div class="slider-single-img slider-animated-1">
-                        <img class="animated" src="@banner.ImageUrl" alt="Banner Image">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-12 col-sm-6">
+                        <div class="slider-single-img slider-animated-1">
+                            <img class="animated" src="assets/img/slider/single-slide-hm1-2.png" alt="">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-}
 
     </div>
 </div>
