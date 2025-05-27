@@ -7,5 +7,6 @@ namespace ECommercePlatform.Models.ViewModels
         public List<ProductDisplay> NewArrivals { get; set; }
         public List<ProductDisplay> BestSellers { get; set; }
         public List<ProductDisplay> SaleItems { get; set; }
+        public List<Banner> Banners{ get; set; }
     }
 }

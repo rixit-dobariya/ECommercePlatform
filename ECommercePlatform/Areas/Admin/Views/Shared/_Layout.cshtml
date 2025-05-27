@@ -104,6 +104,12 @@
 								<p>Offers</p>
 							</a>
 						</li>
+						<li class="nav-item @(ViewData["ActiveMenu"]?.ToString() == "Banner" ? "active" : "")">
+							<a asp-controller="Banner" asp-action="Index">
+								<i class="fas fa-image"></i> <!-- Offers Icon -->
+								<p>Banners</p>
+							</a>
+						</li>
 						<li class="nav-item @(ViewData["ActiveMenu"]?.ToString() == "Review" ? "active" : "")">
 							<a asp-controller="Offer" asp-action="Index">
 								<i class="fas fa-star"></i> <!-- Review Icon -->

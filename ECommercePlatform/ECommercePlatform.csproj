@@ -68,6 +68,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\Images\NewFolder\" />
     <Folder Include="wwwroot\Images\users\" />
   </ItemGroup>
 

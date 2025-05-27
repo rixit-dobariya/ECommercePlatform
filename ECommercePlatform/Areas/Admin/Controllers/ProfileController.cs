@@ -100,5 +100,12 @@ namespace ECommercePlatform.Areas.Admin.Controllers
             TempData["success"] = "Password changed successfully!";
             return View("Edit", new AdminProfileVM { AdminEditProfileVM = adminEditProfileVM});
         }
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserId");
+            HttpContext.Session.Remove("Role");
+            TempData["success"] = "You have logged out successfully!";
+            return Redirect("/User/Home/Index");
+        }
     }
 }

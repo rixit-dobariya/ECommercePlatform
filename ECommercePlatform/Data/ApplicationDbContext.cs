@@ -26,6 +26,7 @@ namespace ECommercePlatform.Data
         DbSet<Response> Responses { get; set; }
         DbSet<ContactDetails> ContactDetails { get; set; }
         DbSet<AboutPageContent> AboutPageContent { get; set; }
+        DbSet<Banner> Banners { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
